@@ -91,11 +91,11 @@ Scene.prototype.loadMapSprites = function() {
 					_sprite.speed.max.y = this.map.sprite[i].property[j].value;
 					_sprite.speed.max.y = parseFloat(_sprite.speed.max.y).toFixed(3);
 					break;
-				case 'affects.gravity':
-					_sprite.affects.gravity = this.map.sprite[i].property[j].value === 'true' ? true : false;
+				case 'affects.physics.gravity':
+					_sprite.affects.physics.gravity = this.map.sprite[i].property[j].value === 'true' ? true : false;
 					break;
-				case 'affects.friction':
-					_sprite.affects.friction = this.map.sprite[i].property[j].value === 'true' ? true : false;
+				case 'affects.physics.friction':
+					_sprite.affects.physics.friction = this.map.sprite[i].property[j].value === 'true' ? true : false;
 					break;
 				case 'bounciness':
 					_sprite.bounciness = this.map.sprite[i].property[j].value;

@@ -166,12 +166,12 @@ var Game = new function() {
 	
 	this.updatePhysics = function() {
 		for(var i = 0; i < Game.current.scene.sprite.length; i++) {
-			if(Game.current.scene.sprite[i].affects.gravity) {
+			if(Game.current.scene.sprite[i].affects.physics.gravity) {
 				Game.current.scene.sprite[i].speed.x += Game.current.scene.physics.gravity.x;
 				Game.current.scene.sprite[i].speed.y += Game.current.scene.physics.gravity.y;
 			}
 			
-			if(Game.current.scene.sprite[i].affects.friction) {
+			if(Game.current.scene.sprite[i].affects.physics.friction) {
 				if(Game.current.scene.sprite[i].speed.x > 0) {
 					Game.current.scene.sprite[i].speed.x -= (Game.current.scene.physics.friction.x * Game.current.scene.sprite[i].speed.max.x);
 					if(Game.current.scene.sprite[i].speed.x < 0) {
@@ -196,25 +196,25 @@ var Game = new function() {
 				}
 			}
 			
-			if(Game.current.scene.sprite[i].affects.gravity && Game.current.scene.physics.gravity.y > 0 && Game.current.scene.sprite[i].collision.sprite.down && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
+			if(Game.current.scene.sprite[i].affects.physics.gravity && Game.current.scene.physics.gravity.y > 0 && Game.current.scene.sprite[i].collision.sprite.down && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
 				if(Game.current.scene.sprite[i].speed.x >= 0 && Game.current.scene.sprite[i].speed.x < Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x) {
 					Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x;
 				} else if(Game.current.scene.sprite[i].speed.x <= 0 && Game.current.scene.sprite[i].speed.x > Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x) {
 					Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x;
 				}
-			} else if(Game.current.scene.sprite[i].affects.gravity && Game.current.scene.physics.gravity.y < 0 && Game.current.scene.sprite[i].collision.sprite.up && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
+			} else if(Game.current.scene.sprite[i].affects.physics.gravity && Game.current.scene.physics.gravity.y < 0 && Game.current.scene.sprite[i].collision.sprite.up && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
 				if(Game.current.scene.sprite[i].speed.x >= 0 && Game.current.scene.sprite[i].speed.x < Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x) {
 					Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x;
 				} else if(Game.current.scene.sprite[i].speed.x <= 0 && Game.current.scene.sprite[i].speed.x > Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x) {
 					Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x;
 				}
-			} else if(Game.current.scene.sprite[i].affects.gravity && Game.current.scene.physics.gravity.x > 0 && Game.current.scene.sprite[i].collision.sprite.right && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
+			} else if(Game.current.scene.sprite[i].affects.physics.gravity && Game.current.scene.physics.gravity.x > 0 && Game.current.scene.sprite[i].collision.sprite.right && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
 				if(Game.current.scene.sprite[i].speed.y >= 0 && Game.current.scene.sprite[i].speed.y < Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y) {
 					Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y;
 				} else if(Game.current.scene.sprite[i].speed.y <= 0 && Game.current.scene.sprite[i].speed.y > Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y) {
 					Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y;
 				}
-			} else if(Game.current.scene.sprite[i].affects.gravity && Game.current.scene.physics.gravity.x < 0 && Game.current.scene.sprite[i].collision.sprite.left && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
+			} else if(Game.current.scene.sprite[i].affects.physics.gravity && Game.current.scene.physics.gravity.x < 0 && Game.current.scene.sprite[i].collision.sprite.left && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
 				if(Game.current.scene.sprite[i].speed.y >= 0 && Game.current.scene.sprite[i].speed.y < Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y) {
 					Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y;
 				} else if(Game.current.scene.sprite[i].speed.y <= 0 && Game.current.scene.sprite[i].speed.y > Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.y) {
