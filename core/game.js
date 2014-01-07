@@ -195,7 +195,6 @@ var Game = new function() {
 					}
 				}
 			}
-			console.log(Game.current.scene.sprite[i].speed.x);
 			
 			if(Game.current.scene.sprite[i].affects.physics.gravity && Game.current.scene.physics.gravity.y > 0 && Game.current.scene.sprite[i].collision.sprite.down && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
 				if(Game.current.scene.sprite[i].speed.x >= 0 && Game.current.scene.sprite[i].speed.x < Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x) {
