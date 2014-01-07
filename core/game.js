@@ -167,34 +167,35 @@ var Game = new function() {
 	this.updatePhysics = function() {
 		for(var i = 0; i < Game.current.scene.sprite.length; i++) {
 			if(Game.current.scene.sprite[i].affects.physics.gravity) {
-				Game.current.scene.sprite[i].speed.x += Game.current.scene.physics.gravity.x;
-				Game.current.scene.sprite[i].speed.y += Game.current.scene.physics.gravity.y;
+				Game.current.scene.sprite[i].speed.gravity.x += Game.current.scene.physics.gravity.x;
+				Game.current.scene.sprite[i].speed.gravity.y += Game.current.scene.physics.gravity.y;
 			}
 			
 			if(Game.current.scene.sprite[i].affects.physics.friction) {
 				if(Game.current.scene.sprite[i].speed.x > 0) {
-					Game.current.scene.sprite[i].speed.x -= (Game.current.scene.physics.friction.x * Game.current.scene.sprite[i].speed.max.x);
-					if(Game.current.scene.sprite[i].speed.x < 0) {
+					Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[i].speed.x * (1 - Game.current.scene.physics.friction.x);
+					if(Game.current.scene.sprite[i].speed.x < 0.05) {
 						Game.current.scene.sprite[i].speed.x = 0;
 					}
 				} else if(Game.current.scene.sprite[i].speed.x < 0) {
-					Game.current.scene.sprite[i].speed.x += (Game.current.scene.physics.friction.x * Game.current.scene.sprite[i].speed.max.x);
-					if(Game.current.scene.sprite[i].speed.x > 0) {
+					Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[i].speed.x * (1 - Game.current.scene.physics.friction.x);
+					if(Game.current.scene.sprite[i].speed.x > 0.05) {
 						Game.current.scene.sprite[i].speed.x = 0;
 					}
 				}
 				if(Game.current.scene.sprite[i].speed.y > 0) {
-					Game.current.scene.sprite[i].speed.y -= (Game.current.scene.physics.friction.y * Game.current.scene.sprite[i].speed.max.y);
-					if(Game.current.scene.sprite[i].speed.y < 0) {
+					Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[i].speed.y * (1 - Game.current.scene.physics.friction.y);
+					if(Game.current.scene.sprite[i].speed.y < 0.05) {
 						Game.current.scene.sprite[i].speed.y = 0;
 					}
 				} else if(Game.current.scene.sprite[i].speed.y < 0) {
-					Game.current.scene.sprite[i].speed.y += (Game.current.scene.physics.friction.y * Game.current.scene.sprite[i].speed.max.y);
-					if(Game.current.scene.sprite[i].speed.y > 0) {
+					Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[i].speed.y * (1 - Game.current.scene.physics.friction.y);
+					if(Game.current.scene.sprite[i].speed.y > 0.05) {
 						Game.current.scene.sprite[i].speed.y = 0;
 					}
 				}
 			}
+			console.log(Game.current.scene.sprite[i].speed.x);
 			
 			if(Game.current.scene.sprite[i].affects.physics.gravity && Game.current.scene.physics.gravity.y > 0 && Game.current.scene.sprite[i].collision.sprite.down && Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].platform) {
 				if(Game.current.scene.sprite[i].speed.x >= 0 && Game.current.scene.sprite[i].speed.x < Game.current.scene.sprite[Game.current.scene.sprite[i].collision.sprite.id].speed.x) {
@@ -230,8 +231,11 @@ var Game = new function() {
 				Game.current.scene.sprite[i].speed.x = Game.current.scene.sprite[i].speed.max.x * sx;	
 			}
 			if(Math.abs(Game.current.scene.sprite[i].speed.y) > Game.current.scene.sprite[i].speed.max.y) {
-				Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[i].speed.max.y * sy;	
+				Game.current.scene.sprite[i].speed.y = Game.current.scene.sprite[i].speed.max.y * sy;
 			}
+			
+			Game.current.scene.sprite[i].speed.x += Game.current.scene.sprite[i].speed.gravity.x;
+			Game.current.scene.sprite[i].speed.y += Game.current.scene.sprite[i].speed.gravity.y; 
 			
 			Game.current.scene.sprite[i].speed.x = parseFloat(Game.current.scene.sprite[i].speed.x.toFixed(3));
 			Game.current.scene.sprite[i].speed.y = parseFloat(Game.current.scene.sprite[i].speed.y.toFixed(3));
@@ -246,6 +250,9 @@ var Game = new function() {
 			if(Game.current.scene.sprite[i].speed.y === 0) {
 				Game.current.scene.sprite[i].speed.t.y = 0;
 			}
+			
+			Game.current.scene.sprite[i].speed.x -= Game.current.scene.sprite[i].speed.gravity.x;
+			Game.current.scene.sprite[i].speed.y -= Game.current.scene.sprite[i].speed.gravity.y; 
 		}
 	};
 	
