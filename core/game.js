@@ -2,13 +2,13 @@ var Game = new function() {
 	this.canvas = null;
 	this.context = null;
 	this.scale = null;
-	this.scene = new Scene();
-	this.current = {scene: this.scene};
+	this.scene = null;
+	this.current = null;
 	this.next = {scene: null, fade: null};
-	this.imageFile = ImageFile;
-	this.audioFile = AudioFile;
+	this.imageFile = null;
+	this.audioFile = null;
 	this.sound = new Array();
-	this.input = Input;
+	this.input = null;
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
 	
 	this.canvasSprite = null;
@@ -16,8 +16,6 @@ var Game = new function() {
 	this.canvasMap = null;
 	this.contextMap = null;
 	this.status = 1;
-	
-	this.scene.physics = this.physics;
 	
 	this.canvas = document.createElement('canvas');
 	this.canvas.setAttribute('id', 'canvas');
@@ -46,8 +44,22 @@ var Game = new function() {
 	    Game.canvasMap.width = Game.canvas.width;
 	    Game.canvasMap.height = Game.canvas.height;
 	    
-	    var interval = setInterval(function(){Game.loadResources(interval)}, 100);
+	    this.scene = new Scene();
+		this.current = {scene: this.scene};
+		
+		this.scene.physics = this.physics;
+		
+		this.imageFile = ImageFile;
+		this.audioFile = AudioFile;
+		
+		this.input = Input;
+	    
+	    //var interval = setInterval(function(){Game.loadResources(interval)}, 100);
 	};
+	
+	this.start = function() {
+		var interval = setInterval(function(){Game.loadResources(interval)}, 100);
+	}
 
 	this.addScene = function(_scene) {
 		Game.scene.push(_scene);
