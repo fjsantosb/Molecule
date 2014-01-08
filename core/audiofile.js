@@ -9,7 +9,6 @@ var AudioFile = new function() {
 			var _audio = new Audio();
 			for(var i = 0; i < _audioSrc.length; i++) {
 				var t = _audioSrc[i].split('.');
-				console.log(_audio.canPlayType('audio/' + (t[t.length - 1])));
 				if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
 					_audioSrcFile = _audioSrc[i];
 				}
