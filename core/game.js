@@ -53,13 +53,11 @@ var Game = new function() {
 		this.audioFile = AudioFile;
 		
 		this.input = Input;
-	    
-	    //var interval = setInterval(function(){Game.loadResources(interval)}, 100);
 	};
 	
 	this.start = function() {
 		var interval = setInterval(function(){Game.loadResources(interval)}, 100);
-	}
+	};
 
 	this.addScene = function(_scene) {
 		Game.scene.push(_scene);
