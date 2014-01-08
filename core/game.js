@@ -57,7 +57,7 @@ var Game = new function() {
 	    //var interval = setInterval(function(){Game.loadResources(interval)}, 100);
 	};
 	
-	this.init = function() {
+	this.start = function() {
 		var interval = setInterval(function(){Game.loadResources(interval)}, 100);
 	}
 
