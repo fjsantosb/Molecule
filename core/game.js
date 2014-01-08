@@ -20,7 +20,7 @@ var Game = new function() {
 	this.canvas = document.createElement('canvas');
 	this.canvas.setAttribute('id', 'canvas');
 	
-	this.init = function(_width, _height, _scale) {
+	this.create = function(_width, _height, _scale) {
 		Game.canvas.width = _width;
 		Game.canvas.height = _height;
 		
@@ -57,7 +57,7 @@ var Game = new function() {
 	    //var interval = setInterval(function(){Game.loadResources(interval)}, 100);
 	};
 	
-	this.start = function() {
+	this.init = function() {
 		var interval = setInterval(function(){Game.loadResources(interval)}, 100);
 	}
 
