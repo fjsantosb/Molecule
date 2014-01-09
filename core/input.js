@@ -7,7 +7,6 @@ function Input() {
 
 // Method to init 'keyboard', 'mouse' or 'touch' depending of type
 Input.prototype.enable = function(_type) {
-	var self = this;
 	if(_type === 'keyboard') {
 		document.addEventListener('keydown', this.onkeydown, true);
 		document.addEventListener('keyup', this.onkeyup, true);
@@ -27,7 +26,6 @@ Input.prototype.enable = function(_type) {
 	
 // Method to remove 'keyboard', 'mouse' or 'touch' depending of type
 Input.prototype.disable = function(_type) {
-	var self = this;
 	if(_type === 'keyboard') {
 		document.removeEventListener('keydown', this.onkeydown, true);
 		document.removeEventListener('keyup', this.onkeyup, true);
@@ -245,8 +243,6 @@ Input.prototype.onkeyup = function(_e) {
 	
 // Method 'onmousedown' for 'mouse' type
 Input.prototype.onmousedown = function(_e) {
-	Game.input.mouse.x = (_e.pageX  - Game.canvas.offsetLeft) / Game.scale;
-	Game.input.mouse.y = (_e.pageY - Game.canvas.offsetTop) / Game.scale;
 	switch(_e.button) {
 		case 0:
 			Game.input.mouse.BUTTON_LEFT = 1;
@@ -258,18 +254,16 @@ Input.prototype.onmousedown = function(_e) {
 			Game.input.mouse.BUTTON_RIGHT = 1;
 			break;
 	}
+	Game.input.mousePosition(_e);
 };
 	
 // Method 'onmousemove' for 'mouse' type
 Input.prototype.onmousemove = function(_e) {
-	Game.input.mouse.x = (_e.pageX  - Game.canvas.offsetLeft) / Game.scale;
-	Game.input.mouse.y = (_e.pageY - Game.canvas.offsetTop) / Game.scale;
+	Game.input.mousePosition(_e);
 };
 	
 // Method 'onmouseup' for 'mouse' type
 Input.prototype.onmouseup = function(_e) {
-	Game.input.mouse.x = (_e.pageX  - Game.canvas.offsetLeft) / Game.scale;
-	Game.input.mouse.y = (_e.pageY - Game.canvas.offsetTop) / Game.scale;
 	switch(_e.button) {
 		case 0:
 			Game.input.mouse.BUTTON_LEFT = 0;
@@ -281,7 +275,13 @@ Input.prototype.onmouseup = function(_e) {
 			Game.input.mouse.BUTTON_RIGHT = 0;
 			break;
 	}
+	Game.input.mousePosition(_e);
 };
+
+Input.prototype.mousePosition = function(_e) {
+	Game.input.mouse.x = (_e.pageX  - Game.canvas.offsetLeft) / Game.scale;
+	Game.input.mouse.y = (_e.pageY - Game.canvas.offsetTop) / Game.scale;
+}
 	
 // Method 'ontouchstart' for 'touch' type
 Input.prototype.ontouchstart = function(_e) {
