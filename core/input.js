@@ -11,9 +11,9 @@ Input.prototype.enable = function(_type) {
 		document.addEventListener('keyup', this.onkeyup, true);
 	}
 	if(_type === 'mouse') {
-		document.addEventListener('mousedown', this.onmousedown, true);
-		document.addEventListener('mousemove', this.onmousemove, true);
-		document.addEventListener('mouseup', this.onmouseup, true);
+		Game.canvas.addEventListener('mousedown', this.onmousedown, true);
+		Game.canvas.addEventListener('mousemove', this.onmousemove, true);
+		Game.canvas.addEventListener('mouseup', this.onmouseup, true);
 	}
 	if(_type === 'touch') {
 		Game.canvas.addEventListener('touchstart', this.ontouchstart, true);
@@ -30,9 +30,9 @@ Input.prototype.disable = function(_type) {
 		document.removeEventListener('keyup', this.onkeyup, true);
 	}
 	if(_type === 'mouse') {
-		document.removeEventListener('mousedown', this.onmousedown, true);
-		document.removeEventListener('mousemove', this.onmousemove, true);
-		document.removeEventListener('mouseup', this.onmouseup, true);
+		Game.canvas.removeEventListener('mousedown', this.onmousedown, true);
+		Game.canvas.removeEventListener('mousemove', this.onmousemove, true);
+		Game.canvas.removeEventListener('mouseup', this.onmouseup, true);
 	}
 	if(_type === 'touch') {
 		Game.canvas.removeEventListener('touchstart', this.ontouchstart, true);
