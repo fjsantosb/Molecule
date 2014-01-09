@@ -5,7 +5,6 @@ function Camera() {
 	this.sprite = null;
 	this.scroll = {x: false, y: false};
 	this.type = 0;
-	this.canvas = document.getElementById('canvas');
 	
 	return this;
 };

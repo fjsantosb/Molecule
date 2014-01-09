@@ -1,6 +1,5 @@
 // Sprite var.
 function Sprite(_name, _width, _height) {
-	
 	this.name = _name;
 	this.image = Game.imageFile.getImageDataByName(this.name);
 	this.position = {x: 0, y: 0, offset: {x: 0, y: 0}, absolute: {x: 0, y: 0}};
