@@ -5,6 +5,7 @@ function Camera() {
 	this.sprite = null;
 	this.scroll = {x: false, y: false};
 	this.type = 0;
+	this.canvas = document.getElementById('canvas');
 	
 	return this;
 };
@@ -30,10 +31,10 @@ Camera.prototype.makeScroll = function(_map) {
 	this.scroll.x = false;
 	this.scroll.y = false;
 	if(_map.layer.length > 0 && _map.layer[this.layer].scrollable) {
-		if((-_map.layer[this.layer].position.x + Game.canvas.width < _map.width * _map.tile.width && this.sprite.move.x > 0 && this.sprite.position.x + this.sprite.frame.width / 2 >= Game.canvas.width / 2) || (-_map.layer[this.layer].position.x > 0 && this.sprite.move.x < 0 && this.sprite.position.x + this.sprite.frame.width / 2 <= Game.canvas.width / 2)) {
+		if((-_map.layer[this.layer].position.x + this.canvas.width < _map.width * _map.tile.width && this.sprite.move.x > 0 && this.sprite.position.x + this.sprite.frame.width / 2 >= this.canvas.width / 2) || (-_map.layer[this.layer].position.x > 0 && this.sprite.move.x < 0 && this.sprite.position.x + this.sprite.frame.width / 2 <= this.canvas.width / 2)) {
 			this.scroll.x = true;
 		}
-		if((-_map.layer[this.layer].position.y + Game.canvas.height < _map.height * _map.tile.height && this.sprite.move.y > 0 && this.sprite.position.y + this.sprite.frame.height / 2>= Game.canvas.height / 2) || (-_map.layer[this.layer].position.y > 0 && this.sprite.move.y < 0 && this.sprite.position.y + this.sprite.frame.height / 2<= Game.canvas.height / 2)) {
+		if((-_map.layer[this.layer].position.y + this.canvas.height < _map.height * _map.tile.height && this.sprite.move.y > 0 && this.sprite.position.y + this.sprite.frame.height / 2>= this.canvas.height / 2) || (-_map.layer[this.layer].position.y > 0 && this.sprite.move.y < 0 && this.sprite.position.y + this.sprite.frame.height / 2<= this.canvas.height / 2)) {
 			this.scroll.y = true;
 		}
 	}
@@ -43,7 +44,7 @@ Camera.prototype.makeScroll = function(_map) {
 Camera.prototype.makeMapScroll = function(_map) {
 	for(var i = 0; i < _map.layer.length; i++) {
 		if(_map.layer[i].scrollable) {
-			if((-_map.layer[i].position.x + Game.canvas.width < _map.width * _map.tile.width && this.sprite.move.x > 0 && this.sprite.position.x + this.sprite.frame.width / 2 >= Game.canvas.width / 2) || (-_map.layer[i].position.x > 0 && this.sprite.move.x < 0 && this.sprite.position.x + this.sprite.frame.width / 2 <= Game.canvas.width / 2)) {
+			if((-_map.layer[i].position.x + this.canvas.width < _map.width * _map.tile.width && this.sprite.move.x > 0 && this.sprite.position.x + this.sprite.frame.width / 2 >= this.canvas.width / 2) || (-_map.layer[i].position.x > 0 && this.sprite.move.x < 0 && this.sprite.position.x + this.sprite.frame.width / 2 <= this.canvas.width / 2)) {
 				if(this.scroll.x) {
 					if(i !== this.layer) {
 						_map.layer[i].scroll.x = this.sprite.move.x * -_map.layer[i].scroll.speed;
@@ -53,7 +54,7 @@ Camera.prototype.makeMapScroll = function(_map) {
 					
 				}
 			}
-			if((-_map.layer[i].position.y + Game.canvas.height < _map.height * _map.tile.height && this.sprite.move.y > 0 && this.sprite.position.y + this.sprite.frame.height / 2>= Game.canvas.height / 2) || (-_map.layer[i].position.y > 0 && this.sprite.move.y < 0 && this.sprite.position.y + this.sprite.frame.height / 2<= Game.canvas.height / 2)) {
+			if((-_map.layer[i].position.y + this.canvas.height < _map.height * _map.tile.height && this.sprite.move.y > 0 && this.sprite.position.y + this.sprite.frame.height / 2>= this.canvas.height / 2) || (-_map.layer[i].position.y > 0 && this.sprite.move.y < 0 && this.sprite.position.y + this.sprite.frame.height / 2<= this.canvas.height / 2)) {
 				if(this.scroll.y) {
 					if(i !== this.layer) {
 						_map.layer[i].scroll.y = this.sprite.move.y * -_map.layer[i].scroll.speed;
