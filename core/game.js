@@ -49,10 +49,10 @@ var Game = new function() {
 		
 		this.scene.physics = this.physics;
 		
-		this.imageFile = ImageFile;
-		this.audioFile = AudioFile;
+		this.imageFile = new ImageFile();
+		this.audioFile = new AudioFile();
 		
-		this.input = Input;
+		this.input = new Input();
 	};
 	
 	this.start = function() {

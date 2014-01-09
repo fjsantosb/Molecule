@@ -1,27 +1,27 @@
-var ImageFile = new function() {
+function ImageFile() {
 	this.name = new Array();
 	this.data = new Array();
 	this.counter = 0;
+};
 	
-	this.load = function(_imageSrc, _imageName) {
-		if(!this.getImageDataByName(_imageName)) {
-			var _image = new Image();
-			_image.src = _imageSrc;
-			_image.addEventListener('load', function(){Game.imageFile.counter++;});
-			Game.imageFile.name.push(_imageName);
-			Game.imageFile.data.push(_image);
-		}
-	};
+ImageFile.prototype.load = function(_imageSrc, _imageName) {
+	if(!this.getImageDataByName(_imageName)) {
+		var self = this;
+		var _image = new Image();
+		_image.src = _imageSrc;
+		_image.addEventListener('load', function(){self.counter++;});
+		this.name.push(_imageName);
+		this.data.push(_image);
+	}
+};
 	
-	this.isLoaded = function() {
-		if(Game.imageFile.counter === Game.imageFile.data.length) {
-			return true;
-		}
-		return false;
-	};
+ImageFile.prototype.isLoaded = function() {
+	if(this.counter === this.data.length) {
+		return true;
+	}
+	return false;
+};
 
-	this.getImageDataByName = function(_imageName) {
-		return Game.imageFile.data[Game.imageFile.name.indexOf(_imageName)];
-	};
-	
+ImageFile.prototype.getImageDataByName = function(_imageName) {
+	return this.data[this.name.indexOf(_imageName)];
 };
