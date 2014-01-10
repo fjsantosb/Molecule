@@ -52,7 +52,7 @@ var Game = new function() {
 		this.imageFile = new ImageFile();
 		this.audioFile = new AudioFile();
 		
-		this.input = new Input();
+		this.input = new Input(this.canvas, this.scale);
 	};
 	
 	this.start = function() {
