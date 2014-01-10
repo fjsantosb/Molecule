@@ -1,6 +1,6 @@
-function Scene() {
+function Scene(_game) {
 	this.sprite = new Array();
-	this.map = new Map();
+	this.map = new Map(_game);
 	this.camera = new Camera();
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
     this.boundaries = {x: null, y: null, width: null, height: null};
@@ -8,6 +8,10 @@ function Scene() {
 	this.status = 1;
 	
 	return this;
+};
+
+Scene.prototype.addGame = function(_game) {
+	_game.scene.push(_scene);
 };
 
 Scene.prototype.loadMap = function(_map) {

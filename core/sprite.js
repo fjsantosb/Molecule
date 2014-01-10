@@ -1,7 +1,7 @@
 // Sprite var.
 function Sprite(_name, _width, _height) {
 	this.name = _name;
-	this.image = Game.imageFile.getImageDataByName(this.name);
+	this.image = null;
 	this.position = {x: 0, y: 0, offset: {x: 0, y: 0}, absolute: {x: 0, y: 0}};
 	this.rotation = 0;
 	this.move = {x: 0, y: 0};
@@ -11,7 +11,7 @@ function Sprite(_name, _width, _height) {
 	this.alpha = 1;
 	this.frame = {width: _width, height: _height, offset: {width: 0, height: 0}};
 	this.animation = new Animation(this.frame.width, this.frame.height);
-	this.size = {width: this.image.width, height: this.image.height};
+	this.size = {width: 0, height: 0};
 	this.collides = {sprite: true, map: true};
 	this.scrollable = true;
 	this.collidable = true;
@@ -22,7 +22,17 @@ function Sprite(_name, _width, _height) {
 	this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}};
 	this.checkCollision = {map: {up: true, down: true, left: true, right: true}};
 	this.kill = false;
+	this.game = null;
 	
+	//this.game.current.scene.sprite.push(this);
+	
+	return this;
+};
+
+Sprite.prototype.addGame = function(_game) {
+	this.game = _game;
+	this.image = this.game.imageFile.getImageDataByName(this.name);
+	this.size = {width: this.image.width, height: this.image.height};
 	if(this.frame.width === undefined && this.frame.width === undefined) {
 		this.frame.width = this.size.width;
 		this.frame.height = this.size.height;
@@ -30,10 +40,7 @@ function Sprite(_name, _width, _height) {
 	} else {
 		this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
 	}
-	
-	Game.current.scene.sprite.push(this);
-	
-	return this;
+	this.game.current.scene.sprite.push(this);
 };
 
 // Sprite prototype Method flipUpdate
@@ -68,22 +75,22 @@ Sprite.prototype.resetAcceleration = function() {
 
 // Sprite prototype Method draw
 Sprite.prototype.draw = function() {
-	Game.contextSprite.save();
-	Game.contextSprite.globalAlpha = this.alpha;
-	Game.contextSprite.scale(1 * this.flip.f.x, 1 * this.flip.f.y);
-	Game.contextSprite.translate(Math.round((this.position.x * this.flip.f.x) + this.flip.offset.x), Math.round((this.position.y * this.flip.f.y) + this.flip.offset.y));
-	Game.contextSprite.rotate(this.rotation * (Math.PI / 180));
-	Game.contextSprite.translate(Math.round(-this.anchor.x * this.flip.f.x), Math.round(-this.anchor.y * this.flip.f.y));
+	this.game.contextSprite.save();
+	this.game.contextSprite.globalAlpha = this.alpha;
+	this.game.contextSprite.scale(1 * this.flip.f.x, 1 * this.flip.f.y);
+	this.game.contextSprite.translate(Math.round((this.position.x * this.flip.f.x) + this.flip.offset.x), Math.round((this.position.y * this.flip.f.y) + this.flip.offset.y));
+	this.game.contextSprite.rotate(this.rotation * (Math.PI / 180));
+	this.game.contextSprite.translate(Math.round(-this.anchor.x * this.flip.f.x), Math.round(-this.anchor.y * this.flip.f.y));
 	if(this.animation !== null)
-		Game.contextSprite.drawImage(this.image, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].x, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].y, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
+		this.game.contextSprite.drawImage(this.image, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].x, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].y, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
 	else
-		Game.contextSprite.drawImage(this.image, 0, 0, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
-	Game.contextSprite.restore();
+		this.game.contextSprite.drawImage(this.image, 0, 0, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
+	this.game.contextSprite.restore();
 };
 
 // Sprite prototype Method is_touched
 Sprite.prototype.isTouched = function() {
-	var _touch = Game.input.touch;
+	var _touch = this.game.input.touch;
 	for(var i = 0; i < _touch.length; i++)
 		if(this.position.x + this.position.offset.x <= _touch[i].x && this.position.x + this.position.offset.x + this.frame.width - this.frame.offset.width - 1 >= _touch[i].x && this.position.y + this.position.offset.y <= _touch[i].y && this.position.y + this.position.offset.y + this.frame.height - this.frame.offset.height - 1 >= _touch[i].y)
 			return true;
@@ -92,7 +99,7 @@ Sprite.prototype.isTouched = function() {
 
 // Sprite prototype Method is_clicked
 Sprite.prototype.isClicked = function(_button) {
-	var _mouse = Game.input.mouse;
+	var _mouse = this.game.input.mouse;
 	if(this.position.x + this.position.offset.x <= _mouse.x && this.position.x + this.position.offset.x + this.frame.width - this.frame.offset.width - 1 >= _mouse.x && this.position.y + this.position.offset.y <= _mouse.y && this.position.y + this.position.offset.y + this.frame.height - this.frame.offset.height - 1 >= _mouse.y && _button)
 		return true;
 	return false;

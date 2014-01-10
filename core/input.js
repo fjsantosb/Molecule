@@ -1,6 +1,5 @@
-function Input(_canvas, _scale) {
-	this.canvas = _canvas;
-	this.scale = _scale;
+function Input(_game) {
+	this.game = _game
 	this.key = {SPACE: 0, LEFT_ARROW: 0, UP_ARROW: 0, RIGHT_ARROW: 0, DOWN_ARROW: 0, A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0, K: 0, L: 0, M: 0, N: 0, O: 0, P: 0, Q: 0, R: 0, S: 0, T: 0, U: 0, V: 0, W: 0, X: 0, Y: 0, Z: 0};
 	this.mouse = {x: 0, y: 0, BUTTON_LEFT: 0, BUTTON_MIDDLE: 0, BUTTON_RIGHT: 0};
 	this.touch = new Array();
@@ -11,19 +10,19 @@ Input.prototype.enable = function(_type) {
 	var self = this;
 	
 	if(_type === 'keyboard') {
-		document.addEventListener('keydown', function(){self.onkeydown(event);}, true);
-		document.addEventListener('keyup', function(){self.onkeyup(event);}, true);
+		document.addEventListener('keydown', function(){self.onkeydown(event)}, true);
+		document.addEventListener('keyup', function(){self.onkeyup(event)}, true);
 	}
 	if(_type === 'mouse') {
-		this.canvas.addEventListener('mousedown', function(){self.onmousedown(event);}, true);
-		this.canvas.addEventListener('mousemove', function(){self.onmousemove(event);}, true);
-		this.canvas.addEventListener('mouseup', function(){self.onmouseup(event);}, true);
+		this.game.canvas.addEventListener('mousedown', function(){self.onmousedown(event)}, true);
+		this.game.canvas.addEventListener('mousemove', function(){self.onmousemove(event)}, true);
+		this.game.canvas.addEventListener('mouseup', function(){self.onmouseup(event)}, true);
 	}
 	if(_type === 'touch') {
-		this.canvas.addEventListener('touchstart', function(){self.ontouchstart(event);}, true);
-		this.canvas.addEventListener('touchmove', function(){self.ontouchmove(event);}, true);
-		this.canvas.addEventListener('touchend', function(){self.ontouchend(event);}, true);
-		this.canvas.addEventListener('touchcancel', function(){self.ontouchcancel(event);}, true);
+		this.game.canvas.addEventListener('touchstart', function(){self.ontouchstart(event)}, true);
+		this.game.canvas.addEventListener('touchmove', function(){self.ontouchmove(event)}, true);
+		this.game.canvas.addEventListener('touchend', function(){self.ontouchend(event)}, true);
+		this.game.canvas.addEventListener('touchcancel', function(){self.ontouchcancel(event)}, true);
 	}
 };
 	
@@ -32,19 +31,19 @@ Input.prototype.disable = function(_type) {
 	var self = this;
 	
 	if(_type === 'keyboard') {
-		document.removeEventListener('keydown', function(){self.onkeydown(event);}, true);
-		document.removeEventListener('keyup', function(){self.onkeyup(event);}, true);
+		document.removeEventListener('keydown', function(){self.onkeydown(event)}, true);
+		document.removeEventListener('keyup', function(){self.onkeyup(event)}, true);
 	}
 	if(_type === 'mouse') {
-		this.canvas.removeEventListener('mousedown', function(){self.onmousedown(event);}, true);
-		this.canvas.removeEventListener('mousemove', function(){self.onmousemove(event);}, true);
-		this.canvas.removeEventListener('mouseup', function(){self.onmouseup(event);}, true);
+		this.game.canvas.removeEventListener('mousedown', function(){self.onmousedown(event)}, true);
+		this.game.canvas.removeEventListener('mousemove', function(){self.onmousemove(event)}, true);
+		this.game.canvas.removeEventListener('mouseup', function(){self.onmouseup(event)}, true);
 	}
 	if(_type === 'touch') {
-		this.canvas.removeEventListener('touchstart', function(){self.ontouchstart(event);}, true);
-		this.canvas.removeEventListener('touchmove', function(){self.ontouchmove(event);}, true);
-		this.canvas.removeEventListener('touchend', function(){self.ontouchend(event);}, true);
-		this.canvas.removeEventListener('touchcancel', function(){self.ontouchcancel(event);}, true);
+		this.game.canvas.removeEventListener('touchstart', function(){self.ontouchstart(event)}, true);
+		this.game.canvas.removeEventListener('touchmove', function(){self.ontouchmove(event)}, true);
+		this.game.canvas.removeEventListener('touchend', function(){self.ontouchend(event)}, true);
+		this.game.canvas.removeEventListener('touchcancel', function(){self.ontouchcancel(event)}, true);
 	}
 };
 	
@@ -284,8 +283,8 @@ Input.prototype.onmouseup = function(_e) {
 };
 
 Input.prototype.mousePosition = function(_e) {
-	this.mouse.x = (_e.pageX  - this.canvas.offsetLeft) / this.scale;
-	this.mouse.y = (_e.pageY - this.canvas.offsetTop) / this.scale;
+	this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft) / this.game.scale;
+	this.mouse.y = (_e.pageY - this.game.canvas.offsetTop) / this.game.scale;
 }
 	
 // Method 'ontouchstart' for 'touch' type
@@ -316,6 +315,6 @@ Input.prototype.ontouchcancel = function(_e) {
 Input.prototype.normalizeTouches = function(_touches) {
 	this.touch = [];
 	for(var i = 0; i < _touches.length; i++) {
-		this.touch.push({x: (_touches[i].pageX - this.canvas.offsetLeft) / this.scale, y: (_touches[i].pageY - this.canvas.offsetTop) / this.scale});
+		this.touch.push({x: (_touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
 	}
 };

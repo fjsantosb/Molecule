@@ -1,4 +1,5 @@
-function Map() {
+function Map(_game) {
+	this.game = _game;
 	this.canvas = new Array();
 	this.context = new Array();
 	this.name = null;
@@ -103,13 +104,13 @@ Map.prototype.createTileset = function(_i) {
     this.twidth = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tilewidth"));
     this.theight = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tileheight"));
     
-    this.image = Game.imageFile.getImageDataByName(this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
+    this.image = this.game.imageFile.getImageDataByName(this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
     return {firstGid: this.firstGid, name: this.name, width: this.twidth, height: this.theight, image: this.image};
 };
 
 Map.prototype.loadResources = function(_interval) {
 	var self = this;
-	if(Game.imageFile.loaded()) {
+	if(this.game.imageFile.loaded()) {
 		clearInterval(_interval);
 	    var counter = 0;            
     	for(var i = 0; i < this.layer.length; i++) {
@@ -240,22 +241,22 @@ Map.prototype.resetScroll = function() {
 Map.prototype.drawLayer = function(_layer) {
 	var i = this.findLayer(_layer);
 	if(this.layer[i].visible) {
-		var w = Game.canvas.width > this.canvas[i].width ? this.canvas[i].width : Game.canvas.width;
-		var h = Game.canvas.height > this.canvas[i].height ? this.canvas[i].height : Game.canvas.height;
-		Game.context.save();
-		Game.context.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
-		Game.context.restore();
+		var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
+		var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
+		this.game.context.save();
+		this.game.context.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
+		this.game.context.restore();
 	}
 };
 
 Map.prototype.draw = function() {
 	for(var i = 0; i < this.canvas.length; i++) {
 		if(this.layer[i].visible) {
-			var w = Game.canvas.width > this.canvas[i].width ? this.canvas[i].width : Game.canvas.width;
-			var h = Game.canvas.height > this.canvas[i].height ? this.canvas[i].height : Game.canvas.height;
-			Game.contextMap.save();
-			Game.contextMap.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
-			Game.contextMap.restore();
+			var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
+			var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
+			this.game.contextMap.save();
+			this.game.contextMap.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
+			this.game.contextMap.restore();
 		}
 	}
 };
