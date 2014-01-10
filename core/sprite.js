@@ -24,14 +24,11 @@ function Sprite(_name, _width, _height) {
 	this.kill = false;
 	this.game = null;
 	
-	//this.game.current.scene.sprite.push(this);
-	
 	return this;
 };
 
-Sprite.prototype.add = function(_game) {
+Sprite.prototype.getAnimation = function(_game) {
 	this.game = _game;
-	this.image = this.game.imageFile.getImageDataByName(this.name);
 	this.size = {width: this.image.width, height: this.image.height};
 	if(this.frame.width === undefined && this.frame.width === undefined) {
 		this.frame.width = this.size.width;
@@ -40,7 +37,6 @@ Sprite.prototype.add = function(_game) {
 	} else {
 		this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
 	}
-	this.game.current.scene.sprite.push(this);
 };
 
 // Sprite prototype Method flipUpdate

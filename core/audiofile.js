@@ -1,14 +1,17 @@
-function AudioFile() {
+function AudioFile(_game) {
+	this.game = _game;
 	this.name = new Array();
 	this.data = new Array();
 	this.counter = 0;
+	
+	return this;
 };
 
-AudioFile.prototype.load = function(_audioSrc, _audioName) {
-	if(!this.getAudioDataByName(_audioName)) {
+AudioFile.prototype.load = function(_audioSrc) {
+	if(!this.getAudioDataByName(_audioSrc)) {
 		var self = this;
-		var _audioSrcFile;
 		var _audio = new Audio();
+		var _audioSrcFile;
 		for(var i = 0; i < _audioSrc.length; i++) {
 			var t = _audioSrc[i].split('.');
 			if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
@@ -17,9 +20,15 @@ AudioFile.prototype.load = function(_audioSrc, _audioName) {
 		}
 		_audio.src = _audioSrcFile;
 		_audio.addEventListener('canplay', function(){self.counter++});
-		this.name.push(_audioName);
+		this.name.push(_audioSrc);
 		this.data.push(_audio);
 	}
+	
+	var s = new Sound();
+	s.sound = this.getAudioDataByName(_audioSrc);
+	this.game.sound.push(s);
+	
+	return s;
 };
 	
 AudioFile.prototype.isLoaded = function() {

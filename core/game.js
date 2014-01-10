@@ -5,8 +5,8 @@ var Game = function(_width, _height, _scale) {
 	this.scene = null;
 	this.current = null;
 	this.next = {scene: null, fade: null};
-	this.imageFile = new ImageFile();
-	this.audioFile = new AudioFile();
+	this.imageFile = new ImageFile(this);
+	this.audioFile = new AudioFile(this);
 	this.sound = new Array();
 	this.input = new Input(this);
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
@@ -66,6 +66,9 @@ Game.prototype.switchScene = function(_scene, _fade) {
 Game.prototype.loadResources = function(_interval) {
 	if(this.imageFile.isLoaded() && this.audioFile.isLoaded()) {
 		clearInterval(_interval);
+		for(var i = 0; i < this.current.scene.sprite.length; i++) {
+			this.current.scene.sprite[i].getAnimation(this);
+		}
 		this.setCamera();
 		init();
 		this.loop();

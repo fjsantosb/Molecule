@@ -1,15 +1,7 @@
-function Sound(_name) {
-	this.name = _name;
+function Sound() {
 	this.sound = null;
 	
-	//Game.sound.push(this);
-	
 	return this;
-};
-
-Sound.prototype.add = function(_game) {
-	this.sound = _game.audioFile.getAudioDataByName(this.name);
-	_game.sound.push(this);
 };
 
 Sound.prototype.play = function(_loop) {
