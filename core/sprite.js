@@ -29,7 +29,7 @@ function Sprite(_name, _width, _height) {
 	return this;
 };
 
-Sprite.prototype.addGame = function(_game) {
+Sprite.prototype.add = function(_game) {
 	this.game = _game;
 	this.image = this.game.imageFile.getImageDataByName(this.name);
 	this.size = {width: this.image.width, height: this.image.height};

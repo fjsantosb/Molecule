@@ -7,7 +7,7 @@ function Sound(_name) {
 	return this;
 };
 
-Sound.prototype.addGame = function(_game) {
+Sound.prototype.add = function(_game) {
 	this.sound = _game.audioFile.getAudioDataByName(this.name);
 	_game.sound.push(this);
 };
