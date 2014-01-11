@@ -3,6 +3,7 @@ var Game = function(_width, _height, _scale) {
 	this.context = null;
 	this.scale = null;
 	this.scene = null;
+	this.map = null;
 	this.current = null;
 	this.next = {scene: null, fade: null};
 	this.sprite = new ImageFile(this);
@@ -44,6 +45,7 @@ var Game = function(_width, _height, _scale) {
     this.canvasMap.height = this.canvas.height;
     
     this.scene = new Scene(this);
+    this.map = this.scene.map;
 	this.current = {scene: this.scene};
 	
 	this.scene.physics = this.physics;
