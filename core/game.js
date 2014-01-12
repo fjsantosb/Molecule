@@ -11,6 +11,7 @@ var Game = function(_width, _height, _scale) {
 	this.sound = new Array();
 	this.input = new Input(this);
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
+	this.boundaries = {x: null, y: null, width: null, height: null};
 	
 	this.canvasSprite = null;
 	this.contextSprite = null;
@@ -49,6 +50,7 @@ var Game = function(_width, _height, _scale) {
 	this.current = {scene: this.scene};
 	
 	this.scene.physics = this.physics;
+	this.scene.boundaries = this.boundaries;
 };
 
 Game.prototype.start = function() {
@@ -478,19 +480,19 @@ Game.prototype.update = function(_exit) {
 Game.prototype.checkBoundaries = function() {
 	for(var i = 0; i < this.current.scene.sprite.length; i++) {
 		if(this.current.scene.boundaries.x !== null) {
-			if(this.current.scene.sprite[i].position.x < this.current.scene.boundaries.x) {
-				this.current.scene.sprite[i].position.x = this.current.scene.boundaries.x;
+			if(this.current.scene.sprite[i].position.x - this.current.scene.sprite[i].anchor.x < this.current.scene.boundaries.x) {
+				this.current.scene.sprite[i].position.x = this.current.scene.boundaries.x + this.current.scene.sprite[i].anchor.x;
 			}
-			if(this.current.scene.sprite[i].position.x > this.current.scene.boundaries.x + this.current.scene.boundaries.width) {
-				this.current.scene.sprite[i].position.x = this.current.scene.boundaries.x + this.current.scene.boundaries.width;
+			if(this.current.scene.sprite[i].position.x + this.current.scene.sprite[i].frame.width - this.current.scene.sprite[i].anchor.x > this.current.scene.boundaries.x + this.current.scene.boundaries.width) {
+				this.current.scene.sprite[i].position.x = this.current.scene.boundaries.x + this.current.scene.boundaries.width - this.current.scene.sprite[i].frame.width + this.current.scene.sprite[i].anchor.x;
 			}
 		}
 		if(this.current.scene.boundaries.y !== null) {
-			if(this.current.scene.sprite[i].position.y < this.current.scene.boundaries.y) {
-				this.current.scene.sprite[i].position.y = this.current.scene.boundaries.y;
+			if(this.current.scene.sprite[i].position.y - this.current.scene.sprite[i].anchor.y < this.current.scene.boundaries.y) {
+				this.current.scene.sprite[i].position.y = this.current.scene.boundaries.y + this.current.scene.sprite[i].anchor.y;
 			}
-			if(this.current.scene.sprite[i].position.y > this.current.scene.boundaries.y + this.current.scene.boundaries.height) {
-				this.current.scene.sprite[i].position.y = this.current.scene.boundaries.y + this.current.scene.boundaries.height;
+			if(this.current.scene.sprite[i].position.y + this.current.scene.sprite[i].frame.height - this.current.scene.sprite[i].anchor.y > this.current.scene.boundaries.y + this.current.scene.boundaries.height) {
+				this.current.scene.sprite[i].position.y = this.current.scene.boundaries.y + this.current.scene.boundaries.height - this.current.scene.sprite[i].frame.height + this.current.scene.sprite[i].anchor.y;
 			}
 		}
 	}
