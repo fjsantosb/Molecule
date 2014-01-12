@@ -175,11 +175,6 @@ Game.prototype.updateCollisionState = function() {
 
 Game.prototype.updatePhysics = function() {
 	for(var i = 0; i < this.current.scene.sprite.length; i++) {
-		if(this.current.scene.sprite[i].affects.physics.gravity) {
-			this.current.scene.sprite[i].speed.gravity.x += this.current.scene.physics.gravity.x;
-			this.current.scene.sprite[i].speed.gravity.y += this.current.scene.physics.gravity.y;
-		}
-		
 		if(this.current.scene.sprite[i].affects.physics.friction) {
 			if(this.current.scene.sprite[i].speed.x > 0) {
 				this.current.scene.sprite[i].speed.x = this.current.scene.sprite[i].speed.x * (1 - this.current.scene.physics.friction.x);
@@ -242,8 +237,15 @@ Game.prototype.updatePhysics = function() {
 			this.current.scene.sprite[i].speed.y = this.current.scene.sprite[i].speed.max.y * sy;
 		}
 		
+		this.current.scene.sprite[i].speed.x -= this.current.scene.sprite[i].speed.gravity.x;
+		this.current.scene.sprite[i].speed.y -= this.current.scene.sprite[i].speed.gravity.y;
+		if(this.current.scene.sprite[i].affects.physics.gravity) {
+			this.current.scene.sprite[i].speed.gravity.x += this.current.scene.physics.gravity.x;
+			this.current.scene.sprite[i].speed.gravity.y += this.current.scene.physics.gravity.y;
+		}
 		this.current.scene.sprite[i].speed.x += this.current.scene.sprite[i].speed.gravity.x;
-		this.current.scene.sprite[i].speed.y += this.current.scene.sprite[i].speed.gravity.y; 
+		this.current.scene.sprite[i].speed.y += this.current.scene.sprite[i].speed.gravity.y;
+		
 		
 		this.current.scene.sprite[i].speed.x = parseFloat(this.current.scene.sprite[i].speed.x.toFixed(3));
 		this.current.scene.sprite[i].speed.y = parseFloat(this.current.scene.sprite[i].speed.y.toFixed(3));
@@ -258,9 +260,6 @@ Game.prototype.updatePhysics = function() {
 		if(this.current.scene.sprite[i].speed.y === 0) {
 			this.current.scene.sprite[i].speed.t.y = 0;
 		}
-		
-		this.current.scene.sprite[i].speed.x -= this.current.scene.sprite[i].speed.gravity.x;
-		this.current.scene.sprite[i].speed.y -= this.current.scene.sprite[i].speed.gravity.y; 
 	}
 };
 
