@@ -375,7 +375,7 @@ Game.prototype.updateMapCollision = function() {
 							for(var k = 0; k <= Math.ceil((this.current.scene.sprite[i].frame.height - this.current.scene.sprite[i].frame.offset.height) / this.current.scene.map.tile.height); k++) {
 								for(var l = 0; l <= Math.ceil((this.current.scene.sprite[i].frame.width - this.current.scene.sprite[i].frame.offset.width) / this.current.scene.map.tile.width); l++) {
 									var tile = this.current.scene.map.getTile(this.current.scene.map.layer[j], this.current.scene.sprite[i].position.x - this.current.scene.sprite[i].anchor.x + this.current.scene.sprite[i].position.offset.x + this.current.scene.sprite[i].move.x + Math.abs(this.current.scene.map.layer[j].position.x) + (l * this.current.scene.map.tile.width), this.current.scene.sprite[i].position.y - this.current.scene.sprite[i].anchor.y + this.current.scene.sprite[i].position.offset.y + this.current.scene.sprite[i].move.y + Math.abs(this.current.scene.map.layer[j].position.y) + (k * this.current.scene.map.tile.height), this.current.scene.sprite[i].frame.width, this.current.scene.sprite[i].frame.height);
-									if(tile === null || tile > this.current.scene.map.layer[j].data.length) {
+									if(tile === null || tile >= this.current.scene.map.layer[j].data.length) {
 										tile = null;
 										//this.current.scene.sprite[i].kill = true;
 									}
