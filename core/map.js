@@ -57,6 +57,8 @@ Map.prototype.load = function(_name) {
     }
     
     var interval = setInterval(function(){self.loadResources(interval)}, 100);
+    
+    return this;
 };
 
 Map.prototype.getTilesetId = function(_tileset, _t) {
@@ -99,18 +101,25 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
 Map.prototype.createTileset = function(_i) {
 	var self = this;
 	
+	var t = this.name.split('/');
+	var path = '';
+	
     this.firstGid = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("firstgid"));
     this.name = this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("name");
     this.twidth = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tilewidth"));
     this.theight = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tileheight"));
     
-    this.image = this.game.imageFile.getImageDataByName(this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
+    for(var i = 0; i < t.length - 1; i++) {
+		path += t[i] + '/';
+	}
+    
+    this.image = this.game.sprite.loadMap(path + this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
     return {firstGid: this.firstGid, name: this.name, width: this.twidth, height: this.theight, image: this.image};
 };
 
 Map.prototype.loadResources = function(_interval) {
 	var self = this;
-	if(this.game.imageFile.loaded()) {
+	if(this.game.sprite.isLoaded()) {
 		clearInterval(_interval);
 	    var counter = 0;            
     	for(var i = 0; i < this.layer.length; i++) {
