@@ -10,19 +10,19 @@ Input.prototype.enable = function(_type) {
 	var self = this;
 	
 	if(_type === 'keyboard') {
-		document.addEventListener('keydown', function(event){self.onkeydown(event)}, true);
-		document.addEventListener('keyup', function(event){self.onkeyup(event)}, true);
+		document.addEventListener('keydown', function(_e){self.onkeydown(_e)}, true);
+		document.addEventListener('keyup', function(_e){self.onkeyup(_e)}, true);
 	}
 	if(_type === 'mouse') {
-		this.game.canvas.addEventListener('mousedown', function(event){self.onmousedown(event)}, true);
-		this.game.canvas.addEventListener('mousemove', function(event){self.onmousemove(event)}, true);
-		this.game.canvas.addEventListener('mouseup', function(event){self.onmouseup(event)}, true);
+		this.game.canvas.addEventListener('mousedown', function(_e){self.onmousedown(_e)}, true);
+		this.game.canvas.addEventListener('mousemove', function(_e){self.onmousemove(_e)}, true);
+		this.game.canvas.addEventListener('mouseup', function(_e){self.onmouseup(_e)}, true);
 	}
 	if(_type === 'touch') {
-		this.game.canvas.addEventListener('touchstart', function(event){self.ontouchstart(event)}, true);
-		this.game.canvas.addEventListener('touchmove', function(event){self.ontouchmove(event)}, true);
-		this.game.canvas.addEventListener('touchend', function(event){self.ontouchend(event)}, true);
-		this.game.canvas.addEventListener('touchcancel', function(event){self.ontouchcancel(event)}, true);
+		this.game.canvas.addEventListener('touchstart', function(_e){self.ontouchstart(_e)}, true);
+		this.game.canvas.addEventListener('touchmove', function(_e){self.ontouchmove(_e)}, true);
+		this.game.canvas.addEventListener('touchend', function(_e){self.ontouchend(_e)}, true);
+		this.game.canvas.addEventListener('touchcancel', function(_e){self.ontouchcancel(_e)}, true);
 	}
 };
 	
@@ -31,19 +31,19 @@ Input.prototype.disable = function(_type) {
 	var self = this;
 
 	if(_type === 'keyboard') {
-		document.removeEventListener('keydown', function(event){self.onkeydown(event)}, true);
-		document.removeEventListener('keyup', function(event){self.onkeyup(event)}, true);
+		document.removeEventListener('keydown', function(_e){self.onkeydown(_e)}, true);
+		document.removeEventListener('keyup', function(_e){self.onkeyup(_e)}, true);
 	}
 	if(_type === 'mouse') {
-		this.game.canvas.removeEventListener('mousedown', function(event){self.onmousedown(event)}, true);
-		this.game.canvas.removeEventListener('mousemove', function(event){self.onmousemove(event)}, true);
-		this.game.canvas.removeEventListener('mouseup', function(event){self.onmouseup(event)}, true);
+		this.game.canvas.removeEventListener('mousedown', function(_e){self.onmousedown(_e)}, true);
+		this.game.canvas.removeEventListener('mousemove', function(_e){self.onmousemove(_e)}, true);
+		this.game.canvas.removeEventListener('mouseup', function(_e){self.onmouseup(_e)}, true);
 	}
 	if(_type === 'touch') {
-		this.game.canvas.removeEventListener('touchstart', function(event){self.ontouchstart(event)}, true);
-		this.game.canvas.removeEventListener('touchmove', function(event){self.ontouchmove(event)}, true);
-		this.game.canvas.removeEventListener('touchend', function(event){self.ontouchend(event)}, true);
-		this.game.canvas.removeEventListener('touchcancel', function(event){self.ontouchcancel(event)}, true);
+		this.game.canvas.removeEventListener('touchstart', function(_e){self.ontouchstart(_e)}, true);
+		this.game.canvas.removeEventListener('touchmove', function(_e){self.ontouchmove(_e)}, true);
+		this.game.canvas.removeEventListener('touchend', function(_e){self.ontouchend(_e)}, true);
+		this.game.canvas.removeEventListener('touchcancel', function(_e){self.ontouchcancel(_e)}, true);
 	}
 };
 	
