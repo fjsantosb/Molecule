@@ -1,7 +1,7 @@
 function Scene(_game) {
 	this.sprite = new Array();
 	this.map = new Map(_game);
-	this.camera = new Camera();
+	this.camera = new Camera(this.map);
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
     this.boundaries = {x: null, y: null, width: null, height: null};
 	this.loaded = false;

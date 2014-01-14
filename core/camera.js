@@ -1,6 +1,6 @@
 // Camera var. Arguments: canvas
-function Camera() {
-	this.map = null;
+function Camera(_map) {
+	this.map = _map;
 	this.layer = null;
 	this.sprite = null;
 	this.scroll = {x: false, y: false};
@@ -10,8 +10,8 @@ function Camera() {
 };
 
 // Method for attach an sprite, map, and main layer
-Camera.prototype.attach = function(_scene, _sprite, _layer) {
-	this.layer = _scene.map.getLayerIdByName(_layer);
+Camera.prototype.attach = function(_sprite, _layer) {
+	this.layer = _map.getLayerIdByName(_layer);
 	this.sprite = _sprite;
 	this.type = 1;
 };
