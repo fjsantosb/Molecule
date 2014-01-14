@@ -10,45 +10,46 @@ Input.prototype.enable = function(_type) {
 	var self = this;
 	
 	if(_type === 'keyboard') {
-		document.addEventListener('keydown', function(){self.onkeydown(event)}, true);
-		document.addEventListener('keyup', function(){self.onkeyup(event)}, true);
+		document.addEventListener('keydown', function(event){self.onkeydown(event)}, true);
+		document.addEventListener('keyup', function(event){self.onkeyup(event)}, true);
 	}
 	if(_type === 'mouse') {
-		this.game.canvas.addEventListener('mousedown', function(){self.onmousedown(event)}, true);
-		this.game.canvas.addEventListener('mousemove', function(){self.onmousemove(event)}, true);
-		this.game.canvas.addEventListener('mouseup', function(){self.onmouseup(event)}, true);
+		this.game.canvas.addEventListener('mousedown', function(event){self.onmousedown(event)}, true);
+		this.game.canvas.addEventListener('mousemove', function(event){self.onmousemove(event)}, true);
+		this.game.canvas.addEventListener('mouseup', function(event){self.onmouseup(event)}, true);
 	}
 	if(_type === 'touch') {
-		this.game.canvas.addEventListener('touchstart', function(){self.ontouchstart(event)}, true);
-		this.game.canvas.addEventListener('touchmove', function(){self.ontouchmove(event)}, true);
-		this.game.canvas.addEventListener('touchend', function(){self.ontouchend(event)}, true);
-		this.game.canvas.addEventListener('touchcancel', function(){self.ontouchcancel(event)}, true);
+		this.game.canvas.addEventListener('touchstart', function(event){self.ontouchstart(event)}, true);
+		this.game.canvas.addEventListener('touchmove', function(event){self.ontouchmove(event)}, true);
+		this.game.canvas.addEventListener('touchend', function(event){self.ontouchend(event)}, true);
+		this.game.canvas.addEventListener('touchcancel', function(event){self.ontouchcancel(event)}, true);
 	}
 };
 	
 // Method to remove 'keyboard', 'mouse' or 'touch' depending of type
 Input.prototype.disable = function(_type) {
 	var self = this;
-	
+
 	if(_type === 'keyboard') {
-		document.removeEventListener('keydown', function(){self.onkeydown(event)}, true);
-		document.removeEventListener('keyup', function(){self.onkeyup(event)}, true);
+		document.removeEventListener('keydown', function(event){self.onkeydown(event)}, true);
+		document.removeEventListener('keyup', function(event){self.onkeyup(event)}, true);
 	}
 	if(_type === 'mouse') {
-		this.game.canvas.removeEventListener('mousedown', function(){self.onmousedown(event)}, true);
-		this.game.canvas.removeEventListener('mousemove', function(){self.onmousemove(event)}, true);
-		this.game.canvas.removeEventListener('mouseup', function(){self.onmouseup(event)}, true);
+		this.game.canvas.removeEventListener('mousedown', function(event){self.onmousedown(event)}, true);
+		this.game.canvas.removeEventListener('mousemove', function(event){self.onmousemove(event)}, true);
+		this.game.canvas.removeEventListener('mouseup', function(event){self.onmouseup(event)}, true);
 	}
 	if(_type === 'touch') {
-		this.game.canvas.removeEventListener('touchstart', function(){self.ontouchstart(event)}, true);
-		this.game.canvas.removeEventListener('touchmove', function(){self.ontouchmove(event)}, true);
-		this.game.canvas.removeEventListener('touchend', function(){self.ontouchend(event)}, true);
-		this.game.canvas.removeEventListener('touchcancel', function(){self.ontouchcancel(event)}, true);
+		this.game.canvas.removeEventListener('touchstart', function(event){self.ontouchstart(event)}, true);
+		this.game.canvas.removeEventListener('touchmove', function(event){self.ontouchmove(event)}, true);
+		this.game.canvas.removeEventListener('touchend', function(event){self.ontouchend(event)}, true);
+		this.game.canvas.removeEventListener('touchcancel', function(event){self.ontouchcancel(event)}, true);
 	}
 };
 	
 // Method 'onkeydown' for 'keyboard' type
 Input.prototype.onkeydown = function(_e) {
+	_e.preventDefault();
 	switch(_e.keyCode) {
 		case 32:
 			this.key.SPACE = 1;
@@ -148,6 +149,7 @@ Input.prototype.onkeydown = function(_e) {
 	
 // Method 'onkeyup' for 'keyboard' type
 Input.prototype.onkeyup = function(_e) {
+	_e.preventDefault();
 	switch(_e.keyCode) {
 		case 32:
 			this.key.SPACE = 0;
