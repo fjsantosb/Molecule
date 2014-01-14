@@ -160,6 +160,7 @@ Map.prototype.createLayer = function(_i) {
     var _position = {x: 0, y: 0};
     var _visible = true;
     var _collidable = false;
+    var _main = false;
     
     var l = this.xmlDoc.getElementsByTagName("layer")[_i].getElementsByTagName("property");
     for(var i = 0; i < l.length; i++) {
@@ -193,6 +194,8 @@ Map.prototype.createLayer = function(_i) {
     		case 'collidable':
     			_collidable = l[i].getAttribute("value") === 'true' ? true : false;
     			break;
+    		case 'main.layer':
+    			_main = l[i].getAttribute("value") === 'true' ? true : false;
     	}
     }
     
@@ -201,12 +204,12 @@ Map.prototype.createLayer = function(_i) {
     this.canvas[_i].width = this.width * this.tile.width;
     this.canvas[_i].height = this.height * this.tile.height;
     
-    return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, data: new Array()};
+    return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, main: _main, data: new Array()};
 };
     
-Map.prototype.getLayerIdByName = function(_name) {
+Map.prototype.getLayerIdByName = function() {
     for(var i = 0; i < this.layer.length; i++) {
-        if(this.layer[i].name === _name) {
+        if(this.layer[i].main) {
             return i;
         }
     }

@@ -47,8 +47,10 @@ var Game = function(_width, _height, _scale) {
     this.canvasMap.height = this.canvas.height;
     
     this.scene = new Scene(this);
-    this.map = this.scene.map;
-	this.camera = this.scene.camera;
+    this.map = new Map(this);
+	this.camera = new Camera(this);
+	this.scene.map = this.map;
+	this.scene.camera = this.camera;
 	this.current = {scene: this.scene};
 	
 	this.scene.physics = this.physics;
@@ -90,14 +92,14 @@ Game.prototype.setCamera = function() {
 		this.current.scene.camera.sprite.position.y = 0;
 		for(var i = 0; i < _x; i++) {
 			this.current.scene.camera.sprite.move.x = 1;
-			this.current.scene.camera.update(this.current.scene.map, this.current.scene.sprite, this.canvas);
+			this.current.scene.camera.update(this.current.scene.sprite);
 			this.update();
 			this.reset();
 		}
 		
 		for(var i = 0; i < _y; i++) {
 			this.current.scene.camera.sprite.move.y = 1;
-			this.current.scene.camera.update(this.current.scene.map, this.current.scene.sprite, this.canvas);
+			this.current.scene.camera.update(this.current.scene.sprite);
 			this.update();
 			this.reset();
 		}
@@ -119,7 +121,7 @@ Game.prototype.loop = function() {
 			this.updateSpriteCollision();
 			this.updateSpriteCollisionCheck();
 			if(this.current.scene.camera.type === 1) {
-				this.current.scene.camera.update(this.current.scene.map, this.current.scene.sprite);
+				this.current.scene.camera.update(this.current.scene.sprite);
 			}
 			this.update(exit);
 			this.checkBoundaries();
