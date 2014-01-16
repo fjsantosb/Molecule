@@ -10,10 +10,6 @@ function Scene(_game) {
 	return this;
 };
 
-Scene.prototype.addGame = function(_game) {
-	_game.scene.push(_scene);
-};
-
 Scene.prototype.loadMap = function(_map) {
 	this.map.load(_map);
 	this.loadMapSprites();
@@ -107,25 +103,8 @@ Scene.prototype.loadMapSprites = function() {
 					break;
 			}
 		}
-		this.addSprite(_sprite);
+		this.sprite.push(_sprite);
 	}
-};
-
-Scene.prototype.addSprite = function(_sprite) {
-	this.sprite.push(_sprite);
-};
-
-Scene.prototype.getSpriteByName = function(_name) {
-	for(var i = 0; i < this.sprite.length; i++) {
-        if(this.sprite[i].name === _name) {
-            return this.sprite[i];
-        }
-    }
-    return -1;
-};
-
-Scene.prototype.getSpriteByIndex = function(_i) {
-	return this.sprite[_i];
 };
 
 Scene.prototype.setBoundaries = function(_x, _y, _width, _height) {
