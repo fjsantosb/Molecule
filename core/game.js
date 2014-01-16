@@ -1,23 +1,18 @@
 var Game = function(_width, _height, _scale) {
 	this.canvas = null;
 	this.context = null;
-	this.scale = null;
-	this.scene = null;
-	this.map = null;
-	this.camera = null;
-	this.current = null;
+	this.scale = _scale || 1;
+	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
+	this.boundaries = {x: null, y: null, width: null, height: null};
+	this.map = new Map(this);
+	this.camera = new Camera(this);
+	this.scene = new Scene(this);
+	this.current = {scene: this.scene};
 	this.next = {scene: null, fade: null};
 	this.sprite = new ImageFile(this);
 	this.audio = new AudioFile(this);
 	this.sound = new Array();
 	this.input = new Input(this);
-	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
-	this.boundaries = {x: null, y: null, width: null, height: null};
-	
-	this.canvasSprite = null;
-	this.contextSprite = null;
-	this.canvasMap = null;
-	this.contextMap = null;
 	this.status = 1;
 	
 	this.canvas = document.createElement('canvas');
@@ -25,14 +20,10 @@ var Game = function(_width, _height, _scale) {
 	
 	this.canvas.width = _width;
 	this.canvas.height = _height;
-	
-	if(_scale === undefined) {
-		_scale = 1;
-	}
+
 	this.canvas.style.width = _width * _scale + "px";
 	this.canvas.style.height = _height * _scale + "px";
 	this.context = this.canvas.getContext('2d');
-	this.scale = _scale;
 	
 	document.body.appendChild(this.canvas);
 	
@@ -45,30 +36,11 @@ var Game = function(_width, _height, _scale) {
     this.canvasSprite.height = this.canvas.height;
     this.canvasMap.width = this.canvas.width;
     this.canvasMap.height = this.canvas.height;
-    
-    this.scene = new Scene(this);
-    this.map = new Map(this);
-	this.camera = new Camera(this);
-	this.scene.map = this.map;
-	this.scene.camera = this.camera;
-	this.current = {scene: this.scene};
-	
-	this.scene.physics = this.physics;
-	this.scene.boundaries = this.boundaries;
 };
 
 Game.prototype.start = function() {
 	var self = this;
 	var interval = setInterval(function(){self.loadResources(interval)}, 100);
-};
-
-Game.prototype.setScene = function(_scene) {
-	this.current.scene = _scene;
-};
-
-Game.prototype.switchScene = function(_scene, _fade) {
-	this.next.scene = _scene;
-	this.next.fade = _fade;
 };
 
 Game.prototype.loadResources = function(_interval) {
@@ -110,7 +82,6 @@ Game.prototype.loop = function() {
 	var self = this;
 	this.removeSprite();
 	update();
-	this.updateTransitionScene();
 	if(this.status == 1 && this.current.scene.status == 1) {
 		var exit = false;
 		this.updatePhysics();
@@ -129,38 +100,6 @@ Game.prototype.loop = function() {
 		}
 	}
 	setTimeout(function(){self.loop()}, 1000 / 60);
-};
-
-Game.prototype.updateTransitionScene = function() {
-	if(this.next.fade) {
-		var transitionSpeed = 0.02;
-		if(this.next.scene !== null) {
-			var _alpha = this.context.globalAlpha;
-			_alpha -= transitionSpeed;
-			_alpha = parseFloat(_alpha.toFixed(3));
-			this.context.globalAlpha = _alpha;
-			if(this.context.globalAlpha <= 0.00) {
-				this.context.globalAlpha = 0;
-				this.current.scene = this.next.scene;
-				this.next.scene = null;
-			}
-		}
-		if(this.next.scene == null && this.context.globalAlpha < 1) {
-			var _alpha = this.context.globalAlpha;
-			_alpha += transitionSpeed;
-			_alpha = parseFloat(_alpha.toFixed(3));
-			this.context.globalAlpha = _alpha;
-			this.context.globalAlpha = parseFloat(this.context.globalAlpha.toFixed(3));
-			if(this.context.globalAlpha >= 1.00) {
-				this.context.globalAlpha = 1;
-			}
-		}
-	} else {
-		if(this.next.scene !== null) {
-			this.current.scene = this.next.scene;
-			this.next.scene = null;
-		}
-	}
 };
 
 Game.prototype.updateCollisionState = function() {
