@@ -19,7 +19,7 @@ ImageFile.prototype.load = function(_imageSrc, _width, _height) {
 	
 	var s = new Sprite(_imageSrc, _width, _height);
 	s.image = this.getImageDataByName(_imageSrc);
-	this.game.current.scene.sprite.push(s);
+	this.game.scene.sprite.push(s);
 	
 	return s;
 };
