@@ -207,7 +207,7 @@ Map.prototype.createLayer = function(_i) {
     return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, main: _main, data: new Array()};
 };
     
-Map.prototype.getLayerIdByName = function() {
+Map.prototype.getMainLayer = function() {
     for(var i = 0; i < this.layer.length; i++) {
         if(this.layer[i].main) {
             return i;
