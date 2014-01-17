@@ -52,7 +52,6 @@ Game.prototype.loadResources = function(_interval) {
 		this.setCamera();
 		init();
 		this.loop();
-		this.draw();
 	}
 };
 
@@ -99,7 +98,8 @@ Game.prototype.loop = function() {
 			this.reset();
 		}
 	}
-	setTimeout(function(){self.loop()}, 1000 / 60);
+	this.draw();
+	requestAnimFrame(function(){self.loop()});
 };
 
 Game.prototype.updateCollisionState = function() {
@@ -449,7 +449,6 @@ Game.prototype.reset = function() {
 };
 
 Game.prototype.draw = function() {
-	var self = this;
 	this.contextMap.clearRect(0, 0, this.canvasMap.width, this.canvasMap.height);
 	this.contextSprite.clearRect(0, 0, this.canvasSprite.width, this.canvasSprite.height);	
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);	
@@ -463,7 +462,6 @@ Game.prototype.draw = function() {
 	}
 	this.contextMap.drawImage(this.canvasSprite, 0, 0);
 	this.context.drawImage(this.canvasMap, 0, 0);
-	requestAnimFrame(function(){self.draw()});
 };
 
 Game.prototype.removeSprite = function() {
