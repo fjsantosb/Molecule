@@ -257,7 +257,7 @@ Game.prototype.updateSpriteCollision = function() {
 					this.scene.sprite[j].move.x = 0;
 					this.scene.sprite[j].move.y = 0;
 				}
-				if((this.scene.sprite[i].collides.sprite && this.scene.sprite[j].collidable) && (this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j]))) {
+				if((this.scene.sprite[i].collides.sprite && this.scene.sprite[j].collidable && this.scene.sprite[i].collidable) && (this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j]))) {
 					var mc = 0;
 					while(mc <= 2) {
 						if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
