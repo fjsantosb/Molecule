@@ -53,8 +53,8 @@ Sprite.prototype.update = function() {
 	this.position.y += this.move.y;
 	this.position.x = parseFloat(this.position.x.toFixed(3));
 	this.position.y = parseFloat(this.position.y.toFixed(3));
-	this.position.absolute.x = this.position.x + this.position.offset.x;
-	this.position.absolute.y = this.position.y + this.position.offset.y;
+	this.position.absolute.x = this.position.x + this.position.offset.x - this.anchor.x;
+	this.position.absolute.y = this.position.y + this.position.offset.y - this.anchor.y;
 	this.size.width = this.frame.width - this.frame.offset.width;
 	this.size.height = this.frame.height - this.frame.offset.height;
 };
