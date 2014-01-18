@@ -216,18 +216,29 @@ Map.prototype.getMainLayer = function() {
     return -1;
 };
 
+Map.prototype.getLayerIdByName = function(_name) {
+    for(var i = 0; i < this.layer.length; i++) {
+        if(this.layer[i].name === _name) {
+            return i;
+        }
+    }
+    return -1;
+};
+
 Map.prototype.getTile = function(_layer, _x, _y, _width, _height) {
-	if((_x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0)) {
+	var _tile = (Math.floor(_y / this.tile.height) * _layer.width) + Math.floor(_x / this.tile.width);
+	if((_tile >= _layer.data.length || _tile < 0 || _x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0)) {
 		return null;
 	} else {
-		return (Math.floor(_y / this.tile.height) * _layer.width) + Math.floor(_x / this.tile.width);
+		return _tile;
 	}
 };
 
 Map.prototype.tileExist = function(_name, _x, _y) {
 	var _layerId = this.getLayerIdByName(_name);
 	var _tile = this.getTile(this.layer[_layerId], _x + Math.abs(this.layer[_layerId].position.x), _y + Math.abs(this.layer[_layerId].position.y), 1, 1);
-	if(this.layer[_layerId].data[_tile].tilesetId === -1) {
+	console.log(_tile);
+	if(_tile === null || this.layer[_layerId].data[_tile].tilesetId === -1) {
 		return false;
 	} else {
 		return true;
