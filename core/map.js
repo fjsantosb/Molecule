@@ -237,7 +237,6 @@ Map.prototype.getTile = function(_layer, _x, _y, _width, _height) {
 Map.prototype.tileExist = function(_name, _x, _y) {
 	var _layerId = this.getLayerIdByName(_name);
 	var _tile = this.getTile(this.layer[_layerId], _x + Math.abs(this.layer[_layerId].position.x), _y + Math.abs(this.layer[_layerId].position.y), 1, 1);
-	console.log(_tile);
 	if(_tile === null || this.layer[_layerId].data[_tile].tilesetId === -1) {
 		return false;
 	} else {
