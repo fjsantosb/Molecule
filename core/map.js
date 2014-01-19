@@ -235,6 +235,20 @@ Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
 	}
 };
 
+Map.prototype.clearTile = function(_name, _x, _y) {
+	var _i = this.getLayerIdByName(_name);
+	var _layer = this.layer[_i];
+	var _tile = this.getTile(_name, _x, _y);
+	if(_tile !== null) {
+		var _id = _layer.data[_tile].tilesetId;
+		_layer.data[_tile].tilesetId = -1;
+		this.context[_i].save();
+		this.context[_i].globalAlpha = _layer.alpha;
+		this.context[_i].clearRect(_layer.data[_tile].position.x, _layer.data[_tile].position.y, this.tileset[_id].width, this.tileset[_id].height);
+		this.context[_i].restore();
+	}
+};
+
 Map.prototype.update = function() {
 	for(var i = 0; i < this.layer.length; i++) {
 		this.layer[i].position.x += this.layer[i].scroll.x;
