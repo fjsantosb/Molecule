@@ -13,12 +13,17 @@ function Map(_game) {
     this.tile = {width: null, height: null};
     this.visible = true;
     this.sprite = new Array();
+    this.path = '';
     
     return this;
 };
 
 Map.prototype.load = function(_name) {
 	var self = this;
+	var t = _name.split('/');
+	for(var i = 0; i < t.length - 1; i++) {
+		this.path += t[i] + '/';
+	}
 	this.name = _name;
     this.xmlHttp = new XMLHttpRequest();
     if(this.xmlHttp.overrideMimeType) {
@@ -101,19 +106,12 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
 Map.prototype.createTileset = function(_i) {
 	var self = this;
 	
-	var t = this.name.split('/');
-	var path = '';
-	
     this.firstGid = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("firstgid"));
     this.name = this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("name");
     this.twidth = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tilewidth"));
     this.theight = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tileheight"));
-    
-    for(var i = 0; i < t.length - 1; i++) {
-		path += t[i] + '/';
-	}
-    
-    this.image = this.game.sprite.loadMap(path + this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
+
+    this.image = this.game.sprite.loadMap(this.path + this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
     return {firstGid: this.firstGid, name: this.name, width: this.twidth, height: this.theight, image: this.image};
 };
 
