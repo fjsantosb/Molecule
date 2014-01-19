@@ -223,22 +223,15 @@ Map.prototype.getLayerIdByName = function(_name) {
     return -1;
 };
 
-Map.prototype.getTile = function(_layer, _x, _y, _width, _height) {
+Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
+	_width = _width || 1;
+	_height = _height || 1;
+	var _layer = this.layer[this.getLayerIdByName(_name)];
 	var _tile = (Math.floor(_y / this.tile.height) * _layer.width) + Math.floor(_x / this.tile.width);
-	if((_tile >= _layer.data.length || _tile < 0 || _x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0)) {
+	if((_tile >= _layer.data.length || _tile < 0) || (_x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0) || (_layer.data[_tile].tilesetId === -1)) {
 		return null;
 	} else {
 		return _tile;
-	}
-};
-
-Map.prototype.tileExist = function(_name, _x, _y) {
-	var _layerId = this.getLayerIdByName(_name);
-	var _tile = this.getTile(this.layer[_layerId], _x + Math.abs(this.layer[_layerId].position.x), _y + Math.abs(this.layer[_layerId].position.y), 1, 1);
-	if(_tile === null || this.layer[_layerId].data[_tile].tilesetId === -1) {
-		return false;
-	} else {
-		return true;
 	}
 };
 
