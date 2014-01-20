@@ -48,8 +48,8 @@ Game.prototype.loadResources = function(_interval) {
 		for(var i = 0; i < this.scene.sprite.length; i++) {
 			this.scene.sprite[i].getAnimation(this);
 		}
-		this.setCamera();
 		init();
+		this.setCamera();
 		this.loop();
 	}
 };
