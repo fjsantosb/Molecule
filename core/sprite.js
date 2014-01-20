@@ -55,8 +55,8 @@ Sprite.prototype.update = function() {
 	this.position.y += this.move.y;
 	this.position.x = parseFloat(this.position.x.toFixed(3));
 	this.position.y = parseFloat(this.position.y.toFixed(3));
-	this.position.absolute.x = this.position.x + this.position.offset.x - this.anchor.x;
-	this.position.absolute.y = this.position.y + this.position.offset.y - this.anchor.y;
+	this.position.absolute.x = this.position.x + this.position.offset.x + this.anchor.x;
+	this.position.absolute.y = this.position.y + this.position.offset.y + this.anchor.y;
 	if(this.layer !== -1) {
 		this.position.absolute.x += Math.abs(this.layer.position.x);
 		this.position.absolute.y += Math.abs(this.layer.position.y);
