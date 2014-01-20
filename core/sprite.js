@@ -23,6 +23,7 @@ function Sprite(_name, _width, _height) {
 	this.checkCollision = {map: {up: true, down: true, left: true, right: true}};
 	this.kill = false;
 	this.game = null;
+	this.layer = null;
 	
 	return this;
 };
@@ -37,6 +38,7 @@ Sprite.prototype.getAnimation = function(_game) {
 	} else {
 		this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
 	}
+	this.layer = this.game.map.layer[this.game.map.getMainLayer()];
 };
 
 // Sprite prototype Method flipUpdate
@@ -55,6 +57,10 @@ Sprite.prototype.update = function() {
 	this.position.y = parseFloat(this.position.y.toFixed(3));
 	this.position.absolute.x = this.position.x + this.position.offset.x - this.anchor.x;
 	this.position.absolute.y = this.position.y + this.position.offset.y - this.anchor.y;
+	if(this.layer !== -1) {
+		this.position.absolute.x += Math.abs(this.layer.position.x);
+		this.position.absolute.y += Math.abs(this.layer.position.y);
+	}
 	this.size.width = this.frame.width - this.frame.offset.width;
 	this.size.height = this.frame.height - this.frame.offset.height;
 };
