@@ -19,11 +19,9 @@ function Sprite(_name, _width, _height) {
 	this.acceleration = {x: 0, y: 0};
 	this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y:0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
 	this.affects = {physics: {gravity: true, friction: true}};
-	this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}};
-	this.checkCollision = {map: {up: true, down: true, left: true, right: true}};
+	this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
 	this.kill = false;
 	this.game = null;
-	this.layer = null;
 	
 	return this;
 };
@@ -31,14 +29,9 @@ function Sprite(_name, _width, _height) {
 Sprite.prototype.getAnimation = function(_game) {
 	this.game = _game;
 	this.size = {width: this.image.width, height: this.image.height};
-	if(this.frame.width === undefined && this.frame.width === undefined) {
-		this.frame.width = this.size.width;
-		this.frame.height = this.size.height;
-		this.animation = null;
-	} else {
-		this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
-	}
-	this.layer = this.game.map.layer[this.game.map.getMainLayer()];
+	this.frame.width = this.frame.width || this.size.width;
+	this.frame.height = this.frame.height || this.size.height;
+	this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
 };
 
 // Sprite prototype Method flipUpdate
@@ -58,8 +51,8 @@ Sprite.prototype.update = function() {
 	this.position.absolute.x = this.position.x;
 	this.position.absolute.y = this.position.y;
 	if(this.layer !== -1) {
-		this.position.absolute.x += Math.abs(this.layer.position.x);
-		this.position.absolute.y += Math.abs(this.layer.position.y);
+		this.position.absolute.x += Math.abs(this.game.map.layer[this.game.map.getMainLayer()].position.x);
+		this.position.absolute.y += Math.abs(this.game.map.layer[this.game.map.getMainLayer()].position.y);
 	}
 	this.size.width = this.frame.width - this.frame.offset.width;
 	this.size.height = this.frame.height - this.frame.offset.height;
@@ -83,10 +76,7 @@ Sprite.prototype.draw = function() {
 	this.game.contextSprite.translate(Math.round((this.position.x * this.flip.f.x) + this.flip.offset.x), Math.round((this.position.y * this.flip.f.y) + this.flip.offset.y));
 	this.game.contextSprite.rotate(this.rotation * (Math.PI / 180));
 	this.game.contextSprite.translate(Math.round(-this.anchor.x * this.flip.f.x), Math.round(-this.anchor.y * this.flip.f.y));
-	if(this.animation !== null)
-		this.game.contextSprite.drawImage(this.image, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].x, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].y, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
-	else
-		this.game.contextSprite.drawImage(this.image, 0, 0, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
+	this.game.contextSprite.drawImage(this.image, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].x, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].y, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
 	this.game.contextSprite.restore();
 };
 

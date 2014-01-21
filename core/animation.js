@@ -15,6 +15,9 @@ Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidt
 			this.frame.push({x:j, y:i});
 		}
 	}
+	if(_imageWidth === _frameWidth && _imageHeight === _frameHeight) {
+		this.add('', [0], 60);
+	}
 };
 
 // Method to add an animation

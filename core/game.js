@@ -347,7 +347,7 @@ Game.prototype.updateMapCollision = function() {
 												if(this.scene.sprite[i].collision.map.up && this.scene.physics.gravity.y < 0) {
 													this.scene.sprite[i].speed.gravity.y = 0;
 												}
-												if((this.scene.sprite[i].checkCollision.map.up && this.scene.sprite[i].collision.map.up) || (this.scene.sprite[i].checkCollision.map.down && this.scene.sprite[i].collision.map.down)) {
+												if((this.scene.sprite[i].collision.check.map.up && this.scene.sprite[i].collision.map.up) || (this.scene.sprite[i].collision.check.map.down && this.scene.sprite[i].collision.map.down)) {
 													this.scene.sprite[i].move.y = 0;
 													this.scene.sprite[i].speed.y = 0;
 													this.scene.sprite[i].speed.t.y = 0;
@@ -372,9 +372,9 @@ Game.prototype.updateMapCollision = function() {
 												if(this.scene.sprite[i].collision.map.right && this.scene.physics.gravity.x > 0) {
 													this.scene.sprite[i].speed.gravity.x = 0;
 												}
-												if((!this.scene.sprite[i].checkCollision.map.up && this.scene.sprite[i].collision.map.up) || (!this.scene.sprite[i].checkCollision.map.down && this.scene.sprite[i].collision.map.down)) {
+												if((!this.scene.sprite[i].collision.check.map.up && this.scene.sprite[i].collision.map.up) || (!this.scene.sprite[i].collision.check.map.down && this.scene.sprite[i].collision.map.down)) {
 												} else {	
-													if((this.scene.sprite[i].checkCollision.map.left && this.scene.sprite[i].collision.map.left) || (this.scene.sprite[i].checkCollision.map.right && this.scene.sprite[i].collision.map.right)) {
+													if((this.scene.sprite[i].collision.check.map.left && this.scene.sprite[i].collision.map.left) || (this.scene.sprite[i].collision.check.map.right && this.scene.sprite[i].collision.map.right)) {
 														this.scene.sprite[i].move.x = 0;
 														this.scene.sprite[i].speed.x = 0;
 														this.scene.sprite[i].speed.t.x = 0;
