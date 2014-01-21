@@ -17,6 +17,12 @@ Camera.prototype.attach = function(_sprite) {
 	this.type = 1;
 };
 
+// Method for detach an sprite
+Camera.prototype.detach = function() {
+	this.sprite = null;
+	this.type = 0;
+};
+
 // Method for update the camera. It will update map & sprite
 Camera.prototype.update = function(_sprite) {
 	if(this.game.map !== null && this.layer !== -1) {
