@@ -50,7 +50,7 @@ Sprite.prototype.update = function() {
 	this.position.y = parseFloat(this.position.y.toFixed(3));
 	this.position.absolute.x = this.position.x;
 	this.position.absolute.y = this.position.y;
-	if(this.layer !== -1) {
+	if(this.game.map.getMainLayer() !== -1) {
 		this.position.absolute.x += Math.abs(this.game.map.layer[this.game.map.getMainLayer()].position.x);
 		this.position.absolute.y += Math.abs(this.game.map.layer[this.game.map.getMainLayer()].position.y);
 	}
