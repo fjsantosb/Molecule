@@ -2,7 +2,7 @@
 function Sprite(_name, _width, _height) {
 	this.name = _name;
 	this.image = null;
-	this.position = {x: 0, y: 0, offset: {x: 0, y: 0}, absolute: {x: 0, y: 0}};
+	this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
 	this.rotation = 0;
 	this.move = {x: 0, y: 0};
 	this.flip = {x: false, y: false, offset: {x: 0, y: 0}, f: {x: 0, y: 0}};
@@ -55,8 +55,8 @@ Sprite.prototype.update = function() {
 	this.position.y += this.move.y;
 	this.position.x = parseFloat(this.position.x.toFixed(3));
 	this.position.y = parseFloat(this.position.y.toFixed(3));
-	this.position.absolute.x = this.position.x + this.position.offset.x + this.anchor.x;
-	this.position.absolute.y = this.position.y + this.position.offset.y + this.anchor.y;
+	this.position.absolute.x = this.position.x;
+	this.position.absolute.y = this.position.y;
 	if(this.layer !== -1) {
 		this.position.absolute.x += Math.abs(this.layer.position.x);
 		this.position.absolute.y += Math.abs(this.layer.position.y);
@@ -94,7 +94,7 @@ Sprite.prototype.draw = function() {
 Sprite.prototype.isTouched = function() {
 	var _touch = this.game.input.touch;
 	for(var i = 0; i < _touch.length; i++)
-		if(this.position.x + this.position.offset.x <= _touch[i].x && this.position.x + this.position.offset.x + this.frame.width - this.frame.offset.width - 1 >= _touch[i].x && this.position.y + this.position.offset.y <= _touch[i].y && this.position.y + this.position.offset.y + this.frame.height - this.frame.offset.height - 1 >= _touch[i].y)
+		if(this.position.x - this.anchor.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _touch[i].x && this.position.y - this.anchor.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _touch[i].y)
 			return true;
 	return false;
 };
@@ -102,14 +102,14 @@ Sprite.prototype.isTouched = function() {
 // Sprite prototype Method is_clicked
 Sprite.prototype.isClicked = function(_button) {
 	var _mouse = this.game.input.mouse;
-	if(this.position.x + this.position.offset.x <= _mouse.x && this.position.x + this.position.offset.x + this.frame.width - this.frame.offset.width - 1 >= _mouse.x && this.position.y + this.position.offset.y <= _mouse.y && this.position.y + this.position.offset.y + this.frame.height - this.frame.offset.height - 1 >= _mouse.y && _button)
+	if(this.position.x - this.anchor.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _mouse.x && this.position.y - this.anchor.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _mouse.y && _button)
 		return true;
 	return false;
 };
 
 // Sprite prototype Method collidesWithSprite
 Sprite.prototype.collidesWithSprite = function(_object) {
-	if(((this.position.x - this.anchor.x + this.position.offset.x + this.move.x <= _object.position.x - _object.anchor.x + _object.position.offset.x + _object.move.x && this.position.x - this.anchor.x + this.position.offset.x + this.frame.width - this.frame.offset.width + this.move.x > _object.position.x - _object.anchor.x + _object.position.offset.x + _object.move.x) || (_object.position.x - _object.anchor.x + _object.position.offset.x + _object.move.x <= this.position.x - this.anchor.x + this.position.offset.x + this.move.x && _object.position.x - _object.anchor.x + _object.move.x + _object.position.offset.x + _object.frame.width - _object.frame.offset.width > this.position.x - this.anchor.x + this.position.offset.x + this.move.x)) && ((this.position.y - this.anchor.y + this.position.offset.y + this.move.y <= _object.position.y - _object.anchor.y + _object.position.offset.y + _object.move.y && this.position.y - this.anchor.y + this.position.offset.y + this.frame.height - this.frame.offset.height + this.move.y > _object.position.y - _object.anchor.y + _object.position.offset.y + _object.move.y) || (_object.position.y - _object.anchor.y + _object.position.offset.y + _object.move.y <= this.position.y - this.anchor.y + this.position.offset.y + this.move.y && _object.position.y - _object.anchor.y + _object.move.y + _object.position.offset.y + _object.frame.height - _object.frame.offset.height > this.position.y - this.anchor.y + this.position.offset.y + this.move.y)))
+	if(((this.position.x - this.anchor.x + this.move.x <= _object.position.x - _object.anchor.x + _object.move.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x > _object.position.x - _object.anchor.x + _object.move.x) || (_object.position.x - _object.anchor.x + _object.move.x <= this.position.x - this.anchor.x + this.move.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.width > this.position.x - this.anchor.x + this.move.x)) && ((this.position.y - this.anchor.y + this.move.y <= _object.position.y - _object.anchor.y + _object.move.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y > _object.position.y - _object.anchor.y + _object.move.y) || (_object.position.y - _object.anchor.y + _object.move.y <= this.position.y - this.anchor.y + this.move.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.height > this.position.y - this.anchor.y + this.move.y)))
 			return true;
 	return false;
 };
@@ -119,7 +119,7 @@ Sprite.prototype.collidesWithTile = function(_layer, _object) {
 	var _lpx = Math.abs(_layer.position.x);
 	var _lpy = Math.abs(_layer.position.y);
 	
-	if(((this.position.x - this.anchor.x + this.position.offset.x + this.move.x + _lpx <= _object.position.x && this.position.x - this.anchor.x + this.position.offset.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx > _object.position.x) || (_object.position.x <= this.position.x - this.anchor.x + this.position.offset.x + this.move.x + _lpx && _object.position.x + _object.width > this.position.x - this.anchor.x + this.position.offset.x + this.move.x + _lpx)) && ((this.position.y - this.anchor.y + this.position.offset.y + this.move.y + _lpy <= _object.position.y && this.position.y - this.anchor.y + this.position.offset.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy > _object.position.y) || (_object.position.y <= this.position.y - this.anchor.y + this.position.offset.y + this.move.y + _lpy && _object.position.y + _object.height > this.position.y - this.anchor.y + this.position.offset.y + this.move.y + _lpy)))
+	if(((this.position.x - this.anchor.x + this.move.x + _lpx <= _object.position.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx > _object.position.x) || (_object.position.x <= this.position.x - this.anchor.x + this.move.x + _lpx && _object.position.x + _object.width > this.position.x - this.anchor.x + this.move.x + _lpx)) && ((this.position.y - this.anchor.y + this.move.y + _lpy <= _object.position.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy > _object.position.y) || (_object.position.y <= this.position.y - this.anchor.y + this.move.y + _lpy && _object.position.y + _object.height > this.position.y - this.anchor.y + this.move.y + _lpy)))
 			return true;
 	return false;
 };

@@ -30,13 +30,13 @@ Scene.prototype.loadMapSprites = function() {
 		_sprite.position.y = parseInt(_sprite.position.y);
 		for(var j = 0; j < this.map.sprite[i].property.length; j++) {
 			switch(this.map.sprite[i].property[j].name) {
-				case 'position.offset.x':
-					_sprite.position.offset.x = this.map.sprite[i].property[j].value;
-					_sprite.position.offset.x = parseInt(_sprite.position.offset.x);
+				case 'anchor.x':
+					_sprite.anchor.x = this.map.sprite[i].property[j].value;
+					_sprite.anchor.x = parseInt(_sprite.anchor.x);
 					break;
-				case 'position.offset.y':
-					_sprite.position.offset.y = this.map.sprite[i].property[j].value;
-					_sprite.position.offset.y = parseInt(_sprite.position.offset.y);
+				case 'anchor.y':
+					_sprite.anchor.y = this.map.sprite[i].property[j].value;
+					_sprite.anchor.y = parseInt(_sprite.anchor.y);
 					break;
 				case 'flip.x':
 					_sprite.flip.x = this.map.sprite[i].property[j].value === 'true' ? true : false;
