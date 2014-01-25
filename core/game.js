@@ -26,16 +26,6 @@ var Game = function(_width, _height, _scale) {
 	this.context = this.canvas.getContext('2d');
 	
 	document.body.appendChild(this.canvas);
-	
-	this.canvasSprite = document.createElement('canvas');
-	this.contextSprite = this.canvasSprite.getContext('2d');
-	this.canvasMap = document.createElement('canvas');
-	this.contextMap = this.canvasMap.getContext('2d');
-	
-    this.canvasSprite.width = this.canvas.width;
-    this.canvasSprite.height = this.canvas.height;
-    this.canvasMap.width = this.canvas.width;
-    this.canvasMap.height = this.canvas.height;
 };
 
 Game.prototype.start = function() {
@@ -466,24 +456,18 @@ Game.prototype.reset = function() {
 };
 
 Game.prototype.draw = function() {
-	this.contextMap.clearRect(0, 0, this.canvasMap.width, this.canvasMap.height);
-	this.contextSprite.clearRect(0, 0, this.canvasSprite.width, this.canvasSprite.height);	
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);	
 	if(this.scene.map !== null && this.scene.map.visible) {
 		this.scene.map.draw(false);
 	}
-	this.context.drawImage(this.canvasMap, 0, 0);
 	for(var i = 0; i < this.scene.sprite.length; i++) {
 		if(this.scene.sprite[i].visible) {
 			this.scene.sprite[i].draw();
 		}
 	}
-	this.context.drawImage(this.canvasSprite, 0, 0);
-	this.contextMap.clearRect(0, 0, this.canvasMap.width, this.canvasMap.height);
 	if(this.scene.map !== null && this.scene.map.visible) {
 		this.scene.map.draw(true);
 	}
-	this.context.drawImage(this.canvasMap, 0, 0);
 	for(var i = 0; i < this.scene.text.length; i++) {
 		this.scene.text[i].draw();
 	}

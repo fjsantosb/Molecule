@@ -69,14 +69,14 @@ Sprite.prototype.resetAcceleration = function() {
 
 // Sprite prototype Method draw
 Sprite.prototype.draw = function() {
-	this.game.contextSprite.save();
-	this.game.contextSprite.globalAlpha = this.alpha;
-	this.game.contextSprite.scale(1 * this.flip.f.x, 1 * this.flip.f.y);
-	this.game.contextSprite.translate(Math.round((this.position.x * this.flip.f.x) + this.flip.offset.x), Math.round((this.position.y * this.flip.f.y) + this.flip.offset.y));
-	this.game.contextSprite.rotate(this.rotation * (Math.PI / 180));
-	this.game.contextSprite.translate(Math.round(-this.anchor.x * this.flip.f.x), Math.round(-this.anchor.y * this.flip.f.y));
-	this.game.contextSprite.drawImage(this.image, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].x, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].y, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
-	this.game.contextSprite.restore();
+	this.game.context.save();
+	this.game.context.globalAlpha = this.alpha;
+	this.game.context.scale(1 * this.flip.f.x, 1 * this.flip.f.y);
+	this.game.context.translate(Math.round((this.position.x * this.flip.f.x) + this.flip.offset.x), Math.round((this.position.y * this.flip.f.y) + this.flip.offset.y));
+	this.game.context.rotate(this.rotation * (Math.PI / 180));
+	this.game.context.translate(Math.round(-this.anchor.x * this.flip.f.x), Math.round(-this.anchor.y * this.flip.f.y));
+	this.game.context.drawImage(this.image, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].x, this.animation.frame[this.animation.id[this.animation.current.animation].frame[this.animation.current.frame]].y, this.frame.width, this.frame.height, 0, 0, this.frame.width, this.frame.height);
+	this.game.context.restore();
 };
 
 // Sprite prototype Method is_touched

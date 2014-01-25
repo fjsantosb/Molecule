@@ -286,9 +286,9 @@ Map.prototype.draw = function(_overlap) {
 		if(this.layer[i].visible  && this.layer[i].overlap === _overlap) {
 			var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
 			var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
-			this.game.contextMap.save();
-			this.game.contextMap.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
-			this.game.contextMap.restore();
+			this.game.context.save();
+			this.game.context.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
+			this.game.context.restore();
 		}
 	}
 };
