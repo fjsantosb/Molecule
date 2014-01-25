@@ -56,7 +56,7 @@ Game.prototype.loadResources = function(_interval) {
 };
 
 Game.prototype.text = function(_font) {
-	var t = new Font(_font, this);
+	var t = new Text(_font, this);
 	this.scene.text.push(t);
 	return t;
 };

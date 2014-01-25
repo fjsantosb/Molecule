@@ -1,4 +1,4 @@
-var Font = function(_font, _game) {
+var Text = function(_font, _game) {
 	this.game = _game;
 	this.title = null;
 	this.x = 0;
@@ -11,7 +11,7 @@ var Font = function(_font, _game) {
 	return this;
 };
 
-Font.prototype.draw = function() {
+Text.prototype.draw = function() {
 	this.game.context.save();
 	if(this.font !== null) {
 		this.game.context.font = this.font;
