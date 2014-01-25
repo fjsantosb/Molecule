@@ -1,5 +1,6 @@
 function Scene(_game) {
 	this.sprite = new Array();
+	this.text = new Array();
 	this.map = _game.map;
 	this.camera = _game.camera;
 	this.physics = _game.physics;

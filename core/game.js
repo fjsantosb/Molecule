@@ -55,6 +55,12 @@ Game.prototype.loadResources = function(_interval) {
 	}
 };
 
+Game.prototype.text = function(_title, _x, _y) {
+	var t = new Message(_title, _x, _y, this);
+	this.scene.text.push(t);
+	return t;
+};
+
 Game.prototype.setCamera = function() {
 	if(this.scene.camera.type === 1) {
 		_x = this.scene.camera.sprite.position.x;
@@ -471,6 +477,9 @@ Game.prototype.draw = function() {
 	}
 	this.contextMap.drawImage(this.canvasSprite, 0, 0);
 	this.context.drawImage(this.canvasMap, 0, 0);
+	for(var i = 0; i < this.scene.text.length; i++) {
+		this.scene.text[i].draw();
+	}
 };
 
 Game.prototype.removeSprite = function() {
