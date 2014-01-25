@@ -273,63 +273,65 @@ Game.prototype.updateSpriteCollision = function() {
 			if(i !== j) {
 				var tjx = this.scene.sprite[j].move.x;
 				var tjy = this.scene.sprite[j].move.y;
-				if(j > i) {
-					this.scene.sprite[j].move.x = 0;
-					this.scene.sprite[j].move.y = 0;
-				}
 				if((this.scene.sprite[i].collides.sprite && this.scene.sprite[j].collidable && this.scene.sprite[i].collidable) && (this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j]))) {
-					var mc = 0;
-					while(mc <= 2) {
-						if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
-							if(mc === 0 || mc === 2) {
-								var tx = this.scene.sprite[i].move.x;
-								this.scene.sprite[i].move.x = 0;
-								if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
-									if(this.scene.sprite[i].move.y > 0) {
-										this.scene.sprite[i].collision.sprite.down = true;
-									}
-									if(this.scene.sprite[i].move.y < 0) {
-										this.scene.sprite[i].collision.sprite.up = true;
-									}
-									if(this.scene.sprite[i].collision.sprite.down && this.scene.physics.gravity.y > 0) {
-										this.scene.sprite[i].speed.gravity.y = 0;
-									}
-									if(this.scene.sprite[i].collision.sprite.up && this.scene.physics.gravity.y < 0) {
-										this.scene.sprite[i].speed.gravity.y = 0;
-									}
-									this.scene.sprite[i].collision.sprite.id = j;
-									this.scene.sprite[i].move.y = 0;
-									this.scene.sprite[i].speed.y = 0;
-									this.scene.sprite[i].speed.t.y = 0;
-								}
-								this.scene.sprite[i].move.x = tx;
-							}
-							if(mc === 1 || mc === 2) {
-								var ty = this.scene.sprite[i].move.y;
-								if(mc !== 2)
-									this.scene.sprite[i].move.y = 0;
-								if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
-									if(this.scene.sprite[i].move.x > 0) {
-										this.scene.sprite[i].collision.sprite.right = true;
-									}
-									if(this.scene.sprite[i].move.x < 0) {
-										this.scene.sprite[i].collision.sprite.left = true;
-									}
-									if(this.scene.sprite[i].collision.sprite.left && this.scene.physics.gravity.x < 0) {
-										this.scene.sprite[i].speed.gravity.x = 0;
-									}
-									if(this.scene.sprite[i].collision.sprite.right && this.scene.physics.gravity.x > 0) {
-										this.scene.sprite[i].speed.gravity.x = 0;
-									}
-									this.scene.sprite[i].collision.sprite.id = j;
+					if(j > i) {
+						this.scene.sprite[j].move.x = 0;
+						this.scene.sprite[j].move.y = 0;
+					}
+					if((this.scene.sprite[i].collides.sprite && this.scene.sprite[j].collidable && this.scene.sprite[i].collidable) && (this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j]))) {
+						var mc = 0;
+						while(mc <= 2) {
+							if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
+								if(mc === 0 || mc === 2) {
+									var tx = this.scene.sprite[i].move.x;
 									this.scene.sprite[i].move.x = 0;
-									this.scene.sprite[i].speed.x = 0;
-									this.scene.sprite[i].speed.t.x = 0;
+									if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
+										if(this.scene.sprite[i].move.y > 0) {
+											this.scene.sprite[i].collision.sprite.down = true;
+										}
+										if(this.scene.sprite[i].move.y < 0) {
+											this.scene.sprite[i].collision.sprite.up = true;
+										}
+										if(this.scene.sprite[i].collision.sprite.down && this.scene.physics.gravity.y > 0) {
+											this.scene.sprite[i].speed.gravity.y = 0;
+										}
+										if(this.scene.sprite[i].collision.sprite.up && this.scene.physics.gravity.y < 0) {
+											this.scene.sprite[i].speed.gravity.y = 0;
+										}
+										this.scene.sprite[i].collision.sprite.id = j;
+										this.scene.sprite[i].move.y = 0;
+										this.scene.sprite[i].speed.y = 0;
+										this.scene.sprite[i].speed.t.y = 0;
+									}
+									this.scene.sprite[i].move.x = tx;
 								}
-								this.scene.sprite[i].move.y = ty;
+								if(mc === 1 || mc === 2) {
+									var ty = this.scene.sprite[i].move.y;
+									if(mc !== 2)
+										this.scene.sprite[i].move.y = 0;
+									if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
+										if(this.scene.sprite[i].move.x > 0) {
+											this.scene.sprite[i].collision.sprite.right = true;
+										}
+										if(this.scene.sprite[i].move.x < 0) {
+											this.scene.sprite[i].collision.sprite.left = true;
+										}
+										if(this.scene.sprite[i].collision.sprite.left && this.scene.physics.gravity.x < 0) {
+											this.scene.sprite[i].speed.gravity.x = 0;
+										}
+										if(this.scene.sprite[i].collision.sprite.right && this.scene.physics.gravity.x > 0) {
+											this.scene.sprite[i].speed.gravity.x = 0;
+										}
+										this.scene.sprite[i].collision.sprite.id = j;
+										this.scene.sprite[i].move.x = 0;
+										this.scene.sprite[i].speed.x = 0;
+										this.scene.sprite[i].speed.t.x = 0;
+									}
+									this.scene.sprite[i].move.y = ty;
+								}
 							}
+							mc++;
 						}
-						mc++;
 					}
 				}
 				this.scene.sprite[j].move.x = tjx;
