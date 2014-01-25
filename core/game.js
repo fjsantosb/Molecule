@@ -13,6 +13,7 @@ var Game = function(_width, _height, _scale) {
 	this.sound = new Array();
 	this.input = new Input(this);
 	this.status = 1;
+	this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
 	
 	this.canvas = document.createElement('canvas');
 	this.canvas.setAttribute('id', 'canvas');
@@ -46,7 +47,7 @@ Game.prototype.loadResources = function(_interval) {
 	if(this.sprite.isLoaded() && this.audio.isLoaded()) {
 		clearInterval(_interval);
 		for(var i = 0; i < this.scene.sprite.length; i++) {
-			this.scene.sprite[i].getAnimation(this);
+			this.scene.sprite[i].getAnimation();
 		}
 		init();
 		this.setCamera();
@@ -99,6 +100,19 @@ Game.prototype.loop = function() {
 	}
 	this.draw();
 	requestAnimFrame(function(){self.loop()});
+};
+
+Game.prototype.updateTimer = function() {
+	this.timer.frame++;
+	this.timer.now = new Date().getTime();
+	if(this.timer.previus !== null)
+		this.timer.loop = (this.timer.now - this.timer.previus) / 1000;
+	if(this.timer.now - this.timer.previus >= 1000) {
+		this.timer.previus = this.timer.now;
+		this.timer.fps = this.timer.frame;
+		this.timer.frame = 0;
+		console.log(this.timer.fps);
+	}
 };
 
 Game.prototype.updateCollisionState = function() {

@@ -1,6 +1,5 @@
 // Camera var. Arguments: canvas
 function Camera(_game) {
-	this.canvas = _game.canvas;
 	this.game = _game;
 	this.layer = null;
 	this.sprite = null;

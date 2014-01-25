@@ -26,8 +26,7 @@ function Sprite(_name, _width, _height) {
 	return this;
 };
 
-Sprite.prototype.getAnimation = function(_game) {
-	this.game = _game;
+Sprite.prototype.getAnimation = function() {
 	this.size = {width: this.image.width, height: this.image.height};
 	this.frame.width = this.frame.width || this.size.width;
 	this.frame.height = this.frame.height || this.size.height;
