@@ -159,6 +159,7 @@ Map.prototype.createLayer = function(_i) {
     var _visible = true;
     var _collidable = false;
     var _main = false;
+    var _overlap = false;
     
     var l = this.xmlDoc.getElementsByTagName("layer")[_i].getElementsByTagName("property");
     for(var i = 0; i < l.length; i++) {
@@ -194,6 +195,10 @@ Map.prototype.createLayer = function(_i) {
     			break;
     		case 'main.layer':
     			_main = l[i].getAttribute("value") === 'true' ? true : false;
+    			break;
+    		case 'sprite.overlap':
+    			_overlap = l[i].getAttribute("value") === 'true' ? true : false;
+    			break;
     	}
     }
     
@@ -202,7 +207,7 @@ Map.prototype.createLayer = function(_i) {
     this.canvas[_i].width = this.width * this.tile.width;
     this.canvas[_i].height = this.height * this.tile.height;
     
-    return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, main: _main, data: new Array()};
+    return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, main: _main,  overlap: _overlap, data: new Array()};
 };
     
 Map.prototype.getMainLayer = function() {
@@ -276,9 +281,9 @@ Map.prototype.drawLayer = function(_layer) {
 	}
 };
 
-Map.prototype.draw = function() {
+Map.prototype.draw = function(_overlap) {
 	for(var i = 0; i < this.canvas.length; i++) {
-		if(this.layer[i].visible) {
+		if(this.layer[i].visible  && this.layer[i].overlap === _overlap) {
 			var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
 			var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
 			this.game.contextMap.save();

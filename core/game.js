@@ -470,14 +470,19 @@ Game.prototype.draw = function() {
 	this.contextSprite.clearRect(0, 0, this.canvasSprite.width, this.canvasSprite.height);	
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);	
 	if(this.scene.map !== null && this.scene.map.visible) {
-		this.scene.map.draw();
+		this.scene.map.draw(false);
 	}
+	this.context.drawImage(this.canvasMap, 0, 0);
 	for(var i = 0; i < this.scene.sprite.length; i++) {
 		if(this.scene.sprite[i].visible) {
 			this.scene.sprite[i].draw();
 		}
 	}
-	this.contextMap.drawImage(this.canvasSprite, 0, 0);
+	this.context.drawImage(this.canvasSprite, 0, 0);
+	this.contextMap.clearRect(0, 0, this.canvasMap.width, this.canvasMap.height);
+	if(this.scene.map !== null && this.scene.map.visible) {
+		this.scene.map.draw(true);
+	}
 	this.context.drawImage(this.canvasMap, 0, 0);
 	for(var i = 0; i < this.scene.text.length; i++) {
 		this.scene.text[i].draw();
