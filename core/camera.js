@@ -11,7 +11,6 @@ function Camera(_game) {
 
 // Method for attach an sprite, map, and main layer
 Camera.prototype.attach = function(_sprite) {
-	this.layer = this.game.map.getMainLayer();
 	this.sprite = _sprite;
 	this.type = 1;
 };

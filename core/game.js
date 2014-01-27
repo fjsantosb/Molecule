@@ -4,7 +4,8 @@ var Game = function(_width, _height, _scale) {
 	this.scale = _scale || 1;
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
 	this.boundaries = {x: null, y: null, width: null, height: null};
-	this.map = new Map(this);
+	this.map = null;
+	this.tilemap = new MapFile(this);
 	this.camera = new Camera(this);
 	this.scene = new Scene(this);
 	this.next = {scene: null, fade: null};
@@ -52,6 +53,7 @@ Game.prototype.text = function(_font) {
 };
 
 Game.prototype.setCamera = function() {
+	this.scene.camera.layer = this.map.getMainLayer();
 	if(this.scene.camera.type === 1) {
 		_x = this.scene.camera.sprite.position.x;
 		this.scene.camera.sprite.position.x = 0;
