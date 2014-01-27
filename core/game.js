@@ -53,8 +53,8 @@ Game.prototype.text = function(_font) {
 };
 
 Game.prototype.setCamera = function() {
-	this.scene.camera.layer = this.map.getMainLayer();
 	if(this.scene.camera.type === 1) {
+		this.scene.camera.layer = this.map.getMainLayer();
 		_x = this.scene.camera.sprite.position.x;
 		this.scene.camera.sprite.position.x = 0;
 		_y = this.scene.camera.sprite.position.y;
