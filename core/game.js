@@ -4,7 +4,6 @@ var Game = function(_width, _height, _scale) {
 	this.scale = _scale || 1;
 	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
 	this.boundaries = {x: null, y: null, width: null, height: null};
-	this.map = new Map(this);;
 	this.tilemap = new MapFile(this);
 	this.camera = new Camera(this);
 	this.scene = new Scene(this);
@@ -41,7 +40,7 @@ Game.prototype.loadResources = function(_interval) {
 			this.scene.sprite[i].getAnimation();
 		}
 		init();
-		this.setCamera();
+		this.scene.camera.set();
 		this.loop();
 	}
 };
@@ -50,29 +49,6 @@ Game.prototype.text = function(_font) {
 	var t = new Text(_font, this);
 	this.scene.text.push(t);
 	return t;
-};
-
-Game.prototype.setCamera = function() {
-	if(this.scene.camera.type === 1) {
-		this.scene.camera.layer = this.map.getMainLayer();
-		_x = this.scene.camera.sprite.position.x;
-		this.scene.camera.sprite.position.x = 0;
-		_y = this.scene.camera.sprite.position.y;
-		this.scene.camera.sprite.position.y = 0;
-		for(var i = 0; i < _x; i++) {
-			this.scene.camera.sprite.move.x = 1;
-			this.scene.camera.update(this.scene.sprite);
-			this.update();
-			this.reset();
-		}
-		
-		for(var i = 0; i < _y; i++) {
-			this.scene.camera.sprite.move.y = 1;
-			this.scene.camera.update(this.scene.sprite);
-			this.update();
-			this.reset();
-		}
-	}
 };
 
 Game.prototype.loop = function() {
