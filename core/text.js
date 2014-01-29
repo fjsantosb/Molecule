@@ -6,7 +6,7 @@ var Text = function(_font, _game) {
 	this.align = 'left';
 	this.font = _font;
 	this.color = '#FFFFFF';
-	this.baseLine = 'top';
+	this.baseline = 'top';
 	this.alpha = 1;
 	return this;
 };
@@ -18,7 +18,7 @@ Text.prototype.draw = function() {
 	}
 	this.game.context.globalAlpha = this.alpha;
 	this.game.context.textAlign = this.align;
-	this.game.context.textBaseline = this.baseLine;
+	this.game.context.textBaseline = this.baseline;
 	this.game.context.fillStyle = this.color;
 	this.game.context.fillText(this.title, this.x, this.y);
 	this.game.context.restore();
