@@ -13,3 +13,7 @@ MapFile.prototype.set = function(_map) {
 	this.game.scene.map = _map;
 	this.game.camera.set();
 };
+
+MapFile.prototype.sprite = function(_sprite, _name) {
+	this.game.scene.loadMapSprites(_sprite, _name);
+};
