@@ -7,6 +7,7 @@ var Game = function(_width, _height, _scale) {
 	this.tilemap = new MapFile(this);
 	this.camera = new Camera(this);
 	this.scene = new Scene(this);
+	this.map = new Map(this);
 	this.next = {scene: null, fade: null};
 	this.sprite = new ImageFile(this);
 	this.audio = new AudioFile(this);
@@ -14,7 +15,6 @@ var Game = function(_width, _height, _scale) {
 	this.input = new Input(this);
 	this.status = 1;
 	this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
-	this.map = new Map(this);
 	
 	this.canvas = document.createElement('canvas');
 	this.canvas.setAttribute('id', 'canvas');
