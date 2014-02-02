@@ -14,6 +14,7 @@ var Game = function(_width, _height, _scale) {
 	this.input = new Input(this);
 	this.status = 1;
 	this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
+	this.map = new Map(this);
 	
 	this.canvas = document.createElement('canvas');
 	this.canvas.setAttribute('id', 'canvas');
@@ -310,21 +311,21 @@ Game.prototype.updateSpriteCollision = function() {
 };
 
 Game.prototype.updateMapCollision = function() {
-	if(this.scene.map !== null) {
+	if(this.map !== null) {
 		for(var i = 0; i < this.scene.sprite.length; i++) {
-			for(var j = 0; j < this.scene.map.layer.length; j++) {
-				if(this.scene.map.layer[j].collidable && this.scene.sprite[i].collides.map) {
+			for(var j = 0; j < this.map.layer.length; j++) {
+				if(this.map.layer[j].collidable && this.scene.sprite[i].collides.map) {
 					var mc = 0;
 					while(mc <= 2) {
 						if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
-							for(var k = 0; k <= Math.ceil((this.scene.sprite[i].frame.height - this.scene.sprite[i].frame.offset.height) / this.scene.map.tile.height); k++) {
-								for(var l = 0; l <= Math.ceil((this.scene.sprite[i].frame.width - this.scene.sprite[i].frame.offset.width) / this.scene.map.tile.width); l++) {
-									var tile = this.scene.map.getTile(this.scene.map.layer[j].name, this.scene.sprite[i].position.x - this.scene.sprite[i].anchor.x + this.scene.sprite[i].move.x + Math.abs(this.scene.map.layer[j].position.x) + (l * this.scene.map.tile.width), this.scene.sprite[i].position.y - this.scene.sprite[i].anchor.y + this.scene.sprite[i].move.y + Math.abs(this.scene.map.layer[j].position.y) + (k * this.scene.map.tile.height), this.scene.sprite[i].frame.width, this.scene.sprite[i].frame.height);
-									if(tile !== null && this.scene.sprite[i].collidesWithTile(this.scene.map.layer[j], this.scene.map.layer[j].data[tile])) {
+							for(var k = 0; k <= Math.ceil((this.scene.sprite[i].frame.height - this.scene.sprite[i].frame.offset.height) / this.map.tile.height); k++) {
+								for(var l = 0; l <= Math.ceil((this.scene.sprite[i].frame.width - this.scene.sprite[i].frame.offset.width) / this.map.tile.width); l++) {
+									var tile = this.map.getTile(this.map.layer[j].name, this.scene.sprite[i].position.x - this.scene.sprite[i].anchor.x + this.scene.sprite[i].move.x + Math.abs(this.map.layer[j].position.x) + (l * this.map.tile.width), this.scene.sprite[i].position.y - this.scene.sprite[i].anchor.y + this.scene.sprite[i].move.y + Math.abs(this.map.layer[j].position.y) + (k * this.map.tile.height), this.scene.sprite[i].frame.width, this.scene.sprite[i].frame.height);
+									if(tile !== null && this.scene.sprite[i].collidesWithTile(this.map.layer[j], this.map.layer[j].data[tile])) {
 										if(mc === 0 || mc === 2) {
 											var tx = this.scene.sprite[i].move.x;
 											this.scene.sprite[i].move.x = 0;
-											if(this.scene.sprite[i].collidesWithTile(this.scene.map.layer[j], this.scene.map.layer[j].data[tile])) {
+											if(this.scene.sprite[i].collidesWithTile(this.map.layer[j], this.map.layer[j].data[tile])) {
 												if(this.scene.sprite[i].move.y > 0) {
 													this.scene.sprite[i].collision.map.down = true;
 												}
@@ -349,7 +350,7 @@ Game.prototype.updateMapCollision = function() {
 											var ty = this.scene.sprite[i].move.y;
 											if(mc !== 2)
 											this.scene.sprite[i].move.y = 0;
-											if(this.scene.sprite[i].collidesWithTile(this.scene.map.layer[j], this.scene.map.layer[j].data[tile])) {
+											if(this.scene.sprite[i].collidesWithTile(this.map.layer[j], this.map.layer[j].data[tile])) {
 												if(this.scene.sprite[i].move.x > 0) {
 													this.scene.sprite[i].collision.map.right = true;
 												}
@@ -400,8 +401,8 @@ Game.prototype.update = function(_exit) {
 		if(this.scene.sprite[i].animation !== null && _exit)
 			this.scene.sprite[i].animation.nextFrame();
 	}
-	if(this.scene.map !== null)
-		this.scene.map.update(this.canvas);
+	if(this.map !== null)
+		this.map.update(this.canvas);
 };
 
 Game.prototype.checkBoundaries = function() {
@@ -429,22 +430,22 @@ Game.prototype.reset = function() {
 	for(var i = 0; i < this.scene.sprite.length; i++) {
 		this.scene.sprite[i].resetMove();
 	}
-	if(this.scene.map !== null)
-		this.scene.map.resetScroll();
+	if(this.map !== null)
+		this.map.resetScroll();
 };
 
 Game.prototype.draw = function() {
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);	
-	if(this.scene.map !== null && this.scene.map.visible) {
-		this.scene.map.draw(false);
+	if(this.map !== null && this.map.visible) {
+		this.map.draw(false);
 	}
 	for(var i = 0; i < this.scene.sprite.length; i++) {
 		if(this.scene.sprite[i].visible) {
 			this.scene.sprite[i].draw();
 		}
 	}
-	if(this.scene.map !== null && this.scene.map.visible) {
-		this.scene.map.draw(true);
+	if(this.map !== null && this.map.visible) {
+		this.map.draw(true);
 	}
 	for(var i = 0; i < this.scene.text.length; i++) {
 		this.scene.text[i].draw();
