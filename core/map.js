@@ -270,6 +270,21 @@ Map.prototype.clearTile = function(_name, _x, _y) {
 	}
 };
 
+Map.prototype.setTile = function(_name, _x, _y, _tile) {
+	var _i = this.getLayerIdByName(_name);
+	var _layer = this.layer[_i];
+	var _ctile = this.getTile(_name, _x, _y);
+	if(_ctile !== null) {
+		var _id = _layer.data[_ctile].tilesetId;
+		console.log(this.tileset[_id]);
+		this.context[_i].save();
+		this.context[_i].globalAlpha = _layer.alpha;
+		this.context[_i].clearRect(_layer.data[_ctile].position.x, _layer.data[_ctile].position.y, this.tileset[_id].width, this.tileset[_id].height);
+		this.context[_i].drawImage(this.tileset[_id].image, Math.floor(_tile % _layer.width) * this.tileset[_id].width, Math.floor(_tile / _layer.width) * this.tileset[_id].height, this.tileset[_id].width, this.tileset[_id].height, _layer.data[_ctile].position.x, _layer.data[_ctile].position.y, this.tileset[_id].width, this.tileset[_id].height);
+		this.context[_i].restore();
+	}
+};
+
 Map.prototype.update = function() {
 	for(var i = 0; i < this.layer.length; i++) {
 		this.layer[i].position.x += this.layer[i].scroll.x;
