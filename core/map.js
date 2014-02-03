@@ -229,8 +229,8 @@ Map.prototype.getLayerIdByName = function(_name) {
 };
 
 Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
-	_width = _width || 1;
-	_height = _height || 1;
+	_width = _width || 0;
+	_height = _height || 0;
 	var _layer = this.layer[this.getLayerIdByName(_name)];
 	if(_layer === undefined) {
 		return null;
@@ -276,7 +276,8 @@ Map.prototype.setTile = function(_name, _x, _y, _tile) {
 	var _ctile = this.getTile(_name, _x, _y);
 	if(_ctile !== null) {
 		var _id = _layer.data[_ctile].tilesetId;
-		console.log(this.tileset[_id]);
+		_layer.data[_ctile].tilesetId = _id;
+		_layer.data[_ctile].t = _tile;
 		this.context[_i].save();
 		this.context[_i].globalAlpha = _layer.alpha;
 		this.context[_i].clearRect(_layer.data[_ctile].position.x, _layer.data[_ctile].position.y, this.tileset[_id].width, this.tileset[_id].height);

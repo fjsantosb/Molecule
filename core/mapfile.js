@@ -21,7 +21,7 @@ MapFile.prototype.sprite = function(_sprite, _name) {
 			_sprite.position.x = this.game.map.sprite[i].object.x;
 			_sprite.position.y = this.game.map.sprite[i].object.y;
 			_sprite.position.x = parseInt(_sprite.position.x);
-			_sprite.position.y = parseInt(_sprite.position.y);
+			_sprite.position.y = parseInt(_sprite.position.y - _sprite.frame.height);
 			for(var j = 0; j < this.game.map.sprite[i].property.length; j++) {
 				switch(this.game.map.sprite[i].property[j].name) {
 					case 'anchor.x':
