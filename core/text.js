@@ -8,6 +8,7 @@ var Text = function(_font, _game) {
 	this.color = '#FFFFFF';
 	this.baseline = 'top';
 	this.alpha = 1;
+	this.visible = true;
 	return this;
 };
 
@@ -22,4 +23,8 @@ Text.prototype.draw = function() {
 	this.game.context.fillStyle = this.color;
 	this.game.context.fillText(this.title, this.x, this.y);
 	this.game.context.restore();
+};
+
+Text.prototype.measure = function() {
+	return this.game.context.measureText(this.title).width;
 };

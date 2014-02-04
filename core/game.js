@@ -450,7 +450,9 @@ Game.prototype.draw = function() {
 		this.map.draw(true);
 	}
 	for(var i = 0; i < this.scene.text.length; i++) {
-		this.scene.text[i].draw();
+		if(this.scene.text[i].visible) {
+			this.scene.text[i].draw();
+		}
 	}
 };
 
