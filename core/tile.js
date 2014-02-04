@@ -3,7 +3,7 @@ function Tile(_game) {
 };
 
 Tile.prototype.get = function(_name, _x, _y) {
-	var t = this.game.map.getTileId(_name, _x, _y);
+	var t = this.game.map.getTileData(_name, _x, _y);
 	return t;
 };
 

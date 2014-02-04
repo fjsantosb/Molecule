@@ -228,7 +228,7 @@ Map.prototype.getLayerIdByName = function(_name) {
 };
 
 Map.prototype.getTilesetIdByName = function(_name) {
-    for(var i = 0; i < this.layer.length; i++) {
+    for(var i = 0; i < this.tileset.length; i++) {
         if(this.tileset[i].name === _name) {
             return i;
         }
@@ -252,12 +252,16 @@ Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
 	}
 };
 
-Map.prototype.getTileId = function(_name, _x, _y) {
+Map.prototype.getTileData = function(_name, _x, _y) {
 	var _i = this.getLayerIdByName(_name);
 	var _layer = this.layer[_i];
 	var _tile = this.getTile(_name, _x, _y);
+	var _tname = null;
 	if(_tile !== null) {
-		return _layer.data[_tile];
+		if(_layer.data[_tile].id !== -1) {
+			_tname = this.tileset[_layer.data[_tile].id].name;
+		}
+		return {id: _layer.data[_tile].t, tileset: {id: _layer.data[_tile].id, name: _tname}, position: {x: _layer.data[_tile].position.x, y: _layer.data[_tile].position.y}, width: _layer.data[_tile].width, height: _layer.data[_tile].height, visible: _layer.data[_tile].visible, collide: _layer.data[_tile].collide};
 	} else {
 		return null;
 	}
