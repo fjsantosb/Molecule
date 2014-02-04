@@ -79,9 +79,8 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
     if(_tilesetId >= 0) {
         this.t = _t;
         this.t = this.t - _tileset.firstGid;
-        this.x = Math.floor(_i % _layer.width) * _tileset.width;
-        this.y = Math.floor(_i / _layer.width) * _tileset.height;
-        this.frame = {x: this.t * _tileset.width % _tileset.image.width, y: Math.floor(this.t  * _tileset.width / _tileset.image.width) * _tileset.height};
+        this.x = Math.floor(_i % _layer.width) * this.tile.width;
+        this.y = Math.floor(_i / _layer.width) * this.tile.width;
         this.l = _l;
         this.tilesetId = _tilesetId;
         this.twidth = _tileset.width;
@@ -90,17 +89,16 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
         this.collide = true;
     } else {
         this.t = null;
-        this.x = null;
-        this.y = null;
-        this.frame = {x: null, y: null};
+        this.x = Math.floor(_i % _layer.width) * this.tile.width;
+        this.y = Math.floor(_i / _layer.width) * this.tile.width;
         this.l = _l;
         this.tilesetId = -1;
-        this.twidth = null;
-        this.theight = null;
+        this.twidth = 0;
+        this.theight = 0;
         this.tvisible = false;
         this.collide = false;
     }
-    return {t: this.t, position: {x: this.x, y: this.y}, frame: this.frame, layer: this.l, tilesetId: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
+    return {t: this.t, position: {x: this.x, y: this.y}, layer: this.l, tilesetId: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
 };
 
 Map.prototype.createTileset = function(_i) {
@@ -138,7 +136,7 @@ Map.prototype.createContext = function(_i) {
         if(Id >= 0 && this.layer[_i].data[i].visible) {
             this.context[_i].save();
             this.context[_i].globalAlpha = this.layer[this.layer[_i].data[i].layer].alpha;
-            this.context[_i].drawImage(this.tileset[Id].image, this.layer[_i].data[i].frame.x, this.layer[_i].data[i].frame.y, this.tileset[Id].width, this.tileset[Id].height, this.layer[_i].data[i].position.x, this.layer[_i].data[i].position.y, this.tileset[Id].width, this.tileset[Id].height);
+            this.context[_i].drawImage(this.tileset[Id].image, 0, 0, this.tileset[Id].width, this.tileset[Id].height, this.layer[_i].data[i].position.x, this.layer[_i].data[i].position.y, this.tileset[Id].width, this.tileset[Id].height);
             this.context[_i].restore();
         }
     }
@@ -149,6 +147,7 @@ Map.prototype.createLayer = function(_i) {
     this.width = parseInt(this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("width"));
     this.height = parseInt(this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("height"));
     this.alpha = parseFloat(this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("opacity"));
+    
     if(!this.alpha) {
         this.alpha = 1;
     }
@@ -206,7 +205,7 @@ Map.prototype.createLayer = function(_i) {
 	this.context.push(this.canvas[_i].getContext('2d'));
     this.canvas[_i].width = this.width * this.tile.width;
     this.canvas[_i].height = this.height * this.tile.height;
-    
+
     return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, main: _main,  overlap: _overlap, data: new Array()};
 };
 
@@ -228,6 +227,15 @@ Map.prototype.getLayerIdByName = function(_name) {
     return -1;
 };
 
+Map.prototype.getTilesetIdByName = function(_name) {
+    for(var i = 0; i < this.layer.length; i++) {
+        if(this.tileset[i].name === _name) {
+            return i;
+        }
+    }
+    return -1;
+};
+
 Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
 	_width = _width || 0;
 	_height = _height || 0;
@@ -236,7 +244,7 @@ Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
 		return null;
 	} else {
 		var _tile = (Math.floor(_y / this.tile.height) * _layer.width) + Math.floor(_x / this.tile.width);
-		if((_tile >= _layer.data.length || _tile < 0) || (_x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0) || (_layer.data[_tile].tilesetId === -1)) {
+		if((_tile >= _layer.data.length || _tile < 0) || (_x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0)) {
 			return null;
 		} else {
 			return _tile;
@@ -249,9 +257,13 @@ Map.prototype.getTileId = function(_name, _x, _y) {
 	var _layer = this.layer[_i];
 	var _tile = this.getTile(_name, _x, _y);
 	if(_tile !== null) {
-		return _layer.data[_tile].t;
+		if(_layer.data[_tile].tilesetId !== -1) {
+			return {id: _layer.data[_tile].t, tileset: this.tileset[_layer.data[_tile].tilesetId].name};
+		} else {
+			return {id: _layer.data[_tile].t, tileset: null};
+		}
 	} else {
-		return null;
+		return {id: null, tileset: null};
 	}
 };
 
@@ -259,10 +271,14 @@ Map.prototype.clearTile = function(_name, _x, _y) {
 	var _i = this.getLayerIdByName(_name);
 	var _layer = this.layer[_i];
 	var _tile = this.getTile(_name, _x, _y);
-	if(_tile !== null) {
+	if(_tile !== null && _layer.data[_tile].t !== null) {
 		var _id = _layer.data[_tile].tilesetId;
 		_layer.data[_tile].tilesetId = -1;
 		_layer.data[_tile].t = null;
+		_layer.data[_tile].visible = false;
+		_layer.data[_tile].collide = false;
+		_layer.data[_tile].width = 0;
+		_layer.data[_tile].height = 0;
 		this.context[_i].save();
 		this.context[_i].globalAlpha = _layer.alpha;
 		this.context[_i].clearRect(_layer.data[_tile].position.x, _layer.data[_tile].position.y, this.tileset[_id].width, this.tileset[_id].height);
@@ -270,14 +286,18 @@ Map.prototype.clearTile = function(_name, _x, _y) {
 	}
 };
 
-Map.prototype.setTile = function(_name, _x, _y, _tile) {
+Map.prototype.setTile = function(_name, _x, _y, _tileset, _tile) {
 	var _i = this.getLayerIdByName(_name);
 	var _layer = this.layer[_i];
 	var _ctile = this.getTile(_name, _x, _y);
 	if(_ctile !== null) {
-		var _id = _layer.data[_ctile].tilesetId;
+		var _id = this.getTilesetIdByName(_tileset);
 		_layer.data[_ctile].tilesetId = _id;
 		_layer.data[_ctile].t = _tile;
+		_layer.data[_ctile].visible = true;
+		_layer.data[_ctile].collide = true;
+		_layer.data[_ctile].width = this.tileset[_id].width;
+		_layer.data[_ctile].height = this.tileset[_id].height;
 		this.context[_i].save();
 		this.context[_i].globalAlpha = _layer.alpha;
 		this.context[_i].clearRect(_layer.data[_ctile].position.x, _layer.data[_ctile].position.y, this.tileset[_id].width, this.tileset[_id].height);
