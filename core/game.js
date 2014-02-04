@@ -15,6 +15,8 @@ var Game = function(_width, _height, _scale) {
 	this.input = new Input(this);
 	this.status = 1;
 	this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
+	this.width = _width;
+	this.height = _height;
 	
 	this.canvas = document.createElement('canvas');
 	this.canvas.setAttribute('id', 'canvas');
