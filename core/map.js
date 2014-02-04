@@ -98,7 +98,7 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
         this.tvisible = false;
         this.collide = false;
     }
-    return {t: this.t, position: {x: this.x, y: this.y}, layer: this.l, tilesetId: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
+    return {t: this.t, position: {x: this.x, y: this.y}, layer: this.l, id: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
 };
 
 Map.prototype.createTileset = function(_i) {
@@ -132,7 +132,7 @@ Map.prototype.loadResources = function(_interval) {
 
 Map.prototype.createContext = function(_i) {
 	for(var i = 0; i < this.layer[_i].data.length; i++) {
-        var Id = this.layer[_i].data[i].tilesetId;
+        var Id = this.layer[_i].data[i].id;
         if(Id >= 0 && this.layer[_i].data[i].visible) {
             this.context[_i].save();
             this.context[_i].globalAlpha = this.layer[this.layer[_i].data[i].layer].alpha;
@@ -257,8 +257,8 @@ Map.prototype.getTileId = function(_name, _x, _y) {
 	var _layer = this.layer[_i];
 	var _tile = this.getTile(_name, _x, _y);
 	if(_tile !== null) {
-		if(_layer.data[_tile].tilesetId !== -1) {
-			return {id: _layer.data[_tile].t, tileset: this.tileset[_layer.data[_tile].tilesetId].name};
+		if(_layer.data[_tile].id !== -1) {
+			return {id: _layer.data[_tile].t, tileset: this.tileset[_layer.data[_tile].id].name};
 		} else {
 			return {id: _layer.data[_tile].t, tileset: null};
 		}
@@ -272,8 +272,8 @@ Map.prototype.clearTile = function(_name, _x, _y) {
 	var _layer = this.layer[_i];
 	var _tile = this.getTile(_name, _x, _y);
 	if(_tile !== null && _layer.data[_tile].t !== null) {
-		var _id = _layer.data[_tile].tilesetId;
-		_layer.data[_tile].tilesetId = -1;
+		var _id = _layer.data[_tile].id;
+		_layer.data[_tile].id = -1;
 		_layer.data[_tile].t = null;
 		_layer.data[_tile].visible = false;
 		_layer.data[_tile].collide = false;
@@ -292,7 +292,7 @@ Map.prototype.setTile = function(_name, _x, _y, _tileset, _tile) {
 	var _ctile = this.getTile(_name, _x, _y);
 	if(_ctile !== null) {
 		var _id = this.getTilesetIdByName(_tileset);
-		_layer.data[_ctile].tilesetId = _id;
+		_layer.data[_ctile].id = _id;
 		_layer.data[_ctile].t = _tile;
 		_layer.data[_ctile].visible = true;
 		_layer.data[_ctile].collide = true;
