@@ -257,13 +257,9 @@ Map.prototype.getTileId = function(_name, _x, _y) {
 	var _layer = this.layer[_i];
 	var _tile = this.getTile(_name, _x, _y);
 	if(_tile !== null) {
-		if(_layer.data[_tile].id !== -1) {
-			return {id: _layer.data[_tile].t, tileset: this.tileset[_layer.data[_tile].id].name};
-		} else {
-			return {id: _layer.data[_tile].t, tileset: null};
-		}
+		return _layer.data[_tile];
 	} else {
-		return {id: null, tileset: null};
+		return null;
 	}
 };
 
