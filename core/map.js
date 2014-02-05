@@ -81,6 +81,7 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
         this.t = this.t - _tileset.firstGid;
         this.x = Math.floor(_i % _layer.width) * this.tile.width;
         this.y = Math.floor(_i / _layer.width) * this.tile.width;
+        this.frame = {x: this.t * _tileset.width % _tileset.image.width, y: Math.floor(this.t  * _tileset.width / _tileset.image.width) * _tileset.height};
         this.l = _l;
         this.tilesetId = _tilesetId;
         this.twidth = _tileset.width;
@@ -91,6 +92,7 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
         this.t = null;
         this.x = Math.floor(_i % _layer.width) * this.tile.width;
         this.y = Math.floor(_i / _layer.width) * this.tile.width;
+        this.frame = {x: null, y: null};
         this.l = _l;
         this.tilesetId = -1;
         this.twidth = 0;
@@ -98,7 +100,7 @@ Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
         this.tvisible = false;
         this.collide = false;
     }
-    return {t: this.t, position: {x: this.x, y: this.y}, layer: this.l, id: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
+    return {t: this.t, position: {x: this.x, y: this.y}, frame: this.frame, layer: this.l, id: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
 };
 
 Map.prototype.createTileset = function(_i) {
@@ -136,7 +138,7 @@ Map.prototype.createContext = function(_i) {
         if(Id >= 0 && this.layer[_i].data[i].visible) {
             this.context[_i].save();
             this.context[_i].globalAlpha = this.layer[this.layer[_i].data[i].layer].alpha;
-            this.context[_i].drawImage(this.tileset[Id].image, 0, 0, this.tileset[Id].width, this.tileset[Id].height, this.layer[_i].data[i].position.x, this.layer[_i].data[i].position.y, this.tileset[Id].width, this.tileset[Id].height);
+            this.context[_i].drawImage(this.tileset[Id].image, this.layer[_i].data[i].frame.x, this.layer[_i].data[i].frame.y, this.tileset[Id].width, this.tileset[Id].height, this.layer[_i].data[i].position.x, this.layer[_i].data[i].position.y, this.tileset[Id].width, this.tileset[Id].height);
             this.context[_i].restore();
         }
     }
