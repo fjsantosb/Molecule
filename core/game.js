@@ -94,6 +94,7 @@ Game.prototype.updateTimer = function() {
 
 Game.prototype.updateCollisionState = function() {
 	for(var i = 0; i < this.scene.sprite.length; i++) {
+		this.scene.sprite[i].collision.sprite.id = null;
 		this.scene.sprite[i].collision.sprite.left = false;
 		this.scene.sprite[i].collision.sprite.right = false;
 		this.scene.sprite[i].collision.sprite.up = false;
