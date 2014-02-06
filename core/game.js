@@ -271,6 +271,7 @@ Game.prototype.updateSpriteCollision = function() {
 											this.scene.sprite[i].speed.gravity.y = 0;
 										}
 										this.scene.sprite[i].collision.sprite.id = j;
+										this.scene.sprite[j].collision.sprite.id = i;
 										this.scene.sprite[i].move.y = 0;
 										this.scene.sprite[i].speed.y = 0;
 										this.scene.sprite[i].speed.t.y = 0;
@@ -295,6 +296,7 @@ Game.prototype.updateSpriteCollision = function() {
 											this.scene.sprite[i].speed.gravity.x = 0;
 										}
 										this.scene.sprite[i].collision.sprite.id = j;
+										this.scene.sprite[j].collision.sprite.id = i;
 										this.scene.sprite[i].move.x = 0;
 										this.scene.sprite[i].speed.x = 0;
 										this.scene.sprite[i].speed.t.x = 0;
