@@ -324,6 +324,13 @@ Map.prototype.resetScroll = function() {
 	}
 };
 
+Map.prototype.resetPosition = function() {
+	for(var i = 0; i < this.layer.length; i++) {
+		this.layer[i].position.x = 0;
+		this.layer[i].position.y = 0;
+	}
+};
+
 Map.prototype.drawLayer = function(_layer) {
 	var i = this.findLayer(_layer);
 	if(this.layer[i].visible) {

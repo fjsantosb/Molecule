@@ -25,6 +25,7 @@ Camera.prototype.set = function() {
 	if(this.type === 1) {
 		this.layer = this.game.map.getMainLayer();
 		this.game.map.resetScroll();
+		this.game.map.resetPosition();
 		_x = this.sprite.position.x;
 		this.sprite.position.x = 0;
 		_y = this.sprite.position.y;

@@ -11,7 +11,7 @@ MapFile.prototype.load = function(_name) {
 
 MapFile.prototype.set = function(_map) {
 	this.game.map = _map;
-	this.game.camera.set();
+	this.game.camera.detach();
 };
 
 MapFile.prototype.sprite = function(_sprite, _name) {
