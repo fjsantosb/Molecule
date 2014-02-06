@@ -260,9 +260,11 @@ Game.prototype.updateSpriteCollision = function() {
 									if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
 										if(this.scene.sprite[i].move.y > 0) {
 											this.scene.sprite[i].collision.sprite.down = true;
+											this.scene.sprite[j].collision.sprite.up = true;
 										}
 										if(this.scene.sprite[i].move.y < 0) {
 											this.scene.sprite[i].collision.sprite.up = true;
+											this.scene.sprite[j].collision.sprite.down = true;
 										}
 										if(this.scene.sprite[i].collision.sprite.down && this.physics.gravity.y > 0) {
 											this.scene.sprite[i].speed.gravity.y = 0;
@@ -285,9 +287,11 @@ Game.prototype.updateSpriteCollision = function() {
 									if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
 										if(this.scene.sprite[i].move.x > 0) {
 											this.scene.sprite[i].collision.sprite.right = true;
+											this.scene.sprite[j].collision.sprite.left = true;
 										}
 										if(this.scene.sprite[i].move.x < 0) {
 											this.scene.sprite[i].collision.sprite.left = true;
+											this.scene.sprite[j].collision.sprite.right = true;
 										}
 										if(this.scene.sprite[i].collision.sprite.left && this.physics.gravity.x < 0) {
 											this.scene.sprite[i].speed.gravity.x = 0;
