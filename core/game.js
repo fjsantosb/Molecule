@@ -88,7 +88,6 @@ Game.prototype.updateTimer = function() {
 		this.timer.previus = this.timer.now;
 		this.timer.fps = this.timer.frame;
 		this.timer.frame = 0;
-		console.log(this.timer.fps);
 	}
 };
 
