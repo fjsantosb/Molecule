@@ -20,7 +20,7 @@ Input.prototype.enable = function(_type) {
 	}
 	if(_type === 'touch') {
 		this.game.canvas.addEventListener('MSPointerDown', function(_e){self.ontouchstart(_e)}, true);
-		this.game.canvas.addEventListener('pointermove', function(_e){self.ontouchmove(_e)}, true);
+		this.game.canvas.addEventListener('MSPointerMove', function(_e){self.ontouchmove(_e)}, true);
 		this.game.canvas.addEventListener('MSPointerUp', function(_e){self.ontouchend(_e)}, true);
 		this.game.canvas.addEventListener('MSPointerCancel', function(_e){self.ontouchcancel(_e)}, true);
 
@@ -45,6 +45,11 @@ Input.prototype.disable = function(_type) {
 		this.game.canvas.removeEventListener('mouseup', function(_e){self.onmouseup(_e)}, true);
 	}
 	if(_type === 'touch') {
+		this.game.canvas.removeEventListener('MSPointerDown', function(_e){self.ontouchstart(_e)}, true);
+		this.game.canvas.removeEventListener('MSPointerMove', function(_e){self.ontouchmove(_e)}, true);
+		this.game.canvas.removeEventListener('MSPointerUp', function(_e){self.ontouchend(_e)}, true);
+		this.game.canvas.removeEventListener('MSPointerCancel', function(_e){self.ontouchcancel(_e)}, true);
+		
 		this.game.canvas.removeEventListener('touchstart', function(_e){self.ontouchstart(_e)}, true);
 		this.game.canvas.removeEventListener('touchmove', function(_e){self.ontouchmove(_e)}, true);
 		this.game.canvas.removeEventListener('touchend', function(_e){self.ontouchend(_e)}, true);
