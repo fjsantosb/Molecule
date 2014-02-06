@@ -309,13 +309,13 @@ Input.prototype.ontouchmove = function(_e) {
 // Method 'ontouchend' for 'touch' type
 Input.prototype.ontouchend = function(_e) {
 	_e.preventDefault();
-	this.normalizeTouches(_e);
+	this.touch = [];
 };
 	
 // Method 'ontouchcancel' for 'touch' type
 Input.prototype.ontouchcancel = function(_e) {
 	_e.preventDefault();
-	this.normalizeTouches(_e);
+	this.touch = [];
 };
 	
 // Method to normalize touches depending of canvas size and position
