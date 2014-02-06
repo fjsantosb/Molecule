@@ -407,7 +407,7 @@ Game.prototype.update = function(_exit) {
 			this.scene.sprite[i].animation.nextFrame();
 	}
 	if(this.map !== null)
-		this.map.update(this.canvas);
+		this.map.update();
 };
 
 Game.prototype.checkBoundaries = function() {
