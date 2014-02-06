@@ -19,6 +19,11 @@ Input.prototype.enable = function(_type) {
 		this.game.canvas.addEventListener('mouseup', function(_e){self.onmouseup(_e)}, true);
 	}
 	if(_type === 'touch') {
+		this.game.canvas.addEventListener('MSPointerDown', function(_e){self.ontouchstart(_e)}, true);
+		this.game.canvas.addEventListener('pointermove', function(_e){self.ontouchmove(_e)}, true);
+		this.game.canvas.addEventListener('MSPointerUp', function(_e){self.ontouchend(_e)}, true);
+		this.game.canvas.addEventListener('MSPointerCancel', function(_e){self.ontouchcancel(_e)}, true);
+
 		this.game.canvas.addEventListener('touchstart', function(_e){self.ontouchstart(_e)}, true);
 		this.game.canvas.addEventListener('touchmove', function(_e){self.ontouchmove(_e)}, true);
 		this.game.canvas.addEventListener('touchend', function(_e){self.ontouchend(_e)}, true);
@@ -292,31 +297,35 @@ Input.prototype.mousePosition = function(_e) {
 // Method 'ontouchstart' for 'touch' type
 Input.prototype.ontouchstart = function(_e) {
 	_e.preventDefault();
-	this.normalizeTouches(_e.touches);
+	this.normalizeTouches(_e);
 };
 	
 // Method 'ontouchmove' for 'touch' type
 Input.prototype.ontouchmove = function(_e) {
 	_e.preventDefault();
-	this.normalizeTouches(_e.touches);
+	this.normalizeTouches(_e);
 };
 	
 // Method 'ontouchend' for 'touch' type
 Input.prototype.ontouchend = function(_e) {
 	_e.preventDefault();
-	this.normalizeTouches(_e.touches);
+	this.normalizeTouches(_e);
 };
 	
 // Method 'ontouchcancel' for 'touch' type
 Input.prototype.ontouchcancel = function(_e) {
 	_e.preventDefault();
-	this.normalizeTouches(_e.touches);
+	this.normalizeTouches(_e);
 };
 	
 // Method to normalize touches depending of canvas size and position
-Input.prototype.normalizeTouches = function(_touches) {
+Input.prototype.normalizeTouches = function(_e) {
 	this.touch = [];
-	for(var i = 0; i < _touches.length; i++) {
-		this.touch.push({x: (_touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
+	if(_e.touches) {
+		for(var i = 0; i < _e.touches.length; i++) {
+			this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
+		}
+	} else {
+		this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
 	}
 };
