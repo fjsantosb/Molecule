@@ -83,9 +83,11 @@ Sprite.prototype.draw = function() {
 // Sprite prototype Method is_touched
 Sprite.prototype.isTouched = function() {
 	var _touch = this.game.input.touch;
-	for(var i = 0; i < _touch.length; i++)
-		if(this.position.x - this.anchor.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _touch[i].x && this.position.y - this.anchor.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _touch[i].y)
+	for(var i = 0; i < _touch.length; i++) {
+		if(this.position.x - this.anchor.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _touch[i].x && this.position.y - this.anchor.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _touch[i].y) {
 			return true;
+		}
+	}
 	return false;
 };
 
