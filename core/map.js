@@ -96,13 +96,12 @@ Map.prototype.createContext = function() {
 };
 
 Map.prototype.getTileset = function(_data) {
-	if(this.json.tilesets.length === 1) {
-		return 0;
-	} else {
-		for(var i = 0; i < this.json.tilesets.length; i++) {
-			if(this.json.tilesets[i].firstgid >= _data) {
-				return i;
-			}
+	for(var i = 0; i < this.json.tilesets.length; i++) {
+		if(i === this.json.tilesets.length - 1) {
+			return i;
+		}
+		if(this.json.tilesets[i].firstgid > _data) {
+			return i - 1;
 		}
 	}
 };
