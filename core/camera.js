@@ -58,7 +58,7 @@ Camera.prototype.update = function(_sprite) {
 Camera.prototype.makeScroll = function() {
 	this.scroll.x = false;
 	this.scroll.y = false;
-	if(this.game.map.json.layers.length > 0 && this.game.map.json.layers[this.layer].properties.scrollable) {
+	if(this.game.map.json.layers[this.layer].properties.scrollable) {
 		if((-this.game.map.json.layers[this.layer].x + this.game.canvas.width < this.game.map.json.layers[this.layer].width * this.game.map.json.tilewidth && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.sprite.scroll.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.sprite.scroll.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
 			this.scroll.x = true;
 		}
