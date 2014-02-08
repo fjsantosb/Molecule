@@ -11,8 +11,8 @@ ImageFile.prototype.load = function(_imageSrc, _width, _height) {
 	if(!this.getImageDataByName(_imageSrc)) {
 		var self = this;
 		var _image = new Image();
-		_image.src = _imageSrc;
 		_image.addEventListener('load', function(){self.counter++});
+		_image.src = _imageSrc;
 		this.name.push(_imageSrc);
 		this.data.push(_image);
 	}
@@ -28,8 +28,8 @@ ImageFile.prototype.loadMap = function(_imageSrc, _width, _height) {
 	if(!this.getImageDataByName(_imageSrc)) {
 		var self = this;
 		var _image = new Image();
-		_image.src = _imageSrc;
 		_image.addEventListener('load', function(){self.counter++});
+		_image.src = _imageSrc;
 		this.name.push(_imageSrc);
 		this.data.push(_image);
 	}

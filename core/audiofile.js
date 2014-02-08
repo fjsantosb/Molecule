@@ -18,8 +18,8 @@ AudioFile.prototype.load = function(_audioSrc) {
 				_audioSrcFile = _audioSrc[i];
 			}
 		}
-		_audio.src = _audioSrcFile;
 		_audio.addEventListener('canplay', function(){self.counter++});
+		_audio.src = _audioSrcFile;
 		this.name.push(_audioSrc);
 		this.data.push(_audio);
 	}

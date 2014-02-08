@@ -51,8 +51,8 @@ Sprite.prototype.update = function() {
 	this.position.absolute.x = this.position.x;
 	this.position.absolute.y = this.position.y;
 	if(this.game.map.getMainLayer() !== -1) {
-		this.position.absolute.x += Math.abs(this.game.map.layer[this.game.map.getMainLayer()].position.x);
-		this.position.absolute.y += Math.abs(this.game.map.layer[this.game.map.getMainLayer()].position.y);
+		this.position.absolute.x += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].x);
+		this.position.absolute.y += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].y);
 	}
 	this.size.width = this.frame.width - this.frame.offset.width;
 	this.size.height = this.frame.height - this.frame.offset.height;
@@ -105,9 +105,11 @@ Sprite.prototype.collidesWithSprite = function(_object) {
 };
 
 // Sprite prototype Method collidesWithTile
-Sprite.prototype.collidesWithTile = function(_layer, _object) {
-	var _lpx = Math.abs(_layer.position.x);
-	var _lpy = Math.abs(_layer.position.y);
+Sprite.prototype.collidesWithTile = function(_layer, _tile) {
+	var _lpx = Math.abs(_layer.x);
+	var _lpy = Math.abs(_layer.y);
+	
+	_object = {position: {x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth, y: Math.floor(_tile / _layer.width) * this.game.map.json.tilewidth}, width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth, height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
 	
 	if(((this.position.x - this.anchor.x + this.move.x + _lpx <= _object.position.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx > _object.position.x) || (_object.position.x <= this.position.x - this.anchor.x + this.move.x + _lpx && _object.position.x + _object.width > this.position.x - this.anchor.x + this.move.x + _lpx)) && ((this.position.y - this.anchor.y + this.move.y + _lpy <= _object.position.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy > _object.position.y) || (_object.position.y <= this.position.y - this.anchor.y + this.move.y + _lpy && _object.position.y + _object.height > this.position.y - this.anchor.y + this.move.y + _lpy)))
 			return true;

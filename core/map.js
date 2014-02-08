@@ -3,217 +3,108 @@ function Map(_game) {
 	this.canvas = new Array();
 	this.context = new Array();
 	this.name = null;
-	this.xmlHttp = null;
-	this.xmlDoc = null;
-	this.tileset = new Array();
-    this.layer = new Array();
-    this.data = new Array();
-    this.width = null;
-    this.height = null;
-    this.tile = {width: null, height: null};
     this.visible = true;
-    this.sprite = new Array();
+    this.image = new Array();
     this.path = '';
+    this.json = null;
+    this.loaded = false;
     
     return this;
 };
 
 Map.prototype.load = function(_name) {
 	var self = this;
+	this.name = _name;
 	var t = _name.split('/');
 	for(var i = 0; i < t.length - 1; i++) {
 		this.path += t[i] + '/';
 	}
-	this.name = _name;
-    this.xmlHttp = new XMLHttpRequest();
-    if(this.xmlHttp.overrideMimeType) {
-    	this.xmlHttp.overrideMimeType("text/xml");
-    }
-    this.xmlHttp.open("GET", this.name, false);
-	this.xmlHttp.send();
-    if(this.xmlHttp.status === 200) {
-		this.xmlDoc = this.xmlHttp.responseXML;
-    }
-    
-    this.width = parseInt(this.xmlDoc.getElementsByTagName("map")[0].getAttribute("width"));
-    this.height = parseInt(this.xmlDoc.getElementsByTagName("map")[0].getAttribute("height"));
-    this.tile.width = parseInt(this.xmlDoc.getElementsByTagName("map")[0].getAttribute("tilewidth"));
-    this.tile.height = parseInt(this.xmlDoc.getElementsByTagName("map")[0].getAttribute("tileheight"));
-    
-    this.totalImages = this.xmlDoc.getElementsByTagName("tileset").length;
-    
-    for(var i = 0; i < this.xmlDoc.getElementsByTagName("tileset").length; i++) {
-        this.tileset.push(self.createTileset(i));
-    }
-	
-    for(var i = 0; i < this.xmlDoc.getElementsByTagName("layer").length; i++) {
-        this.layer.push(self.createLayer(i));
-    }
-    
-    for(var i = 0; i < this.xmlDoc.getElementsByTagName("object").length; i++) {
-    	var _s = {name: this.xmlDoc.getElementsByTagName("object")[i].getAttribute("name"), type: this.xmlDoc.getElementsByTagName("object")[i].getAttribute("type"), x: this.xmlDoc.getElementsByTagName("object")[i].getAttribute("x"), y: this.xmlDoc.getElementsByTagName("object")[i].getAttribute("y")};
-    	var _property = new Array();
-    	for(var j = 0; j < this.xmlDoc.getElementsByTagName("object")[i].getElementsByTagName("property").length; j++) {
-    		var _n = this.xmlDoc.getElementsByTagName("object")[i].getElementsByTagName("property")[j].getAttribute("name");
-    		var _v = this.xmlDoc.getElementsByTagName("object")[i].getElementsByTagName("property")[j].getAttribute("value");
-    		_property.push({name: _n, value: _v});
-    	}
-    	this.sprite.push({object: _s, property: _property});
-    }
-    
-    var interval = setInterval(function(){self.loadResources(interval)}, 100);
-    
-    return this;
+	this.ajaxJsonReq(this.name);
 };
 
-Map.prototype.getTilesetId = function(_tileset, _t) {
-    for(var i = _tileset.length - 1; i >= 0 ; i--) {
-        if(_t >= _tileset[i].firstGid) {
-            return i;
-        }
-    }
-    return -1;
-};
-
-Map.prototype.createData = function(_i, _layer, _tileset, _t, _tilesetId, _l) {
-    if(_tilesetId >= 0) {
-        this.t = _t;
-        this.t = this.t - _tileset.firstGid;
-        this.x = Math.floor(_i % _layer.width) * this.tile.width;
-        this.y = Math.floor(_i / _layer.width) * this.tile.width;
-        this.frame = {x: this.t * _tileset.width % _tileset.image.width, y: Math.floor(this.t  * _tileset.width / _tileset.image.width) * _tileset.height};
-        this.l = _l;
-        this.tilesetId = _tilesetId;
-        this.twidth = _tileset.width;
-        this.theight = _tileset.height;
-        this.tvisible = true;
-        this.collide = true;
-    } else {
-        this.t = null;
-        this.x = Math.floor(_i % _layer.width) * this.tile.width;
-        this.y = Math.floor(_i / _layer.width) * this.tile.width;
-        this.frame = {x: null, y: null};
-        this.l = _l;
-        this.tilesetId = -1;
-        this.twidth = 0;
-        this.theight = 0;
-        this.tvisible = false;
-        this.collide = false;
-    }
-    return {t: this.t, position: {x: this.x, y: this.y}, frame: this.frame, layer: this.l, id: this.tilesetId, width: this.twidth, height: this.theight, visible: this.tvisible, collide: this.collide};
-};
-
-Map.prototype.createTileset = function(_i) {
+Map.prototype.ajaxJsonReq = function(_name) {
 	var self = this;
-	
-    this.firstGid = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("firstgid"));
-    this.name = this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("name");
-    this.twidth = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tilewidth"));
-    this.theight = parseInt(this.xmlDoc.getElementsByTagName("tileset")[_i].getAttribute("tileheight"));
+    var ajaxReq = new XMLHttpRequest();
+    ajaxReq.open("GET", _name, true);
+    ajaxReq.setRequestHeader("Content-type", "application/json");
+	ajaxReq.addEventListener('readystatechange', function(){self.jsonLoaded(ajaxReq)});
+    ajaxReq.send();
+};
 
-    this.image = this.game.sprite.loadMap(this.path + this.xmlDoc.getElementsByTagName("image")[_i].getAttribute("source"));
-    return {firstGid: this.firstGid, name: this.name, width: this.twidth, height: this.theight, image: this.image};
+Map.prototype.jsonLoaded = function(_ajaxReq) {
+	if(_ajaxReq.readyState == 4 && _ajaxReq.status == 200) {
+        var response = JSON.parse(_ajaxReq.responseText);
+        this.json = response;
+        this.addProperties();
+        this.loadImages();
+    }
+};
+
+Map.prototype.loadImages = function() {
+	var self = this;
+	for(var i = 0; i < this.json.tilesets.length; i++) {
+		var image = this.game.sprite.loadMap(this.path + this.json.tilesets[i].image);
+		this.image.push(image);
+	}
+	var interval = setInterval(function(){self.loadResources(interval)}, 100);
 };
 
 Map.prototype.loadResources = function(_interval) {
-	var self = this;
 	if(this.game.sprite.isLoaded()) {
 		clearInterval(_interval);
-	    var counter = 0;            
-    	for(var i = 0; i < this.layer.length; i++) {
-        	for(var j = 0; j < this.layer[i].width * this.layer[i].height; j++) {
-            	var t = parseInt(this.xmlDoc.getElementsByTagName("tile")[counter].getAttribute("gid"));
-            	var d = self.getTilesetId(this.tileset, t);
-            	this.layer[i].data.push(self.createData(j, this.layer[i], this.tileset[d], t, d, i));
-            	counter++;
-        	}
-        	self.createContext(i);
-        }
+		this.createContext();
+		this.loaded = true;
     }
 };
 
-Map.prototype.createContext = function(_i) {
-	for(var i = 0; i < this.layer[_i].data.length; i++) {
-        var Id = this.layer[_i].data[i].id;
-        if(Id >= 0 && this.layer[_i].data[i].visible) {
-            this.context[_i].save();
-            this.context[_i].globalAlpha = this.layer[this.layer[_i].data[i].layer].alpha;
-            this.context[_i].drawImage(this.tileset[Id].image, this.layer[_i].data[i].frame.x, this.layer[_i].data[i].frame.y, this.tileset[Id].width, this.tileset[Id].height, this.layer[_i].data[i].position.x, this.layer[_i].data[i].position.y, this.tileset[Id].width, this.tileset[Id].height);
-            this.context[_i].restore();
-        }
-    }
+Map.prototype.addProperties = function() {
+	for(var i = 0; i < this.json.layers.length; i++) {
+		if(this.json.layers[i].type === 'tilelayer') {
+			if(this.json.layers[i].properties !== undefined) {
+				var main = this.json.layers[i].properties['main'] === 'true'? true : false || false;
+				var scrollable = this.json.layers[i].properties['scrollable'] === 'false'? false : true || true;
+				var collidable = this.json.layers[i].properties['collidable'] === 'true'? true : false || false;
+				var overlap = this.json.layers[i].properties['overlap'] === 'true'? true : false || false;
+				this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: 1}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap};
+			} else {
+				this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1}, main: false, scrollable: true, collidable: false, overlap: false};
+			}
+		}
+	}
 };
 
-Map.prototype.createLayer = function(_i) {
-    this.name = this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("name");
-    this.width = parseInt(this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("width"));
-    this.height = parseInt(this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("height"));
-    this.alpha = parseFloat(this.xmlDoc.getElementsByTagName("layer")[_i].getAttribute("opacity"));
-    
-    if(!this.alpha) {
-        this.alpha = 1;
-    }
-    
-    var _scrollable = true;
-    var _scroll = {x: 0, y: 0, speed: 1};
-    var _position = {x: 0, y: 0};
-    var _visible = true;
-    var _collidable = false;
-    var _main = false;
-    var _overlap = false;
-    
-    var l = this.xmlDoc.getElementsByTagName("layer")[_i].getElementsByTagName("property");
-    for(var i = 0; i < l.length; i++) {
-    	switch(l[i].getAttribute("name")) {
-    		case 'scrollable':
-    			_scrollable = l[i].getAttribute("value") === 'true' ? true : false;
-    			break;
-    		case 'scroll.x':
-    			_scroll.x = l[i].getAttribute("value");
-    			_scroll.x = parseInt(_scroll.x);
-    			break;
-    		case 'scroll.y':
-    			_scroll.y = l[i].getAttribute("value");
-    			_scroll.y = parseInt(_scroll.y);
-    			break;
-    		case 'scroll.speed':
-    			_scroll.speed = l[i].getAttribute("value");
-    			_scroll.speed = parseFloat(_scroll.speed);
-    			break;
-    		case 'position.x':
-    			_position.x = l[i].getAttribute("value");
-    			_position.x = parseInt(_position.x);
-    			break;
-    		case 'position.y':
-    			_position.y = l[i].getAttribute("value");
-    			_position.y = parseInt(_position.y);
-    			break;
-    		case 'visible':
-    			_visible = l[i].getAttribute("value") === 'true' ? true : false;
-    			break;
-    		case 'collidable':
-    			_collidable = l[i].getAttribute("value") === 'true' ? true : false;
-    			break;
-    		case 'main.layer':
-    			_main = l[i].getAttribute("value") === 'true' ? true : false;
-    			break;
-    		case 'sprite.overlap':
-    			_overlap = l[i].getAttribute("value") === 'true' ? true : false;
-    			break;
-    	}
-    }
-    
-	this.canvas.push(document.createElement('canvas'));
-	this.context.push(this.canvas[_i].getContext('2d'));
-    this.canvas[_i].width = this.width * this.tile.width;
-    this.canvas[_i].height = this.height * this.tile.height;
+Map.prototype.createContext = function() {
+	for(var i = 0; i < this.json.layers.length; i++) {
+		if(this.json.layers[i].type === 'tilelayer') {
+			this.canvas.push(document.createElement('canvas'));
+			this.context.push(this.canvas[i].getContext('2d'));
+	    	this.canvas[i].width = this.json.width * this.json.tilewidth;
+	    	this.canvas[i].height = this.json.height * this.json.tileheight;
+			for(j = 0; j < this.json.layers[i].data.length; j++) {
+				var data = this.json.layers[i].data[j];
+				if(data > 0) {
+				var tileset = this.getTileset(data);
+				this.context[i].save();
+				this.context[i].globalAlpha = this.json.layers[i].opacity;
+				this.context[i].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % this.json.tilesets[tileset].imagewidth) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / this.json.tilesets[tileset].imagewidth) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, Math.floor(j % this.json.layers[i].width) * this.json.tilewidth, Math.floor(j / this.json.layers[i].width) * this.json.tilewidth, this.json.tilewidth, this.json.tileheight);
+				this.context[i].restore();
+				}
+			}
+		}
+	}
+};
 
-    return {name: this.name, width: this.width, height: this.height, alpha: this.alpha, tileset: -1, scrollable: _scrollable, scroll: _scroll, position: _position, visible: _visible, collidable: _collidable, main: _main,  overlap: _overlap, data: new Array()};
+Map.prototype.getTileset = function(_data) {
+	for(var i = 0; i < this.json.tilesets.length; i++) {
+		if(this.json.tilesets[i].firstgid > _data) {
+			return i - 1;
+		}
+	}
 };
 
 Map.prototype.getMainLayer = function() {
-    for(var i = 0; i < this.layer.length; i++) {
-        if(this.layer[i].main) {
+    for(var i = 0; i < this.json.layers.length; i++) {
+        if(this.game.map.json.layers[i].type === 'tilelayer' && this.json.layers[i].properties.main) {
             return i;
         }
     }
@@ -221,8 +112,8 @@ Map.prototype.getMainLayer = function() {
 };
 
 Map.prototype.getLayerIdByName = function(_name) {
-    for(var i = 0; i < this.layer.length; i++) {
-        if(this.layer[i].name === _name) {
+    for(var i = 0; i < this.json.layers.length; i++) {
+        if(this.json.layers[i].name === _name) {
             return i;
         }
     }
@@ -230,8 +121,8 @@ Map.prototype.getLayerIdByName = function(_name) {
 };
 
 Map.prototype.getTilesetIdByName = function(_name) {
-    for(var i = 0; i < this.tileset.length; i++) {
-        if(this.tileset[i].name === _name) {
+    for(var i = 0; i < this.json.tilesets.length; i++) {
+        if(this.json.tilesets[i].name === _name) {
             return i;
         }
     }
@@ -241,114 +132,93 @@ Map.prototype.getTilesetIdByName = function(_name) {
 Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
 	_width = _width || 0;
 	_height = _height || 0;
-	var _layer = this.layer[this.getLayerIdByName(_name)];
-	if(_layer === undefined) {
-		return null;
-	} else {
-		var _tile = (Math.floor(_y / this.tile.height) * _layer.width) + Math.floor(_x / this.tile.width);
-		if((_tile >= _layer.data.length || _tile < 0) || (_x > _layer.width * this.tile.width || _x + _width < 0) || (_y > _layer.height * this.tile.height || _y + _height < 0)) {
+	var layer = this.getLayerIdByName(_name);
+	if(this.json.layers[layer].type === 'tilelayer') {
+		var tile = (Math.floor(_y / this.json.tileheight) * this.json.layers[layer].width) + Math.floor(_x / this.json.tilewidth);
+		if((tile >= this.json.layers[layer].data.length || tile < 0) || (_x > this.json.layers[layer].width * this.json.tilewidth || _x + _width < 0) || (_y > this.json.layers[layer].height * this.json.tileheight || _y + _height < 0)) {
 			return null;
 		} else {
-			return _tile;
+			return tile;
 		}
+	} else {
+		return null;
 	}
 };
 
 Map.prototype.getTileData = function(_name, _x, _y) {
-	var _i = this.getLayerIdByName(_name);
-	var _layer = this.layer[_i];
-	var _tile = this.getTile(_name, _x, _y);
-	var _tname = null;
-	if(_tile !== null) {
-		if(_layer.data[_tile].id !== -1) {
-			_tname = this.tileset[_layer.data[_tile].id].name;
-		}
-		return {id: _layer.data[_tile].t, tileset: {id: _layer.data[_tile].id, name: _tname}, position: {x: _layer.data[_tile].position.x, y: _layer.data[_tile].position.y}, width: _layer.data[_tile].width, height: _layer.data[_tile].height, visible: _layer.data[_tile].visible, collide: _layer.data[_tile].collide};
-	} else {
+	var layer = this.getLayerIdByName(_name);
+	var tile = this.getTile(_name, _x, _y);
+	if(tile === null) {
 		return null;
+	} else {
+		return this.json.layers[layer].data[tile];	
 	}
 };
 
 Map.prototype.clearTile = function(_name, _x, _y) {
-	var _i = this.getLayerIdByName(_name);
-	var _layer = this.layer[_i];
-	var _tile = this.getTile(_name, _x, _y);
-	if(_tile !== null && _layer.data[_tile].t !== null) {
-		var _id = _layer.data[_tile].id;
-		_layer.data[_tile].id = -1;
-		_layer.data[_tile].t = null;
-		_layer.data[_tile].visible = false;
-		_layer.data[_tile].collide = false;
-		_layer.data[_tile].width = 0;
-		_layer.data[_tile].height = 0;
-		this.context[_i].save();
-		this.context[_i].globalAlpha = _layer.alpha;
-		this.context[_i].clearRect(_layer.data[_tile].position.x, _layer.data[_tile].position.y, this.tileset[_id].width, this.tileset[_id].height);
-		this.context[_i].restore();
+	var id = this.getLayerIdByName(_name);
+	var layer = this.json.layers[id];
+	var tile = this.getTile(_name, _x, _y);
+	if(tile !== null) {
+		layer.data[tile] = 0;
+		this.context[id].save();
+		this.context[id].globalAlpha = layer.opacity;
+		this.context[id].clearRect(Math.floor(tile % this.json.layers[id].width) * this.json.tilewidth, Math.floor(tile / this.json.layers[id].width) * this.json.tilewidth, this.json.tilewidth, this.json.tileheight);
+		this.context[id].restore();
 	}
 };
 
 Map.prototype.setTile = function(_name, _x, _y, _tileset, _tile) {
-	var _i = this.getLayerIdByName(_name);
-	var _layer = this.layer[_i];
-	var _ctile = this.getTile(_name, _x, _y);
-	if(_ctile !== null) {
-		var _id = this.getTilesetIdByName(_tileset);
-		_layer.data[_ctile].id = _id;
-		_layer.data[_ctile].t = _tile;
-		_layer.data[_ctile].visible = true;
-		_layer.data[_ctile].collide = true;
-		_layer.data[_ctile].width = this.tileset[_id].width;
-		_layer.data[_ctile].height = this.tileset[_id].height;
-		this.context[_i].save();
-		this.context[_i].globalAlpha = _layer.alpha;
-		this.context[_i].clearRect(_layer.data[_ctile].position.x, _layer.data[_ctile].position.y, this.tileset[_id].width, this.tileset[_id].height);
-		this.context[_i].drawImage(this.tileset[_id].image, Math.floor(_tile % _layer.width) * this.tileset[_id].width, Math.floor(_tile / _layer.width) * this.tileset[_id].height, this.tileset[_id].width, this.tileset[_id].height, _layer.data[_ctile].position.x, _layer.data[_ctile].position.y, this.tileset[_id].width, this.tileset[_id].height);
-		this.context[_i].restore();
+	var id = this.getLayerIdByName(_name);
+	var layer = this.json.layers[id];
+	var tile = this.getTile(_name, _x, _y);
+	var tileset = this.getTilesetIdByName(_tileset);
+	var data = _tile + this.json.tilesets[tileset].firstgid;
+	if(tile !== null) {
+		layer.data[tile] = data;
+		this.context[id].save();
+		this.context[id].globalAlpha = this.json.layers[id].opacity;
+		this.context[id].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % this.json.tilesets[tileset].imagewidth) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / this.json.tilesets[tileset].imagewidth) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, Math.floor(tile % this.json.layers[id].width) * this.json.tilewidth, Math.floor(tile / this.json.layers[id].width) * this.json.tilewidth, this.json.tilewidth, this.json.tileheight);
+		this.context[id].restore();
 	}
 };
 
 Map.prototype.update = function() {
-	for(var i = 0; i < this.layer.length; i++) {
-		this.layer[i].position.x += this.layer[i].scroll.x;
-		this.layer[i].position.y += this.layer[i].scroll.y;
-		this.layer[i].position.x = parseFloat(this.layer[i].position.x.toFixed(3));
-		this.layer[i].position.y = parseFloat(this.layer[i].position.y.toFixed(3));
+	for(var i = 0; i < this.json.layers.length; i++) {
+		if(this.json.layers[i].type === 'tilelayer') {
+			this.json.layers[i].x += this.json.layers[i].properties.scroll.x;
+			this.json.layers[i].y += this.json.layers[i].properties.scroll.y;
+			this.json.layers[i].x = parseFloat(this.json.layers[i].x.toFixed(3));
+			this.json.layers[i].y = parseFloat(this.json.layers[i].y.toFixed(3));
+		}
 	}
 };
 
 Map.prototype.resetScroll = function() {
-	for(var i = 0; i < this.layer.length; i++) {
-		this.layer[i].scroll.x = 0;
-		this.layer[i].scroll.y = 0;
+	for(var i = 0; i < this.json.layers.length; i++) {
+		if(this.json.layers[i].type === 'tilelayer') {
+			this.json.layers[i].properties.scroll.x = 0;
+			this.json.layers[i].properties.scroll.y = 0;
+		}
 	}
 };
 
 Map.prototype.resetPosition = function() {
-	for(var i = 0; i < this.layer.length; i++) {
-		this.layer[i].position.x = 0;
-		this.layer[i].position.y = 0;
-	}
-};
-
-Map.prototype.drawLayer = function(_layer) {
-	var i = this.findLayer(_layer);
-	if(this.layer[i].visible) {
-		var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
-		var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
-		this.game.context.save();
-		this.game.context.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
-		this.game.context.restore();
+	for(var i = 0; i < this.json.layers.length; i++) {
+		if(this.json.layers[i].type === 'tilelayer') {
+			this.json.layers[i].x = 0;
+			this.json.layers[i].y = 0;
+		}
 	}
 };
 
 Map.prototype.draw = function(_overlap) {
 	for(var i = 0; i < this.canvas.length; i++) {
-		if(this.layer[i].visible  && this.layer[i].overlap === _overlap) {
+		if(this.json.layers[i].type === 'tilelayer' && this.json.layers[i].visible && this.json.layers[i].properties.overlap === _overlap) {
 			var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
 			var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
 			this.game.context.save();
-			this.game.context.drawImage(this.canvas[i], Math.round(-this.layer[i].position.x), Math.round(-this.layer[i].position.y), w, h, 0, 0, w, h);
+			this.game.context.drawImage(this.canvas[i], Math.round(-this.json.layers[i].x), Math.round(-this.json.layers[i].y), w, h, 0, 0, w, h);
 			this.game.context.restore();
 		}
 	}

@@ -1,12 +1,24 @@
 function MapFile(_game) {
 	this.game = _game;
 	this.tile = new Tile(_game);
+	this.map = new Array();
 };
 
 MapFile.prototype.load = function(_name) {
 	var m = new Map(this.game);
 	m.load(_name);
+	this.map.push(m);
 	return m;
+};
+
+MapFile.prototype.isLoaded = function() {
+	var loaded = true;
+	for(var i = 0; i < this.map.length; i++) {
+		if(!this.map[i].loaded) {
+			loaded = false;
+		}
+	}
+	return loaded;
 };
 
 MapFile.prototype.set = function(_map) {
@@ -15,86 +27,34 @@ MapFile.prototype.set = function(_map) {
 };
 
 MapFile.prototype.sprite = function(_sprite, _name) {
-	for(var i = 0; i < this.game.map.sprite.length; i++) {
-		if(this.game.map.sprite[i].object.name === _name) {
-			_sprite.name = this.game.map.sprite[i].object.name;
-			_sprite.position.x = this.game.map.sprite[i].object.x;
-			_sprite.position.y = this.game.map.sprite[i].object.y;
-			_sprite.position.x = parseInt(_sprite.position.x);
-			_sprite.position.y = parseInt(_sprite.position.y - _sprite.frame.height);
-			for(var j = 0; j < this.game.map.sprite[i].property.length; j++) {
-				switch(this.game.map.sprite[i].property[j].name) {
-					case 'anchor.x':
-						_sprite.anchor.x = this.game.map.sprite[i].property[j].value;
-						_sprite.anchor.x = parseInt(_sprite.anchor.x);
-						break;
-					case 'anchor.y':
-						_sprite.anchor.y = this.game.map.sprite[i].property[j].value;
-						_sprite.anchor.y = parseInt(_sprite.anchor.y);
-						break;
-					case 'flip.x':
-						_sprite.flip.x = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'flip.y':
-						_sprite.flip.y = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'visible':
-						_sprite.visible = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'frame.width':
-						_sprite.frame.width = this.game.map.sprite[i].property[j].value;
-						_sprite.frame.width = parseInt(_sprite.frame.width);
-						break;
-					case 'frame.height':
-						_sprite.frame.height = this.game.map.sprite[i].property[j].value;
-						_sprite.frame.height = parseInt(_sprite.frame.height);
-						break;
-					case 'frame.offset.width':
-						_sprite.frame.offset.width = this.game.map.sprite[i].property[j].value;
-						_sprite.frame.offset.width = parseInt(_sprite.frame.offset.width);
-						break;
-					case 'frame.offset.height':
-						_sprite.frame.offset.height = this.game.map.sprite[i].property[j].value;
-						_sprite.frame.offset.height = parseInt(_sprite.frame.offset.height);
-						break;
-					case 'collides.sprite':
-						_sprite.collides.sprite = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'collides.map':
-						_sprite.collides.map = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'scrollable':
-						_sprite.scrollable = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'collidable':
-						_sprite.collidable = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'speed.min.x':
-						_sprite.speed.min.x = this.game.map.sprite[i].property[j].value;
-						_sprite.speed.min.x = parseFloat(_sprite.speed.min.x).toFixed(3);
-						break;
-					case 'speed.min.y':
-						_sprite.speed.min.y = this.game.map.sprite[i].property[j].value;
-						_sprite.speed.min.y = parseFloat(_sprite.speed.min.y).toFixed(3);
-						break;
-					case 'speed.max.x':
-						_sprite.speed.max.x = this.game.map.sprite[i].property[j].value;
-						_sprite.speed.max.x = parseFloat(_sprite.speed.max.x).toFixed(3);
-						break;
-					case 'speed.max.y':
-						_sprite.speed.max.y = this.game.map.sprite[i].property[j].value;
-						_sprite.speed.max.y = parseFloat(_sprite.speed.max.y).toFixed(3);
-						break;
-					case 'affects.physics.gravity':
-						_sprite.affects.physics.gravity = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'affects.physics.friction':
-						_sprite.affects.physics.friction = this.game.map.sprite[i].property[j].value === 'true' ? true : false;
-						break;
-					case 'bounciness':
-						_sprite.bounciness = this.game.map.sprite[i].property[j].value;
-						_sprite.bounciness = parseFloat(_sprite.bounciness).toFixed(3);
-						break;
+	for(var i = 0; i < this.game.map.json.layers.length; i++) {
+		if(this.game.map.json.layers[i].type === 'objectgroup') {
+			for(var j = 0; j < this.game.map.json.layers[i].objects.length; j++) {
+				if(this.game.map.json.layers[i].objects[j].name === _name) {
+					_sprite.name = this.game.map.json.layers[i].objects[j].name;
+					_sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
+					_sprite.position.y = parseInt(this.game.map.json.layers[i].objects[j].y) - _sprite.frame.height;
+					_sprite.visible = this.game.map.json.layers[i].objects[j].visible;
+						
+					_sprite.anchor.x = parseInt(this.game.map.json.layers[i].objects[j].properties['anchor.x']) || _sprite.anchor.x;
+					_sprite.anchor.y = parseInt(this.game.map.json.layers[i].objects[j].properties['anchor.y']) || _sprite.anchor.y;
+					_sprite.flip.x = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.x']) || _sprite.flip.x;
+					_sprite.flip.y = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.y']) || _sprite.flip.y;
+					_sprite.frame.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.width']) || _sprite.frame.width;
+					_sprite.frame.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.height']) || _sprite.frame.height;
+					_sprite.frame.offset.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.width']) || _sprite.frame.offset.width;
+					_sprite.frame.offset.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.heigh']) || _sprite.frame.offset.height;
+					_sprite.collides.sprite = this.game.map.json.layers[i].objects[j].properties['collides.sprite'] === 'true' ? true : false || _sprite.collides.sprite;
+					_sprite.collides.map = this.game.map.json.layers[i].objects[j].properties['collides.map'] === 'true' ? true : false || _sprite.collides.map;
+					_sprite.scrollable = this.game.map.json.layers[i].objects[j].properties['scrollable'] === 'true' ? true : false || _sprite.scrollable;
+					_sprite.collidable = this.game.map.json.layers[i].objects[j].properties['collidable'] === 'true' ? true : false || _sprite.collidable;
+					_sprite.speed.min.x = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.min.x']).toFixed(3) || _sprite.speed.min.x;
+					_sprite.speed.min.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.min.y']).toFixed(3) || _sprite.speed.min.y;
+					_sprite.speed.max.x = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.x']).toFixed(3) || _sprite.speed.max.x;
+					_sprite.speed.max.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.y']).toFixed(3) || _sprite.speed.max.y;
+					_sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'true' ? true : false || _sprite.affects.physics.gravity;
+					_sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'true' ? true : false || _sprite.affects.physics.friction;
+					_sprite.bounciness = parseFloat(this.game.map.json.layers[i].objects[j].properties['bounciness']).toFixed(3) || _sprite.bounciness;
 				}
 			}
 		}

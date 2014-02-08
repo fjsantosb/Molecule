@@ -37,7 +37,7 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.loadResources = function(_interval) {
-	if(this.sprite.isLoaded() && this.audio.isLoaded()) {
+	if(this.sprite.isLoaded() && this.audio.isLoaded() && this.tilemap.isLoaded()) {
 		clearInterval(_interval);
 		for(var i = 0; i < this.scene.sprite.length; i++) {
 			this.scene.sprite[i].getAnimation();
@@ -321,19 +321,19 @@ Game.prototype.updateSpriteCollision = function() {
 Game.prototype.updateMapCollision = function() {
 	if(this.map !== null) {
 		for(var i = 0; i < this.scene.sprite.length; i++) {
-			for(var j = 0; j < this.map.layer.length; j++) {
-				if(this.map.layer[j].collidable && this.scene.sprite[i].collides.map) {
+			for(var j = 0; j < this.map.json.layers.length; j++) {
+				if(this.map.json.layers[j].type === 'tilelayer' && this.map.json.layers[j].properties.collidable && this.scene.sprite[i].collides.map) {
 					var mc = 0;
 					while(mc <= 2) {
 						if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
-							for(var k = 0; k <= Math.ceil((this.scene.sprite[i].frame.height - this.scene.sprite[i].frame.offset.height) / this.map.tile.height); k++) {
-								for(var l = 0; l <= Math.ceil((this.scene.sprite[i].frame.width - this.scene.sprite[i].frame.offset.width) / this.map.tile.width); l++) {
-									var tile = this.map.getTile(this.map.layer[j].name, this.scene.sprite[i].position.x - this.scene.sprite[i].anchor.x + this.scene.sprite[i].move.x + Math.abs(this.map.layer[j].position.x) + (l * this.map.tile.width), this.scene.sprite[i].position.y - this.scene.sprite[i].anchor.y + this.scene.sprite[i].move.y + Math.abs(this.map.layer[j].position.y) + (k * this.map.tile.height), this.scene.sprite[i].frame.width, this.scene.sprite[i].frame.height);
-									if(tile !== null && this.map.layer[j].data[tile].t !== null && this.scene.sprite[i].collidesWithTile(this.map.layer[j], this.map.layer[j].data[tile])) {
+							for(var k = 0; k <= Math.ceil((this.scene.sprite[i].frame.height - this.scene.sprite[i].frame.offset.height) / this.map.json.tileheight); k++) {
+								for(var l = 0; l <= Math.ceil((this.scene.sprite[i].frame.width - this.scene.sprite[i].frame.offset.width) / this.map.json.tilewidth); l++) {
+									var tile = this.map.getTile(this.map.json.layers[j].name, this.scene.sprite[i].position.x - this.scene.sprite[i].anchor.x + this.scene.sprite[i].move.x + Math.abs(this.map.json.layers[j].x) + (l * this.map.json.tilewidth), this.scene.sprite[i].position.y - this.scene.sprite[i].anchor.y + this.scene.sprite[i].move.y + Math.abs(this.map.json.layers[j].y) + (k * this.map.json.tileheight), this.scene.sprite[i].frame.width, this.scene.sprite[i].frame.height);
+									if(tile !== null && this.map.json.layers[j].data[tile] > 0 && this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile)) {
 										if(mc === 0 || mc === 2) {
 											var tx = this.scene.sprite[i].move.x;
 											this.scene.sprite[i].move.x = 0;
-											if(this.scene.sprite[i].collidesWithTile(this.map.layer[j], this.map.layer[j].data[tile])) {
+											if(this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile)) {
 												if(this.scene.sprite[i].move.y > 0) {
 													this.scene.sprite[i].collision.map.down = true;
 												}
@@ -358,7 +358,7 @@ Game.prototype.updateMapCollision = function() {
 											var ty = this.scene.sprite[i].move.y;
 											if(mc !== 2)
 											this.scene.sprite[i].move.y = 0;
-											if(this.scene.sprite[i].collidesWithTile(this.map.layer[j], this.map.layer[j].data[tile])) {
+											if(this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile)) {
 												if(this.scene.sprite[i].move.x > 0) {
 													this.scene.sprite[i].collision.map.right = true;
 												}
