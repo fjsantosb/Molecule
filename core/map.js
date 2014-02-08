@@ -100,8 +100,8 @@ Map.prototype.getTileset = function(_data) {
 		return 0;
 	} else {
 		for(var i = 0; i < this.json.tilesets.length; i++) {
-			if(this.json.tilesets[i].firstgid > _data) {
-				return i - 1;
+			if(this.json.tilesets[i].firstgid >= _data) {
+				return i;
 			}
 		}
 	}
