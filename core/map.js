@@ -103,10 +103,12 @@ Map.prototype.getTileset = function(_data) {
 };
 
 Map.prototype.getMainLayer = function() {
-    for(var i = 0; i < this.json.layers.length; i++) {
-        if(this.game.map.json.layers[i].type === 'tilelayer' && this.json.layers[i].properties.main) {
-            return i;
-        }
+	if(this.json !== null) {
+	    for(var i = 0; i < this.json.layers.length; i++) {
+	        if(this.game.map.json.layers[i].type === 'tilelayer' && this.json.layers[i].properties.main) {
+	            return i;
+	        }
+	    }
     }
     return -1;
 };
@@ -184,21 +186,25 @@ Map.prototype.setTile = function(_name, _x, _y, _tileset, _tile) {
 };
 
 Map.prototype.update = function() {
-	for(var i = 0; i < this.json.layers.length; i++) {
-		if(this.json.layers[i].type === 'tilelayer') {
-			this.json.layers[i].x += this.json.layers[i].properties.scroll.x;
-			this.json.layers[i].y += this.json.layers[i].properties.scroll.y;
-			this.json.layers[i].x = parseFloat(this.json.layers[i].x.toFixed(3));
-			this.json.layers[i].y = parseFloat(this.json.layers[i].y.toFixed(3));
+	if(this.json !== null) {
+		for(var i = 0; i < this.json.layers.length; i++) {
+			if(this.json.layers[i].type === 'tilelayer') {
+				this.json.layers[i].x += this.json.layers[i].properties.scroll.x;
+				this.json.layers[i].y += this.json.layers[i].properties.scroll.y;
+				this.json.layers[i].x = parseFloat(this.json.layers[i].x.toFixed(3));
+				this.json.layers[i].y = parseFloat(this.json.layers[i].y.toFixed(3));
+			}
 		}
 	}
 };
 
 Map.prototype.resetScroll = function() {
-	for(var i = 0; i < this.json.layers.length; i++) {
-		if(this.json.layers[i].type === 'tilelayer') {
-			this.json.layers[i].properties.scroll.x = 0;
-			this.json.layers[i].properties.scroll.y = 0;
+	if(this.json !== null) {
+		for(var i = 0; i < this.json.layers.length; i++) {
+			if(this.json.layers[i].type === 'tilelayer') {
+				this.json.layers[i].properties.scroll.x = 0;
+				this.json.layers[i].properties.scroll.y = 0;
+			}
 		}
 	}
 };

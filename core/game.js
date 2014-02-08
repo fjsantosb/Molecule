@@ -319,7 +319,7 @@ Game.prototype.updateSpriteCollision = function() {
 };
 
 Game.prototype.updateMapCollision = function() {
-	if(this.map !== null) {
+	if(this.map !== null && this.map.json !== null) {
 		for(var i = 0; i < this.scene.sprite.length; i++) {
 			for(var j = 0; j < this.map.json.layers.length; j++) {
 				if(this.map.json.layers[j].type === 'tilelayer' && this.map.json.layers[j].properties.collidable && this.scene.sprite[i].collides.map) {
