@@ -65,7 +65,8 @@ Map.prototype.addProperties = function() {
 				var scrollable = this.json.layers[i].properties['scrollable'] === 'false'? false : true || true;
 				var collidable = this.json.layers[i].properties['collidable'] === 'true'? true : false || false;
 				var overlap = this.json.layers[i].properties['overlap'] === 'true'? true : false || false;
-				this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: 1}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap};
+				var speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
+				this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap};
 			} else {
 				this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1}, main: false, scrollable: true, collidable: false, overlap: false};
 			}
