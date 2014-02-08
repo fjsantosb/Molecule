@@ -314,7 +314,7 @@ Input.prototype.ontouchmove = function(_e) {
 // Method 'ontouchend' for 'touch' type
 Input.prototype.ontouchend = function(_e) {
 	_e.preventDefault();
-	this.touch = [];
+	this.normalizeTouches(_e);
 };
 	
 // Method 'ontouchcancel' for 'touch' type
@@ -331,6 +331,8 @@ Input.prototype.normalizeTouches = function(_e) {
 			this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
 		}
 	} else {
-		this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
+		if(_e !== undefined) {
+			this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
+		}
 	}
 };
