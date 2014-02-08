@@ -24,8 +24,8 @@ var Game = function(_width, _height, _scale) {
 	this.canvas.width = _width;
 	this.canvas.height = _height;
 
-	this.canvas.style.width = _width * _scale + "px";
-	this.canvas.style.height = _height * _scale + "px";
+	this.canvas.style.width = _width * this.scale + "px";
+	this.canvas.style.height = _height * this.scale + "px";
 	this.context = this.canvas.getContext('2d');
 	
 	document.body.appendChild(this.canvas);
