@@ -97,10 +97,9 @@ Map.prototype.createContext = function() {
 
 Map.prototype.getTileset = function(_data) {
 	for(var i = 0; i < this.json.tilesets.length; i++) {
-		if(i === this.json.tilesets.length - 1) {
+		if(this.json.tilesets.length === 1 || this.json.tilesets.length === i || this.json.tilesets[i].firstgid === _data) {
 			return i;
-		}
-		if(this.json.tilesets[i].firstgid > _data) {
+		} else if(this.json.tilesets[i].firstgid > _data) {
 			return i - 1;
 		}
 	}
