@@ -87,7 +87,7 @@ Map.prototype.createContext = function() {
 				var tileset = this.getTileset(data);
 				this.context[i].save();
 				this.context[i].globalAlpha = this.json.layers[i].opacity;
-				this.context[i].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, Math.floor(j % this.json.layers[i].width) * this.json.tilewidth, Math.floor(j / this.json.layers[i].width) * this.json.tilewidth, this.json.tilewidth, this.json.tileheight);
+				this.context[i].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, Math.floor(j % this.json.layers[i].width) * this.json.tilewidth, Math.floor(j / this.json.layers[i].width) * this.json.tilewidth, this.json.tilewidth, this.json.tileheight);				
 				this.context[i].restore();
 				}
 			}
