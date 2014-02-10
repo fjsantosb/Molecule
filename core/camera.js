@@ -13,6 +13,7 @@ function Camera(_game) {
 Camera.prototype.attach = function(_sprite) {
 	this.sprite = _sprite;
 	this.type = 1;
+	this.set();
 };
 
 // Method for detach an sprite
