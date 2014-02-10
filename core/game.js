@@ -72,7 +72,7 @@ Game.prototype.loop = function() {
 			}
 			this.update(exit);
 			this.checkBoundaries();
-			this.reset();
+			this.resetMove();
 		}
 	}
 	this.draw();
@@ -434,7 +434,7 @@ Game.prototype.checkBoundaries = function() {
 	}
 };
 
-Game.prototype.reset = function() {
+Game.prototype.resetMove = function() {
 	for(var i = 0; i < this.scene.sprite.length; i++) {
 		this.scene.sprite[i].resetMove();
 	}

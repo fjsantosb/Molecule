@@ -33,14 +33,14 @@ Camera.prototype.set = function() {
 			this.sprite.move.x = 1;
 			this.update(this.game.scene.sprite);
 			this.game.update();
-			this.game.reset();
+			this.game.resetMove();
 		}
 		
 		for(var i = 0; i < _y; i++) {
 			this.sprite.move.y = 1;
 			this.update(this.game.scene.sprite);
 			this.game.update();
-			this.game.reset();
+			this.game.resetMove();
 		}
 	}
 };
