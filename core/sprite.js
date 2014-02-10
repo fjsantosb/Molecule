@@ -16,6 +16,7 @@ function Sprite(_name, _width, _height) {
 	this.scrollable = true;
 	this.collidable = true;
 	this.platform = false;
+	this.bounciness = false;
 	this.acceleration = {x: 0, y: 0};
 	this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y:0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
 	this.affects = {physics: {gravity: true, friction: true}};
