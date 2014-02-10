@@ -22,20 +22,22 @@ MapFile.prototype.isLoaded = function() {
 };
 
 MapFile.prototype.set = function(_map) {
-	this.game.map = _map;
 	this.game.camera.detach();
+	this.game.scene.sprite = new Array();
+	this.game.map = _map;
 };
 
-MapFile.prototype.sprite = function(_sprite, _name) {
+MapFile.prototype.sprite = function(_name) {
 	for(var i = 0; i < this.game.map.json.layers.length; i++) {
 		if(this.game.map.json.layers[i].type === 'objectgroup') {
 			for(var j = 0; j < this.game.map.json.layers[i].objects.length; j++) {
 				if(this.game.map.json.layers[i].objects[j].name === _name) {
+					var _sprite = this.game.sprite.load(this.game.map.path + _name, this.game.map.json.layers[i].objects[j].tilewidth, this.game.map.json.layers[i].objects[j].tileheight);
+					_sprite.getAnimation();
 					_sprite.name = this.game.map.json.layers[i].objects[j].name;
 					_sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
 					_sprite.position.y = parseInt(this.game.map.json.layers[i].objects[j].y) - _sprite.frame.height;
 					_sprite.visible = this.game.map.json.layers[i].objects[j].visible;
-						
 					_sprite.anchor.x = parseInt(this.game.map.json.layers[i].objects[j].properties['anchor.x']) || _sprite.anchor.x;
 					_sprite.anchor.y = parseInt(this.game.map.json.layers[i].objects[j].properties['anchor.y']) || _sprite.anchor.y;
 					_sprite.flip.x = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.x']) || _sprite.flip.x;
@@ -55,6 +57,7 @@ MapFile.prototype.sprite = function(_sprite, _name) {
 					_sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'true' ? true : false || _sprite.affects.physics.gravity;
 					_sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'true' ? true : false || _sprite.affects.physics.friction;
 					_sprite.bounciness = parseFloat(this.game.map.json.layers[i].objects[j].properties['bounciness']).toFixed(3) || _sprite.bounciness;
+					return _sprite;
 				}
 			}
 		}
