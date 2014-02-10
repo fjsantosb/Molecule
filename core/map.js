@@ -6,6 +6,7 @@ function Map(_game) {
     this.visible = true;
     this.image = new Array();
     this.path = '';
+    this.response = null;
     this.json = null;
     this.loaded = false;
     
@@ -33,11 +34,20 @@ Map.prototype.ajaxJsonReq = function(_name) {
 
 Map.prototype.jsonLoaded = function(_ajaxReq) {
 	if(_ajaxReq.readyState == 4 && _ajaxReq.status == 200) {
-        var response = JSON.parse(_ajaxReq.responseText);
-        this.json = response;
+        this.response = _ajaxReq.responseText;
+        this.json = JSON.parse(this.response);
         this.addProperties();
         this.loadImages();
     }
+};
+
+Map.prototype.reset = function() {
+	this.json = null;
+	this.json = JSON.parse(this.response);
+	this.addProperties();
+	this.canvas = [];
+	this.context = [];
+	this.createContext();
 };
 
 Map.prototype.loadImages = function() {

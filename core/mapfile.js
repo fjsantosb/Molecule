@@ -21,9 +21,11 @@ MapFile.prototype.isLoaded = function() {
 	return loaded;
 };
 
-MapFile.prototype.set = function(_map) {
+MapFile.prototype.set = function(_map, _reset) {
+	_reset = _reset || false;
 	this.game.camera.detach();
-	//this.game.scene.sprite = new Array();
+	if(_reset)
+		_map.reset();
 	this.game.map = _map;
 };
 
