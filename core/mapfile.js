@@ -56,7 +56,7 @@ MapFile.prototype.sprite = function(_name) {
 					_sprite.speed.max.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.y']).toFixed(3) || _sprite.speed.max.y;
 					_sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'true' ? true : false || _sprite.affects.physics.gravity;
 					_sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'true' ? true : false || _sprite.affects.physics.friction;
-					_sprite.bounciness = parseFloat(this.game.map.json.layers[i].objects[j].properties['bounciness']).toFixed(3) || _sprite.bounciness;
+					_sprite.bounciness = this.game.map.json.layers[i].objects[j].properties['bounciness'] === 'true' ? true : false || _sprite.bounciness;
 					return _sprite;
 				}
 			}

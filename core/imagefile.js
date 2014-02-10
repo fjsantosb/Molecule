@@ -8,34 +8,40 @@ function ImageFile(_game) {
 };
 	
 ImageFile.prototype.load = function(_imageSrc, _width, _height) {
-	if(!this.getImageDataByName(_imageSrc)) {
+	var _name = _imageSrc;
+	if(!this.getImageDataByName(_name)) {
 		var self = this;
 		var _image = new Image();
 		_image.addEventListener('load', function(){self.counter++});
 		_image.src = _imageSrc;
-		this.name.push(_imageSrc);
+		this.name.push(_name);
 		this.data.push(_image);
 	}
 	
-	var s = new Sprite(_imageSrc, _width, _height);
+	var s = new Sprite(_name, _width, _height);
 	s.game = this.game;
-	s.image = this.getImageDataByName(_imageSrc);
+	s.image = this.getImageDataByName(_name);
 	this.game.scene.sprite.push(s);
 	return s;
 };
 
 ImageFile.prototype.loadMap = function(_imageSrc, _width, _height) {
-	if(!this.getImageDataByName(_imageSrc)) {
+	var _name = _imageSrc.substring(0, _imageSrc.length - 4);
+	if(!this.getImageDataByName(_name)) {
 		var self = this;
 		var _image = new Image();
 		_image.addEventListener('load', function(){self.counter++});
 		_image.src = _imageSrc;
-		this.name.push(_imageSrc);
+		this.name.push(_name);
 		this.data.push(_image);
 	}
 	
-	return this.getImageDataByName(_imageSrc);
-}
+	return this.getImageDataByName(_name);
+};
+
+ImageFile.prototype.reset = function() {
+	this.game.scene.sprite = [];
+};
 	
 ImageFile.prototype.isLoaded = function() {
 	if(this.counter === this.data.length) {
