@@ -23,7 +23,7 @@ MapFile.prototype.isLoaded = function() {
 
 MapFile.prototype.set = function(_map) {
 	this.game.camera.detach();
-	this.game.scene.sprite = new Array();
+	//this.game.scene.sprite = new Array();
 	this.game.map = _map;
 };
 
