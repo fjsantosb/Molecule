@@ -76,9 +76,11 @@ Map.prototype.addProperties = function() {
 				var collidable = this.json.layers[i].properties['collidable'] === 'true'? true : false || false;
 				var overlap = this.json.layers[i].properties['overlap'] === 'true'? true : false || false;
 				var speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
-				this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap};
+				var infiniteX = this.json.layers[i].properties['infinite.x'] === 'true'? true : false || false;
+				var infiniteY = this.json.layers[i].properties['infinite.y'] === 'true'? true : false || false;
+				this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap, infinite: {x: infiniteX, y: infiniteY}};
 			} else {
-				this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1}, main: false, scrollable: true, collidable: false, overlap: false};
+				this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
 			}
 		}
 	}
