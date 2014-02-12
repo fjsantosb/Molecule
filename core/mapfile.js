@@ -34,7 +34,8 @@ MapFile.prototype.sprite = function(_name) {
 		if(this.game.map.json.layers[i].type === 'objectgroup') {
 			for(var j = 0; j < this.game.map.json.layers[i].objects.length; j++) {
 				if(this.game.map.json.layers[i].objects[j].name === _name) {
-					var _sprite = this.game.sprite.load(this.game.map.path + _name, this.game.map.json.layers[i].objects[j].tilewidth, this.game.map.json.layers[i].objects[j].tileheight);
+					var _tileset = this.game.map.getTileset(this.game.map.json.layers[i].objects[j].gid);
+					var _sprite = this.game.sprite.load(this.game.map.path + _name, this.game.map.json.tilesets[_tileset].tilewidth, this.game.map.json.tilesets[_tileset].tileheight);
 					_sprite.getAnimation();
 					_sprite.name = this.game.map.json.layers[i].objects[j].name;
 					_sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
