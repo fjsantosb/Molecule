@@ -1,0 +1,21 @@
+#eclipse files
+.project
+.settings
+
+# temp files
+.DS_Store
+Thumbs.db
+Desktop.ini
+npm-debug.log
+
+# project specific ignore
+node_modules/
+build/*
+
+# Vim swap files
+*.sw*
+
+*.sublime-project
+
+molecule.sublime-workspace
+bower_components
