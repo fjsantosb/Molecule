@@ -1,7 +1,7 @@
 Molecule - HTML5 Game Framework
 ===============================
 
-This is the official reposity for the Molecule HTML5 Game Framework. All
+This is the official repository for the Molecule HTML5 Game Framework. All
 documentation, features and examples can be seen on the official website:
 [http://www.moleculejs.net](http://www.moleculejs.net)
 
