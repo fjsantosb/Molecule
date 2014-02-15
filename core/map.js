@@ -234,14 +234,6 @@ Map.prototype.update = function() {
 				} else if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y >= 0 && this.json.layers[i].properties.scroll.y > 0) {
 					this.json.layers[i].y = -this.canvas[i].height / 2;
 				}
-				/*
-				if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].x >= 0) {
-					this.json.layers[i].x = this.canvas[i].width / 2;
-				}
-				if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y >= 0) {
-					this.json.layers[i].y = this.canvas[i].height / 2;
-				}
-				*/
 			}
 		}
 	}
