@@ -107,15 +107,15 @@ Map.prototype.createContext = function() {
 			}
 			this.canvas.push(document.createElement('canvas'));
 			this.context.push(this.canvas[i].getContext('2d'));
-	    	this.canvas[i].width = this.json.layers[i].width * this.json.tilewidth;
-	    	this.canvas[i].height = this.json.layers[i].height * this.json.tileheight;
+	    	this.canvas[i].width = (this.json.layers[i].width * this.json.tilewidth);
+	    	this.canvas[i].height = (this.json.layers[i].height * this.json.tileheight);
 			for(j = 0; j < this.json.layers[i].data.length; j++) {
 				var data = this.json.layers[i].data[j];
 				if(data > 0) {
 					var tileset = this.getTileset(data);
 					this.context[i].save();
 					this.context[i].globalAlpha = this.json.layers[i].opacity;
-					this.context[i].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, Math.floor(j % this.json.layers[i].width) * this.json.tilewidth, Math.floor(j / this.json.layers[i].width) * this.json.tilewidth, this.json.tilewidth, this.json.tileheight);
+					this.context[i].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth), (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth), this.json.tilewidth, this.json.tileheight);
 					this.context[i].restore();
 				}
 			}
@@ -224,12 +224,24 @@ Map.prototype.update = function() {
 				this.json.layers[i].y += this.json.layers[i].properties.scroll.y;
 				this.json.layers[i].x = parseFloat(this.json.layers[i].x.toFixed(3));
 				this.json.layers[i].y = parseFloat(this.json.layers[i].y.toFixed(3));
-				if(this.json.layers[i].properties.scroll.infinite.x && Math.abs(this.json.layers[i].x) >= this.canvas[i].width / 2) {
+				if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].x <= -this.canvas[i].width / 2 && this.json.layers[i].properties.scroll.x < 0) {
 					this.json.layers[i].x = 0;
+				} else if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].x >= 0 && this.json.layers[i].properties.scroll.x > 0) {
+					this.json.layers[i].x = -this.canvas[i].width / 2;
 				}
-				if(this.json.layers[i].properties.scroll.infinite.y && Math.abs(this.json.layers[i].y) >= this.canvas[i].height / 2) {
+				if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y <= -this.canvas[i].height / 2 && this.json.layers[i].properties.scroll.y < 0) {
 					this.json.layers[i].y = 0;
+				} else if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y >= 0 && this.json.layers[i].properties.scroll.y > 0) {
+					this.json.layers[i].y = -this.canvas[i].height / 2;
 				}
+				/*
+				if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].x >= 0) {
+					this.json.layers[i].x = this.canvas[i].width / 2;
+				}
+				if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y >= 0) {
+					this.json.layers[i].y = this.canvas[i].height / 2;
+				}
+				*/
 			}
 		}
 	}
