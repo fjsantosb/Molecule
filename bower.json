@@ -1,0 +1,9 @@
+{
+  "name": "Molecule",
+  "version": "0.1",
+  "main": "build/molecule-0.1-min.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fjsantosb/Molecule",
+  }
+}
