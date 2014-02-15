@@ -89,22 +89,6 @@ Map.prototype.addProperties = function() {
 Map.prototype.createContext = function() {
 	for(var i = 0; i < this.json.layers.length; i++) {
 		if(this.json.layers[i].type === 'tilelayer') {
-			var t = new Array();
-			if(this.json.layers[i].properties.scroll.infinite.x) {
-				for(var k = 0; k < this.json.layers[i].data.length; k += this.json.layers[i].width) {
-					for(var l = 0; l < 2; l++) {
-						for(var m = k; m < k + this.json.layers[i].width; m++) {
-							t.push(this.json.layers[i].data[m]);
-						}
-					}
-				}
-				this.json.layers[i].data = t;
-				this.json.layers[i].width = this.json.layers[i].width * 2;
-			}
-			if(this.json.layers[i].properties.scroll.infinite.y) {
-				this.json.layers[i].data.push.apply(this.json.layers[i].data, this.json.layers[i].data);
-				this.json.layers[i].height = this.json.layers[i].height * 2;
-			}
 			this.canvas.push(document.createElement('canvas'));
 			this.context.push(this.canvas[i].getContext('2d'));
 	    	this.canvas[i].width = (this.json.layers[i].width * this.json.tilewidth);
@@ -167,6 +151,12 @@ Map.prototype.getTile = function(_name, _x, _y, _width, _height) {
 	_height = _height || 0;
 	var layer = this.getLayerIdByName(_name);
 	if(this.json.layers[layer].type === 'tilelayer') {
+		if(this.json.layers[layer].properties.scroll.infinite.x && _x >= this.canvas[layer].width / 2) {
+			_x = Math.floor(_x % this.canvas[layer].width);
+		}
+		if(this.json.layers[layer].properties.scroll.infinite.y && _y >= this.canvas[layer].height / 2) {
+			_y = Math.floor(_y % this.canvas[layer].height);
+		}
 		var tile = (Math.floor(_y / this.json.tileheight) * this.json.layers[layer].width) + Math.floor(_x / this.json.tilewidth);
 		if((tile >= this.json.layers[layer].data.length || tile < 0) || (_x > this.json.layers[layer].width * this.json.tilewidth || _x + _width < 0) || (_y > this.json.layers[layer].height * this.json.tileheight || _y + _height < 0)) {
 			return null;
@@ -224,16 +214,18 @@ Map.prototype.update = function() {
 				this.json.layers[i].y += this.json.layers[i].properties.scroll.y;
 				this.json.layers[i].x = parseFloat(this.json.layers[i].x.toFixed(3));
 				this.json.layers[i].y = parseFloat(this.json.layers[i].y.toFixed(3));
-				if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].x <= -this.canvas[i].width / 2 && this.json.layers[i].properties.scroll.x < 0) {
+
+				if(this.json.layers[i].properties.scroll.infinite.x && Math.round(this.json.layers[i].x) <= -this.canvas[i].width && this.json.layers[i].properties.scroll.x < 0) {
 					this.json.layers[i].x = 0;
-				} else if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].x >= 0 && this.json.layers[i].properties.scroll.x > 0) {
-					this.json.layers[i].x = -this.canvas[i].width / 2;
+				} else if(this.json.layers[i].properties.scroll.infinite.x && Math.round(this.json.layers[i].x) >= 0 && this.json.layers[i].properties.scroll.x > 0) {
+					this.json.layers[i].x = -this.canvas[i].width + 1;
 				}
-				if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y <= -this.canvas[i].height / 2 && this.json.layers[i].properties.scroll.y < 0) {
+				if(this.json.layers[i].properties.scroll.infinite.y && Math.round(this.json.layers[i].y) <= -this.canvas[i].height && this.json.layers[i].properties.scroll.y < 0) {
 					this.json.layers[i].y = 0;
-				} else if(this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].y >= 0 && this.json.layers[i].properties.scroll.y > 0) {
-					this.json.layers[i].y = -this.canvas[i].height / 2;
+				} else if(this.json.layers[i].properties.scroll.infinite.y && Math.round(this.json.layers[i].y) >= 0 && this.json.layers[i].properties.scroll.y > 0) {
+					this.json.layers[i].y = -this.canvas[i].height + 1;
 				}
+				
 			}
 		}
 	}
@@ -264,8 +256,16 @@ Map.prototype.draw = function(_overlap) {
 		if(this.json.layers[i].type === 'tilelayer' && this.json.layers[i].visible && this.json.layers[i].properties.overlap === _overlap) {
 			var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
 			var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
+			var w1x = 0;
+			var w1y = 0;
+			if(this.json.layers[i].properties.scroll.infinite.x && Math.floor(-this.json.layers[i].x) + w > this.canvas[i].width) {
+				w1x = Math.floor(-this.json.layers[i].x) + w - this.canvas[i].width;
+			}
+			if(this.json.layers[i].properties.scroll.infinite.y && Math.floor(-this.json.layers[i].y) + h > this.canvas[i].height) {
+				w1y = Math.floor(-this.json.layers[i].y) + h - this.canvas[i].height;
+			}
 			this.game.context.save();
-			this.game.context.drawImage(this.canvas[i], Math.round(-this.json.layers[i].x), Math.round(-this.json.layers[i].y), w, h, 0, 0, w, h);
+			this.game.context.drawImage(this.canvas[i], Math.floor(-this.json.layers[i].x), Math.floor(-this.json.layers[i].y), w - w1x, h - w1y, 0, 0, w - w1x, h - w1y);
 			this.game.context.restore();
 		}
 	}

@@ -108,13 +108,51 @@ Sprite.prototype.collidesWithSprite = function(_object) {
 };
 
 // Sprite prototype Method collidesWithTile
-Sprite.prototype.collidesWithTile = function(_layer, _tile) {
+Sprite.prototype.collidesWithTile = function(_layer, _tile, _j) {
 	var _lpx = Math.abs(_layer.x);
 	var _lpy = Math.abs(_layer.y);
 	
 	_object = {position: {x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth, y: Math.floor(_tile / _layer.width) * this.game.map.json.tilewidth}, width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth, height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
 	
-	if(((this.position.x - this.anchor.x + this.move.x + _lpx <= _object.position.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx > _object.position.x) || (_object.position.x <= this.position.x - this.anchor.x + this.move.x + _lpx && _object.position.x + _object.width > this.position.x - this.anchor.x + this.move.x + _lpx)) && ((this.position.y - this.anchor.y + this.move.y + _lpy <= _object.position.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy > _object.position.y) || (_object.position.y <= this.position.y - this.anchor.y + this.move.y + _lpy && _object.position.y + _object.height > this.position.y - this.anchor.y + this.move.y + _lpy)))
+	var px1 = this.position.x - this.anchor.x + this.move.x + _lpx;
+	var px2 = this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx;
+	var px3 = this.position.x - this.anchor.x + this.move.x + _lpx;
+	var px4 = this.position.x - this.anchor.x + this.move.x + _lpx;
+	if(_layer.properties.scroll.infinite.x) {
+		if(px1 >= this.game.map.canvas[_j].width) {
+			px1 = Math.floor(px1 % this.game.map.canvas[_j].width);
+		}
+		if(px2 >= this.game.map.canvas[_j].width) {
+			px2 = Math.floor(px2 % this.game.map.canvas[_j].width);
+		}
+		if(px3 >= this.game.map.canvas[_j].width) {
+			px3 = Math.floor(px3 % this.game.map.canvas[_j].width);
+		}
+		if(px4 >= this.game.map.canvas[_j].width) {
+			px4 = Math.floor(px4 % this.game.map.canvas[_j].width);
+		}
+	}
+	
+	var py1 = this.position.y - this.anchor.y + this.move.y + _lpy;
+	var py2 = this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy;
+	var py3 = this.position.y - this.anchor.y + this.move.y + _lpy;
+	var py4 = this.position.y - this.anchor.y + this.move.y + _lpy;
+	if(_layer.properties.scroll.infinite.y) {
+		if(py1 >= this.game.map.canvas[_j].height) {
+			py1 = Math.floor(py1 % this.game.map.canvas[_j].height);
+		}
+		if(py2 >= this.game.map.canvas[_j].height) {
+			py2 = Math.floor(py2 % this.game.map.canvas[_j].height);
+		}
+		if(py3 >= this.game.map.canvas[_j].height) {
+			py3 = Math.floor(py3 % this.game.map.canvas[_j].height);
+		}
+		if(py4 >= this.game.map.canvas[_j].height) {
+			py4 = Math.floor(py4 % this.game.map.canvas[_j].height);
+		}
+	}
+	
+	if(((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)))
 			return true;
 	return false;
 };
