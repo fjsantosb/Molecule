@@ -4,6 +4,23 @@
 		<title>Molecule - HTML5 Game Framework</title>
 	</head>
 	<body>
-		<script src="core/tile.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    window.onload = function(){
+      var game = new Game(480, 320);
+      var sprite = new game.sprite.load('logo.png');
+
+      game.start();
+
+      this.init = function(){
+        sprite.position.x = game.canvas.width / 2 - sprite.size.width / 2;
+        sprite.position.y = game.canvas.height/ 2 - sprite.size.height / 2;
+      }
+
+      this.update = function () {
+
+      }
+    }
+    </script>
+		<script src="molecule-0.1-min.js" type="text/javascript"></script>
 	</body>
 </html>
