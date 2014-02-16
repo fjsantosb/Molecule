@@ -453,13 +453,13 @@ Game.prototype.draw = function() {
 		this.map.draw(false);
 	}
 	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].visible && !this.scene.sprite[i].overlap) {
-			this.scene.sprite[i].draw();
+		if(this.scene.sprite[i].visible) {
+			this.scene.sprite[i].draw(false);
 		}
 	}
 	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].visible && this.scene.sprite[i].overlap) {
-			this.scene.sprite[i].draw();
+		if(this.scene.sprite[i].visible) {
+			this.scene.sprite[i].draw(true);
 		}
 	}
 	if(this.map !== null && this.map.visible) {
