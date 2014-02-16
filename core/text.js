@@ -9,6 +9,7 @@ var Text = function(_font, _game) {
 	this.baseline = 'top';
 	this.alpha = 1;
 	this.visible = true;
+	this.stroke = {enable: false, color: '#000000'};
 	return this;
 };
 
@@ -22,6 +23,10 @@ Text.prototype.draw = function() {
 	this.game.context.textBaseline = this.baseline;
 	this.game.context.fillStyle = this.color;
 	this.game.context.fillText(this.title, this.x, this.y);
+	if(this.stroke.enable) {
+		this.game.context.strokeStyle = this.stroke.color;
+		this.game.context.strokeText(this.title, this.x, this.y);
+	}
 	this.game.context.restore();
 };
 
