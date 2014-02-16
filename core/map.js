@@ -53,7 +53,7 @@ Map.prototype.reset = function() {
 Map.prototype.loadImages = function() {
 	var self = this;
 	for(var i = 0; i < this.json.tilesets.length; i++) {
-		var image = this.game.sprite.loadMap(this.path + this.json.tilesets[i].image);
+		var image = this.game.sprite.image(this.path + this.json.tilesets[i].image);
 		this.image.push(image);
 	}
 	var interval = setInterval(function(){self.loadResources(interval)}, 100);
