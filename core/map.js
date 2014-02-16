@@ -281,6 +281,13 @@ Map.prototype.draw = function(_overlap) {
 					this.game.context.restore();	
 				}
 			}
+			if(this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].properties.scroll.infinite.y) {
+				if(w1x > 0 && w1y > 0) {
+					this.game.context.save();
+					this.game.context.drawImage(this.canvas[i], 0, 0, w1x, w1y, w - w1x, h - w1y, w1x, w1y);
+					this.game.context.restore();	
+				}
+			} 
 		}
 	}
 };
