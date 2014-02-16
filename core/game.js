@@ -39,6 +39,9 @@ Game.prototype.start = function() {
 Game.prototype.loadResources = function(_interval) {
 	if(this.sprite.isLoaded() && this.audio.isLoaded() && this.tilemap.isLoaded()) {
 		clearInterval(_interval);
+		for(var i = 0; i < this.scene.sprite.length; i++) {
+			this.scene.sprite[i].getAnimation();
+		}
 		init();
 		this.camera.set();
 		this.loop();
@@ -96,6 +99,7 @@ Game.prototype.updateCollisionState = function() {
 		this.scene.sprite[i].collision.sprite.up = false;
 		this.scene.sprite[i].collision.sprite.down = false;
 		
+		this.scene.sprite[i].collision.map.tile = null;
 		this.scene.sprite[i].collision.map.left = false;
 		this.scene.sprite[i].collision.map.right = false;
 		this.scene.sprite[i].collision.map.up = false;
@@ -333,9 +337,11 @@ Game.prototype.updateMapCollision = function() {
 											if(this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile, j)) {
 												if(this.scene.sprite[i].move.y > 0) {
 													this.scene.sprite[i].collision.map.down = true;
+													this.scene.sprite[i].collision.map.tile = tile;
 												}
 												if(this.scene.sprite[i].move.y < 0) {
 													this.scene.sprite[i].collision.map.up = true;
+													this.scene.sprite[i].collision.map.tile = tile;
 												}
 												if(this.scene.sprite[i].collision.map.down && this.physics.gravity.y > 0) {
 													this.scene.sprite[i].speed.gravity.y = 0;
@@ -358,9 +364,11 @@ Game.prototype.updateMapCollision = function() {
 											if(this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile, j)) {
 												if(this.scene.sprite[i].move.x > 0) {
 													this.scene.sprite[i].collision.map.right = true;
+													this.scene.sprite[i].collision.map.tile = tile;
 												}
 												if(this.scene.sprite[i].move.x < 0) {
 													this.scene.sprite[i].collision.map.left = true;
+													this.scene.sprite[i].collision.map.tile = tile;
 												}
 												if(this.scene.sprite[i].collision.map.left && this.physics.gravity.x < 0) {
 													this.scene.sprite[i].speed.gravity.x = 0;
