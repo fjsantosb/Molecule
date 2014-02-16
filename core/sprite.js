@@ -22,6 +22,7 @@ function Sprite(_name, _width, _height) {
 	this.affects = {physics: {gravity: true, friction: true}};
 	this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
 	this.scroll = {offset: {x: 0, y: 0}};
+	this.overlap = false;
 	this.kill = false;
 	this.game = null;
 	

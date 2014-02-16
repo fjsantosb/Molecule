@@ -445,7 +445,12 @@ Game.prototype.draw = function() {
 		this.map.draw(false);
 	}
 	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].visible) {
+		if(this.scene.sprite[i].visible && !this.scene.sprite[i].overlap) {
+			this.scene.sprite[i].draw();
+		}
+	}
+	for(var i = 0; i < this.scene.sprite.length; i++) {
+		if(this.scene.sprite[i].visible && this.scene.sprite[i].overlap) {
 			this.scene.sprite[i].draw();
 		}
 	}
