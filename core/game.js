@@ -37,7 +37,7 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.loadResources = function(_interval) {
-	if(this.sprite.isLoaded() && this.audio.isLoaded() && this.tilemap.isLoaded()) {
+	if(this.sprite.isLoaded() && this.tilemap.isLoaded()) {
 		clearInterval(_interval);
 		for(var i = 0; i < this.scene.sprite.length; i++) {
 			this.scene.sprite[i].getAnimation();
