@@ -84,17 +84,11 @@
 
     // Custom Globals
     "globals"       : {
-        "me": true,
         "console": true,
         "throttle": true,
         "Windows": true,
         "alert": true,
         "define" : true,
-        // Howler specific exceptions
-        "AudioContext" : true,
-        "webkitAudioContext" : true,
-        "Howl" : true,
-        "Howler" : true,
         "exports" : true // commonJS and friends
     } 
 }
