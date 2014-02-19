@@ -25,7 +25,7 @@ ImageFile.prototype.load = function(_imageSrc, _width, _height) {
 	var s = new Sprite(_imageSrc, _width, _height);
 	s.game = this.game;
 	s.image = this.image(_imageSrc);
-	if(this.isLoaded());
+	if(this.isLoaded())
 		s.getAnimation();
 	this.game.scene.sprite.push(s);
 	return s;
