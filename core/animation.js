@@ -4,6 +4,8 @@ function Animation() {
 	this.id = new Array();
 	this.current = {animation: 0, frame: 0};
 	this.timer = 0;
+	this.reverse = false;
+	this.halt = false;
 	
 	return this;
 };
@@ -29,6 +31,7 @@ Animation.prototype.add = function(_name, _frames, _speed, _loop) {
 
 //Method to play current animation
 Animation.prototype.run = function(_name) {
+	this.halt = false;
 	if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
 		this.current.frame = -1;
 		for(var i = 0; i < this.id.length; i++) {
@@ -41,17 +44,34 @@ Animation.prototype.run = function(_name) {
 	}
 };
 
+Animation.prototype.halt = function() {
+	this.halt = true;
+};
+
 // Method to get next animation frame
 Animation.prototype.nextFrame = function() {
-	this.timer++;
-	if(this.timer > this.id[this.current.animation].speed) {
-		this.timer = 0;
-		this.current.frame++;
-		if(this.current.frame >= this.id[this.current.animation].frame.length) {
-			if(this.id[this.current.animation].loop) {
-				this.current.frame = 0;
+	if(!this.halt) {
+		this.timer++;
+		if(this.timer > this.id[this.current.animation].speed) {
+			this.timer = 0;
+			if(!this.reverse) {
+				this.current.frame++;
+				if(this.current.frame >= this.id[this.current.animation].frame.length) {
+					if(this.id[this.current.animation].loop) {
+						this.current.frame = 0;
+					} else {
+						this.current.frame = this.id[this.current.animation].frame.length - 1;
+					}
+				}
 			} else {
-				this.current.frame = this.id[this.current.animation].frame.length - 1;
+				this.current.frame--;
+				if(this.current.frame < 0) {
+					if(this.id[this.current.animation].loop) {
+						this.current.frame = this.id[this.current.animation].frame.length - 1;
+					} else {
+						this.current.frame = 0;
+					}
+				}
 			}
 		}
 	}
