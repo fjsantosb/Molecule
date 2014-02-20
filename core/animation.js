@@ -30,7 +30,10 @@ Animation.prototype.add = function(_name, _frames, _speed, _loop) {
 };
 
 //Method to play current animation
-Animation.prototype.run = function(_name) {
+Animation.prototype.run = function(_name, _reverse) {
+	if(_reverse === undefined)
+		_reverse = false;
+	this.reverse = _reverse;
 	this.halt = false;
 	if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
 		this.current.frame = -1;
