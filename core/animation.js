@@ -21,8 +21,10 @@ Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidt
 };
 
 // Method to add an animation
-Animation.prototype.add = function(_name, _frames, _speed) {
-	this.id.push({name: _name, frame: _frames, speed: _speed});
+Animation.prototype.add = function(_name, _frames, _speed, _loop) {
+	if(_loop === undefined)
+		_loop = true;
+	this.id.push({name: _name, frame: _frames, speed: _speed, loop: _loop});
 };
 
 //Method to play current animation
@@ -46,7 +48,11 @@ Animation.prototype.nextFrame = function() {
 		this.timer = 0;
 		this.current.frame++;
 		if(this.current.frame >= this.id[this.current.animation].frame.length) {
-			this.current.frame = 0;
+			if(this.id[this.current.animation].loop) {
+				this.current.frame = 0;
+			} else {
+				this.current.frame = this.id[this.current.animation].frame.length - 1;
+			}
 		}
 	}
 };
