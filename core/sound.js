@@ -2,8 +2,6 @@ Molecule.module('Molecule.Sound', function (require, p) {
 
 	function Sound() {
 		this.sound = null;
-		
-		return this;
 	};
 	
 	Sound.prototype.play = function(_loop) {

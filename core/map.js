@@ -11,8 +11,6 @@ Molecule.module('Molecule.Map', function (require, p) {
 		this.response = null;
 		this.json = null;
 		this.loaded = false;
-		
-		return this;
 	};
 
 	Map.prototype.load = function(_name) {

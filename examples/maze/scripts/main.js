@@ -28,10 +28,10 @@ Molecule(320, 480, function (game, require) {
 	// Set TileMap	
 	game.tilemap.set(map);
 	
-	// Set Game Camera to Follow Sprite
-	game.camera.attach(player.sprite);
-	
 	game.init(function () {
+		// Set Game Camera to Follow Sprite
+		game.camera.attach(player.sprite);
+		
 		score_text.color = '#ffffff';
 		score_text.x = 160;
 		score_text.y = 1;

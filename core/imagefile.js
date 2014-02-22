@@ -7,8 +7,6 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		this.name = new Array();
 		this.data = new Array();
 		this.counter = 0;
-
-		return this;
 	};
 
 	ImageFile.prototype.preload = function(_imageSrc) {

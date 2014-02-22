@@ -5,8 +5,6 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 		this.name = new Array();
 		this.data = new Array();
 		this.counter = 0;
-
-		return this;
 	};
 
 	AudioFile.prototype.load = function(_audioSrc) {

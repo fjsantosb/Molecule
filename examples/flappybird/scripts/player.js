@@ -1,23 +1,23 @@
 Molecule.module('Player', function (require, p) {
 
     function Player(_game) {
-        this.game = _game;
+        var game = _game;
         this.sprite = null;
         this.touch = false;
         this.acceleration = {x: 2};
         this.state = 0;
 
         this.init = function() {
-            this.sprite = this.game.tilemap.sprite('bird');
+            this.sprite = game.tilemap.sprite('bird');
             this.sprite.position.x += this.sprite.anchor.x;
             this.sprite.position.y += this.sprite.anchor.y;
             this.sprite.overlap = true;
-            this.sprite.scroll.offset.x = 64;
+            this.sprite.scroll.offset.x = 96;
 
             this.sprite.animation.add('idle', [0], 0);
             this.sprite.animation.add('fly', [0, 1, 0, 2], 5);
             this.sprite.animation.run('fly');
-            this.game.camera.attach(this.sprite);
+            game.camera.attach(this.sprite);
         };
 
         this.update = function() {
@@ -30,14 +30,14 @@ Molecule.module('Player', function (require, p) {
             if(this.sprite.speed.y > 0) {
                 this.sprite.rotation += 2;
             }
-            if((this.game.input.key.SPACE || this.game.input.touch.length > 0) && !this.touch && this.state === 0) {
+            if((game.input.key.SPACE || game.input.touch.length > 0) && !this.touch && this.state === 0) {
                 this.touch = true;
                 if(this.sprite.speed.y > 0)
                     this.sprite.speed.y = 0;
                 this.sprite.acceleration.y = -5;
                 this.sprite.rotation = -25;
             }
-            if(!this.game.input.key.SPACE && this.game.input.touch.length === 0) {
+            if(!game.input.key.SPACE && game.input.touch.length === 0) {
                 this.touch = false;
             }
 

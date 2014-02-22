@@ -52,7 +52,6 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
         }
     };
 
-
     return function (game) {
         var sprites = game.scene.sprites,
             physics = game.physics,

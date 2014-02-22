@@ -13,8 +13,10 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions');
 
-    p.init = null;
+	p.init = null;
+	
     p.run = null;
+    
     p.update = function (_exit, game) {
         var sprite;
         for (var i = 0; i < game.scene.sprites.length; i++) {
@@ -48,7 +50,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
     };
 
-    p.updateCollisionState = function (sprites) {
+    p.resetCollisionState = function (sprites) {
         var sprite;
         for (var i = 0; i < sprites.length; i++) {
             sprite = sprites[i];
@@ -76,7 +78,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         if (game.status == 1) {
             var exit = false;
             physics(game);
-            p.updateCollisionState(game.scene.sprites);
+            p.resetCollisionState(game.scene.sprites);
             while (!exit) {
                 exit = move(game.scene.sprites);
                 calculateMapCollisions(game);
@@ -92,7 +94,6 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
         p.draw(game);
         p.run();
-
     };
 
     p.updateSpriteCollisionCheck = function (sprites) {
@@ -126,11 +127,9 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
             }
         }
-
     };
 
     p.draw = function (game) {
-
         game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
         if (game.map !== null && game.map.visible) {
             game.map.draw(false);
@@ -153,7 +152,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                 game.scene.text[i].draw();
             }
         }
-
     };
 
     p.requestAnimFrame = (function () {
@@ -170,7 +168,6 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     var Game = function (_width, _height, _scale) {
-
         this.canvas = null;
         this.context = null;
         this.scale = _scale || 1;
@@ -224,7 +221,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         return t;
     };
 
-// Not in use, remove?
+	// Not in use, remove?
     Game.prototype.updateTimer = function () {
         this.timer.frame++;
         this.timer.now = new Date().getTime();

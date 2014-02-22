@@ -1,25 +1,21 @@
 Molecule.module('Molecule.Camera', function (require, p) {
 
-
-// Camera var. Arguments: canvas
     function Camera(_game) {
         this.game = _game;
         this.layer = null;
         this.sprite = null;
         this.scroll = {x: false, y: false};
         this.type = 0;
-
-        return this;
     };
 
-// Method for attach an sprite, map, and main layer
+	// Method for attach an sprite, map, and main layer
     Camera.prototype.attach = function (_sprite) {
         this.sprite = _sprite;
         this.type = 1;
         this.set();
     };
 
-// Method for detach an sprite
+	// Method for detach an sprite
     Camera.prototype.detach = function () {
         this.sprite = null;
         this.type = 0;
@@ -49,7 +45,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         }
     };
 
-// Method for update the camera. It will update map & sprite
+	// Method for update the camera. It will update map & sprite
     Camera.prototype.update = function (_sprite) {
         if (this.game.map !== null && this.layer !== -1) {
             this.makeScroll();
@@ -58,7 +54,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.makeSpriteScroll(_sprite, this.sprite.move.x, this.sprite.move.y);
     };
 
-// Method to check if scroll is necessary
+	// Method to check if scroll is necessary
     Camera.prototype.makeScroll = function () {
         this.scroll.x = false;
         this.scroll.y = false;
@@ -80,7 +76,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         }
     };
 
-// Method to scroll map
+	// Method to scroll map
     Camera.prototype.makeMapScroll = function () {
         for (var i = 0; i < this.game.map.json.layers.length; i++) {
             if (this.game.map.json.layers[i].type === 'tilelayer' && this.game.map.json.layers[i].properties.scrollable) {
@@ -115,7 +111,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         }
     };
 
-// Method to scroll sprite
+	// Method to scroll sprite
     Camera.prototype.makeSpriteScroll = function (_sprite, _x, _y) {
         for (var i = 0; i < _sprite.length; i++) {
             if (_sprite[i].scrollable) {
