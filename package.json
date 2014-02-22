@@ -1,7 +1,7 @@
 {
   "name": "molecule",
   "description": "Molecule - Game Framework",
-  "version": "0.1",
+  "version": "0.0.1",
   "homepage": "http://www.moleculejs.net/",
   "repository": {
     "type": "git",
@@ -25,13 +25,15 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "grunt": "~0.4.1",
+    "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-concat": "~0.2.0",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-uglify": "~0.2.7",
     "grunt-contrib-nodeunit": "~0.1.2",
-    "grunt-replace": "~0.4.3"
+    "grunt-replace": "~0.4.3",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-tdd": "~0.1.8"
   },
   "scripts": {
     "install": "bower install;grunt",

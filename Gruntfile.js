@@ -87,12 +87,27 @@ module.exports = function(grunt) {
                 'build/<%= pkg.name %>-<%= pkg.version %>-min.js'
             ],
         },
+        tdd: {
+            molecule: {
+                files: {
+                    sources: ['core/molecule.js', 'core/**/*.js'],
+                    libs: [],
+                    tests: ['tests/**/*-test.js']
+                },
+                options: {
+                    runner: 'buster',
+                    expect: true,
+                    sinon: true
+                }
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-tdd');
     grunt.loadNpmTasks('grunt-replace');
 
     // Default task.

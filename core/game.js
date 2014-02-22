@@ -1,497 +1,274 @@
-var Game = function(_width, _height, _scale) {
-	this.canvas = null;
-	this.context = null;
-	this.scale = _scale || 1;
-	this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
-	this.boundaries = {x: null, y: null, width: null, height: null};
-	this.tilemap = new MapFile(this);
-	this.camera = new Camera(this);
-	this.scene = new Scene(this);
-	this.map = new Map(this);
-	this.next = {scene: null, fade: null};
-	this.sprite = new ImageFile(this);
-	this.audio = new AudioFile(this);
-	this.sound = new Array();
-	this.input = new Input(this);
-	this.status = 1;
-	this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
-	this.width = _width;
-	this.height = _height;
-	
-	this.canvas = document.createElement('canvas');
-	this.canvas.setAttribute('id', 'canvas');
-	
-	this.canvas.width = _width;
-	this.canvas.height = _height;
+Molecule.module('Molecule.Game', function (require, p) {
 
-	this.canvas.style.width = _width * this.scale + "px";
-	this.canvas.style.height = _height * this.scale + "px";
-	this.context = this.canvas.getContext('2d');
-	
-	document.body.appendChild(this.canvas);
-};
+    var MapFile = require('Molecule.MapFile'),
+        Camera = require('Molecule.Camera'),
+        Scene = require('Molecule.Scene'),
+        Map = require('Molecule.Map'),
+        ImageFile = require('Molecule.ImageFile'),
+        AudioFile = require('Molecule.AudioFile'),
+        Input = require('Molecule.Input'),
+        Text = require('Molecule.Text'),
+        physics = require('Molecule.Game.physics'),
+        move = require('Molecule.Game.move'),
+        calculateSpriteCollisions = require('Molecule.Game.calculateSpriteCollisions'),
+        calculateMapCollisions = require('Molecule.Game.calculateMapCollisions');
 
-Game.prototype.start = function() {
-	var self = this;
-	var interval = setInterval(function(){self.loadResources(interval)}, 100);
-};
+    p.init = null;
+    p.run = null;
+    p.update = function (_exit, game) {
+        var sprite;
+        for (var i = 0; i < game.scene.sprites.length; i++) {
+            sprite = game.scene.sprites[i];
+            sprite.update();
+            sprite.flipUpdate();
+            if (sprite.animation !== null && _exit)
+                sprite.animation.nextFrame();
+        }
+        if (game.map !== null)
+            game.map.update();
 
-Game.prototype.loadResources = function(_interval) {
-	if(this.sprite.isLoaded() && this.tilemap.isLoaded()) {
-		clearInterval(_interval);
-		for(var i = 0; i < this.scene.sprite.length; i++) {
-			this.scene.sprite[i].getAnimation();
-		}
-		init();
-		this.camera.set();
-		this.loop();
-	}
-};
+    };
 
-Game.prototype.text = function(_font) {
-	var t = new Text(_font, this);
-	this.scene.text.push(t);
-	return t;
-};
+    p.loadResources = function (_interval, game) {
+        if (game.sprite.isLoaded() && game.tilemap.isLoaded()) {
+            clearInterval(_interval);
+            for (var i = 0; i < game.scene.sprites.length; i++) {
+                game.scene.sprites[i].getAnimation();
+            }
+            p.init();
+            game.camera.set();
+            p.loop(game);
+        }
+    };
 
-Game.prototype.loop = function() {
-	var self = this;
-	this.removeSprite();
-	update();
-	if(this.status == 1) {
-		var exit = false;
-		this.updatePhysics();
-		this.updateCollisionState();
-		while(!exit) {
-			exit = this.updateMove();
-			this.updateMapCollision();
-			this.updateSpriteCollision();
-			this.updateSpriteCollisionCheck();
-			if(this.camera.type === 1) {
-				this.camera.update(this.scene.sprite);
-			}
-			this.update(exit);
-			this.checkBoundaries();
-			this.resetMove();
-		}
-	}
-	this.draw();
-	requestAnimFrame(function(){self.loop()});
-};
+    p.removeSprites = function (sprites) {
+        for (var i = sprites.length - 1; i >= 0; i--) {
+            if (sprites[i].kill) {
+                sprites.splice(i, 1);
+            }
+        }
+    };
 
-Game.prototype.updateTimer = function() {
-	this.timer.frame++;
-	this.timer.now = new Date().getTime();
-	if(this.timer.previus !== null)
-		this.timer.loop = (this.timer.now - this.timer.previus) / 1000;
-	if(this.timer.now - this.timer.previus >= 1000) {
-		this.timer.previus = this.timer.now;
-		this.timer.fps = this.timer.frame;
-		this.timer.frame = 0;
-	}
-};
+    p.updateCollisionState = function (sprites) {
+        var sprite;
+        for (var i = 0; i < sprites.length; i++) {
+            sprite = sprites[i];
+            sprite.collision.sprite.id = null;
+            sprite.collision.sprite.left = false;
+            sprite.collision.sprite.right = false;
+            sprite.collision.sprite.up = false;
+            sprite.collision.sprite.down = false;
 
-Game.prototype.updateCollisionState = function() {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		this.scene.sprite[i].collision.sprite.id = null;
-		this.scene.sprite[i].collision.sprite.left = false;
-		this.scene.sprite[i].collision.sprite.right = false;
-		this.scene.sprite[i].collision.sprite.up = false;
-		this.scene.sprite[i].collision.sprite.down = false;
-		
-		this.scene.sprite[i].collision.map.tile = null;
-		this.scene.sprite[i].collision.map.left = false;
-		this.scene.sprite[i].collision.map.right = false;
-		this.scene.sprite[i].collision.map.up = false;
-		this.scene.sprite[i].collision.map.down = false;
-	}
-};
+            sprite.collision.map.tile = null;
+            sprite.collision.map.left = false;
+            sprite.collision.map.right = false;
+            sprite.collision.map.up = false;
+            sprite.collision.map.down = false;
+        }
+    };
 
-Game.prototype.updatePhysics = function() {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].affects.physics.friction) {
-			if(this.scene.sprite[i].speed.x > 0) {
-				this.scene.sprite[i].speed.x = this.scene.sprite[i].speed.x * (1 - this.physics.friction.x);
-				if(this.scene.sprite[i].speed.x < 0.05) {
-					this.scene.sprite[i].speed.x = 0;
-				}
-			} else if(this.scene.sprite[i].speed.x < 0) {
-				this.scene.sprite[i].speed.x = this.scene.sprite[i].speed.x * (1 - this.physics.friction.x);
-				if(this.scene.sprite[i].speed.x > 0.05) {
-					this.scene.sprite[i].speed.x = 0;
-				}
-			}
-			if(this.scene.sprite[i].speed.y > 0) {
-				this.scene.sprite[i].speed.y = this.scene.sprite[i].speed.y * (1 - this.physics.friction.y);
-				if(this.scene.sprite[i].speed.y < 0.05) {
-					this.scene.sprite[i].speed.y = 0;
-				}
-			} else if(this.scene.sprite[i].speed.y < 0) {
-				this.scene.sprite[i].speed.y = this.scene.sprite[i].speed.y * (1 - this.physics.friction.y);
-				if(this.scene.sprite[i].speed.y > 0.05) {
-					this.scene.sprite[i].speed.y = 0;
-				}
-			}
-		}
-		
-		if(this.scene.sprite[i].affects.physics.gravity && this.physics.gravity.y > 0 && this.scene.sprite[i].collision.sprite.down && this.scene.sprite[this.scene.sprite[i].collision.sprite.id].platform) {
-			if(this.scene.sprite[i].speed.x >= 0 && this.scene.sprite[i].speed.x < this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x) {
-				this.scene.sprite[i].speed.x = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x;
-			} else if(this.scene.sprite[i].speed.x <= 0 && this.scene.sprite[i].speed.x > this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x) {
-				this.scene.sprite[i].speed.x = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x;
-			}
-		} else if(this.scene.sprite[i].affects.physics.gravity && this.physics.gravity.y < 0 && this.scene.sprite[i].collision.sprite.up && this.scene.sprite[this.scene.sprite[i].collision.sprite.id].platform) {
-			if(this.scene.sprite[i].speed.x >= 0 && this.scene.sprite[i].speed.x < this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x) {
-				this.scene.sprite[i].speed.x = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x;
-			} else if(this.scene.sprite[i].speed.x <= 0 && this.scene.sprite[i].speed.x > this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x) {
-				this.scene.sprite[i].speed.x = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.x;
-			}
-		} else if(this.scene.sprite[i].affects.physics.gravity && this.physics.gravity.x > 0 && this.scene.sprite[i].collision.sprite.right && this.scene.sprite[this.scene.sprite[i].collision.sprite.id].platform) {
-			if(this.scene.sprite[i].speed.y >= 0 && this.scene.sprite[i].speed.y < this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y) {
-				this.scene.sprite[i].speed.y = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y;
-			} else if(this.scene.sprite[i].speed.y <= 0 && this.scene.sprite[i].speed.y > this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y) {
-				this.scene.sprite[i].speed.y = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y;
-			}
-		} else if(this.scene.sprite[i].affects.physics.gravity && this.physics.gravity.x < 0 && this.scene.sprite[i].collision.sprite.left && this.scene.sprite[this.scene.sprite[i].collision.sprite.id].platform) {
-			if(this.scene.sprite[i].speed.y >= 0 && this.scene.sprite[i].speed.y < this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y) {
-				this.scene.sprite[i].speed.y = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y;
-			} else if(this.scene.sprite[i].speed.y <= 0 && this.scene.sprite[i].speed.y > this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y) {
-				this.scene.sprite[i].speed.y = this.scene.sprite[this.scene.sprite[i].collision.sprite.id].speed.y;
-			}
-		}
-		
-		this.scene.sprite[i].speed.x += this.scene.sprite[i].acceleration.x;
-		this.scene.sprite[i].speed.y += this.scene.sprite[i].acceleration.y;
-		var sx = this.scene.sprite[i].speed.x >= 0 ? 1 : -1;
-		var sy = this.scene.sprite[i].speed.y >= 0 ? 1 : -1;
-		if(Math.abs(this.scene.sprite[i].speed.x) > this.scene.sprite[i].speed.max.x) {
-			this.scene.sprite[i].speed.x = this.scene.sprite[i].speed.max.x * sx;	
-		}
-		if(Math.abs(this.scene.sprite[i].speed.y) > this.scene.sprite[i].speed.max.y) {
-			this.scene.sprite[i].speed.y = this.scene.sprite[i].speed.max.y * sy;
-		}
-		
-		this.scene.sprite[i].speed.x -= this.scene.sprite[i].speed.gravity.x;
-		this.scene.sprite[i].speed.y -= this.scene.sprite[i].speed.gravity.y;
-		if(this.scene.sprite[i].affects.physics.gravity) {
-			this.scene.sprite[i].speed.gravity.x += this.physics.gravity.x;
-			this.scene.sprite[i].speed.gravity.y += this.physics.gravity.y;
-		}
-		this.scene.sprite[i].speed.x += this.scene.sprite[i].speed.gravity.x;
-		this.scene.sprite[i].speed.y += this.scene.sprite[i].speed.gravity.y;
-		
-		
-		this.scene.sprite[i].speed.x = parseFloat(this.scene.sprite[i].speed.x.toFixed(3));
-		this.scene.sprite[i].speed.y = parseFloat(this.scene.sprite[i].speed.y.toFixed(3));
-		this.scene.sprite[i].speed.t.x += this.scene.sprite[i].speed.x;
-		this.scene.sprite[i].speed.t.y += this.scene.sprite[i].speed.y;
-		this.scene.sprite[i].speed.t.x = parseFloat(this.scene.sprite[i].speed.t.x.toFixed(3));
-		this.scene.sprite[i].speed.t.y = parseFloat(this.scene.sprite[i].speed.t.y.toFixed(3));
-		this.scene.sprite[i].resetAcceleration();
-		if(this.scene.sprite[i].speed.x === 0) {
-			this.scene.sprite[i].speed.t.x = 0;
-		}
-		if(this.scene.sprite[i].speed.y === 0) {
-			this.scene.sprite[i].speed.t.y = 0;
-		}
-	}
-};
+    p.loop = function (game) {
 
-Game.prototype.updateMove = function() {
-	var r = true;
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		var t = true;
-		this.scene.sprite[i].speed.check.x = true;
-		this.scene.sprite[i].speed.check.y = true;
-		if(this.scene.sprite[i].speed.t.x >= 1) {
-			this.scene.sprite[i].speed.t.x -= 1;
-			this.scene.sprite[i].move.x = 1;
-			t = false;
-			r = false;
-			this.scene.sprite[i].speed.check.x = false;
-		} else if(this.scene.sprite[i].speed.t.x <= -1) {
-			this.scene.sprite[i].speed.t.x += 1;
-			this.scene.sprite[i].move.x = -1;
-			t = false;
-			r = false;
-			this.scene.sprite[i].speed.check.x = false;
-		}
-		if(this.scene.sprite[i].speed.t.y >= 1) {
-			this.scene.sprite[i].speed.t.y -= 1;
-			this.scene.sprite[i].move.y = 1;
-			t = false;
-			r = false;
-			this.scene.sprite[i].speed.check.y = false;
-		} else if(this.scene.sprite[i].speed.t.y <= -1) {
-			this.scene.sprite[i].speed.t.y += 1;
-			this.scene.sprite[i].move.y = -1;
-			t = false;
-			r = false;
-			this.scene.sprite[i].speed.check.y = false;
-		}
-		if(t) {
-			if(this.scene.sprite[i].speed.t.x !== 0)
-				this.scene.sprite[i].speed.t.x > 0 ? this.scene.sprite[i].move.x = 1 : this.scene.sprite[i].move.x = -1;
-			if(this.scene.sprite[i].speed.t.y !== 0)
-				this.scene.sprite[i].speed.t.y > 0 ? this.scene.sprite[i].move.y = 1 : this.scene.sprite[i].move.y = -1;
-		}
-	}
-	return r;
-};
+        p.requestAnimFrame(function () {
+            p.loop(game);
+        });
+        p.removeSprites(game.scene.sprites);
+        p.update(null, game);
+        if (game.status == 1) {
+            var exit = false;
+            physics(game);
+            p.updateCollisionState(game.scene.sprites);
+            while (!exit) {
+                exit = move(game.scene.sprites);
+                calculateMapCollisions(game);
+                calculateSpriteCollisions(game);
+                p.updateSpriteCollisionCheck(game.scene.sprites);
+                if (game.camera.type === 1) {
+                    game.camera.update(game.scene.sprites);
+                }
+                p.update(exit, game);
+                p.checkBoundaries(game);
+                game.resetMove();
+            }
+        }
+        p.draw(game);
+        p.run();
 
-Game.prototype.updateSpriteCollision = function() {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		for(var j = 0; j < this.scene.sprite.length; j++) {
-			if(i !== j) {
-				var tjx = this.scene.sprite[j].move.x;
-				var tjy = this.scene.sprite[j].move.y;
-				if((this.scene.sprite[i].collides.sprite && this.scene.sprite[j].collidable && this.scene.sprite[i].collidable) && (this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j]))) {
-					if(j > i) {
-						this.scene.sprite[j].move.x = 0;
-						this.scene.sprite[j].move.y = 0;
-					}
-					if((this.scene.sprite[i].collides.sprite && this.scene.sprite[j].collidable && this.scene.sprite[i].collidable) && (this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j]))) {
-						var mc = 0;
-						while(mc <= 2) {
-							if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
-								if(mc === 0 || mc === 2) {
-									var tx = this.scene.sprite[i].move.x;
-									this.scene.sprite[i].move.x = 0;
-									if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
-										if(this.scene.sprite[i].move.y > 0) {
-											this.scene.sprite[i].collision.sprite.down = true;
-											this.scene.sprite[j].collision.sprite.up = true;
-										}
-										if(this.scene.sprite[i].move.y < 0) {
-											this.scene.sprite[i].collision.sprite.up = true;
-											this.scene.sprite[j].collision.sprite.down = true;
-										}
-										if(this.scene.sprite[i].collision.sprite.down && this.physics.gravity.y > 0) {
-											this.scene.sprite[i].speed.gravity.y = 0;
-										}
-										if(this.scene.sprite[i].collision.sprite.up && this.physics.gravity.y < 0) {
-											this.scene.sprite[i].speed.gravity.y = 0;
-										}
-										this.scene.sprite[i].collision.sprite.id = j;
-										this.scene.sprite[j].collision.sprite.id = i;
-										this.scene.sprite[i].move.y = 0;
-										this.scene.sprite[i].speed.y = 0;
-										this.scene.sprite[i].speed.t.y = 0;
-									}
-									this.scene.sprite[i].move.x = tx;
-								}
-								if(mc === 1 || mc === 2) {
-									var ty = this.scene.sprite[i].move.y;
-									if(mc !== 2)
-										this.scene.sprite[i].move.y = 0;
-									if(this.scene.sprite[i].collidesWithSprite(this.scene.sprite[j])) {
-										if(this.scene.sprite[i].move.x > 0) {
-											this.scene.sprite[i].collision.sprite.right = true;
-											this.scene.sprite[j].collision.sprite.left = true;
-										}
-										if(this.scene.sprite[i].move.x < 0) {
-											this.scene.sprite[i].collision.sprite.left = true;
-											this.scene.sprite[j].collision.sprite.right = true;
-										}
-										if(this.scene.sprite[i].collision.sprite.left && this.physics.gravity.x < 0) {
-											this.scene.sprite[i].speed.gravity.x = 0;
-										}
-										if(this.scene.sprite[i].collision.sprite.right && this.physics.gravity.x > 0) {
-											this.scene.sprite[i].speed.gravity.x = 0;
-										}
-										this.scene.sprite[i].collision.sprite.id = j;
-										this.scene.sprite[j].collision.sprite.id = i;
-										this.scene.sprite[i].move.x = 0;
-										this.scene.sprite[i].speed.x = 0;
-										this.scene.sprite[i].speed.t.x = 0;
-									}
-									this.scene.sprite[i].move.y = ty;
-								}
-							}
-							mc++;
-						}
-					}
-				}
-				this.scene.sprite[j].move.x = tjx;
-				this.scene.sprite[j].move.y = tjy;
-			}
-		}
-	}
-};
+    };
 
-Game.prototype.updateMapCollision = function() {
-	if(this.map !== null && this.map.json !== null) {
-		for(var i = 0; i < this.scene.sprite.length; i++) {
-			for(var j = 0; j < this.map.json.layers.length; j++) {
-				if(this.map.json.layers[j].type === 'tilelayer' && this.map.json.layers[j].properties.collidable && this.scene.sprite[i].collides.map) {
-					var mc = 0;
-					while(mc <= 2) {
-						if(this.scene.sprite[i].move.x !== 0 || this.scene.sprite[i].move.y !== 0) {
-							for(var k = 0; k <= Math.ceil((this.scene.sprite[i].frame.height - this.scene.sprite[i].frame.offset.height) / this.map.json.tileheight); k++) {
-								for(var l = 0; l <= Math.ceil((this.scene.sprite[i].frame.width - this.scene.sprite[i].frame.offset.width) / this.map.json.tilewidth); l++) {
-									var tile = this.map.getTile(this.map.json.layers[j].name, this.scene.sprite[i].position.x - this.scene.sprite[i].anchor.x + this.scene.sprite[i].move.x + Math.abs(this.map.json.layers[j].x) + (l * this.map.json.tilewidth), this.scene.sprite[i].position.y - this.scene.sprite[i].anchor.y + this.scene.sprite[i].move.y + Math.abs(this.map.json.layers[j].y) + (k * this.map.json.tileheight), this.scene.sprite[i].frame.width, this.scene.sprite[i].frame.height);
-									if(tile !== null && this.map.json.layers[j].data[tile % this.map.json.layers[j].data.length] > 0 && this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile, j)) {
-										if(mc === 0 || mc === 2) {
-											var tx = this.scene.sprite[i].move.x;
-											this.scene.sprite[i].move.x = 0;
-											if(this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile, j)) {
-												if(this.scene.sprite[i].move.y > 0) {
-													this.scene.sprite[i].collision.map.down = true;
-													this.scene.sprite[i].collision.map.tile = tile;
-												}
-												if(this.scene.sprite[i].move.y < 0) {
-													this.scene.sprite[i].collision.map.up = true;
-													this.scene.sprite[i].collision.map.tile = tile;
-												}
-												if(this.scene.sprite[i].collision.map.down && this.physics.gravity.y > 0) {
-													this.scene.sprite[i].speed.gravity.y = 0;
-												}
-												if(this.scene.sprite[i].collision.map.up && this.physics.gravity.y < 0) {
-													this.scene.sprite[i].speed.gravity.y = 0;
-												}
-												if((this.scene.sprite[i].collision.check.map.up && this.scene.sprite[i].collision.map.up) || (this.scene.sprite[i].collision.check.map.down && this.scene.sprite[i].collision.map.down)) {
-													this.scene.sprite[i].move.y = 0;
-													this.scene.sprite[i].speed.y = 0;
-													this.scene.sprite[i].speed.t.y = 0;
-												}
-											}
-											this.scene.sprite[i].move.x = tx;
-										}
-										if(mc === 1 || mc === 2) {
-											var ty = this.scene.sprite[i].move.y;
-											if(mc !== 2)
-											this.scene.sprite[i].move.y = 0;
-											if(this.scene.sprite[i].collidesWithTile(this.map.json.layers[j], tile, j)) {
-												if(this.scene.sprite[i].move.x > 0) {
-													this.scene.sprite[i].collision.map.right = true;
-													this.scene.sprite[i].collision.map.tile = tile;
-												}
-												if(this.scene.sprite[i].move.x < 0) {
-													this.scene.sprite[i].collision.map.left = true;
-													this.scene.sprite[i].collision.map.tile = tile;
-												}
-												if(this.scene.sprite[i].collision.map.left && this.physics.gravity.x < 0) {
-													this.scene.sprite[i].speed.gravity.x = 0;
-												}
-												if(this.scene.sprite[i].collision.map.right && this.physics.gravity.x > 0) {
-													this.scene.sprite[i].speed.gravity.x = 0;
-												}
-												if((!this.scene.sprite[i].collision.check.map.up && this.scene.sprite[i].collision.map.up) || (!this.scene.sprite[i].collision.check.map.down && this.scene.sprite[i].collision.map.down)) {
-												} else {	
-													if((this.scene.sprite[i].collision.check.map.left && this.scene.sprite[i].collision.map.left) || (this.scene.sprite[i].collision.check.map.right && this.scene.sprite[i].collision.map.right)) {
-														this.scene.sprite[i].move.x = 0;
-														this.scene.sprite[i].speed.x = 0;
-														this.scene.sprite[i].speed.t.x = 0;
-													}
-												}
-											}
-											this.scene.sprite[i].move.y = ty;
-										}
-									}
-								}
-							}
-						}
-						mc++;
-					}
-				}
-			}
-		}
-	}
-};
+    p.updateSpriteCollisionCheck = function (sprites) {
+        var sprite;
+        for (var i = 0; i < sprites.length; i++) {
+            sprite = sprites[i];
+            if (sprite.speed.check.x && sprite.speed.check.y) {
+                sprite.resetMove();
+            }
+        }
+    };
 
-Game.prototype.updateSpriteCollisionCheck = function() {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].speed.check.x && this.scene.sprite[i].speed.check.y) {
-			this.scene.sprite[i].resetMove();
-		}
-	}
-};
+    p.checkBoundaries = function (game) {
+        var sprite;
+        for (var i = 0; i < game.scene.sprites.length; i++) {
+            sprite = game.scene.sprites[i];
+            if (game.boundaries.x !== null) {
+                if (sprite.position.x - sprite.anchor.x < game.boundaries.x) {
+                    sprite.position.x = game.boundaries.x + sprite.anchor.x;
+                }
+                if (sprite.position.x + sprite.frame.width - sprite.anchor.x > game.boundaries.x + game.boundaries.width) {
+                    sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x;
+                }
+            }
+            if (game.boundaries.y !== null) {
+                if (sprite.position.y - sprite.anchor.y < game.boundaries.y) {
+                    sprite.position.y = game.boundaries.y + sprite.anchor.y;
+                }
+                if (sprite.position.y + sprite.frame.height - sprite.anchor.y > game.boundaries.y + game.boundaries.height) {
+                    sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y;
+                }
+            }
+        }
 
-Game.prototype.update = function(_exit) {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		this.scene.sprite[i].update();
-		this.scene.sprite[i].flipUpdate();
-		if(this.scene.sprite[i].animation !== null && _exit)
-			this.scene.sprite[i].animation.nextFrame();
-	}
-	if(this.map !== null)
-		this.map.update();
-};
+    };
 
-Game.prototype.checkBoundaries = function() {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.boundaries.x !== null) {
-			if(this.scene.sprite[i].position.x - this.scene.sprite[i].anchor.x < this.boundaries.x) {
-				this.scene.sprite[i].position.x = this.boundaries.x + this.scene.sprite[i].anchor.x;
-			}
-			if(this.scene.sprite[i].position.x + this.scene.sprite[i].frame.width - this.scene.sprite[i].anchor.x > this.boundaries.x + this.boundaries.width) {
-				this.scene.sprite[i].position.x = this.boundaries.x + this.boundaries.width - this.scene.sprite[i].frame.width + this.scene.sprite[i].anchor.x;
-			}
-		}
-		if(this.boundaries.y !== null) {
-			if(this.scene.sprite[i].position.y - this.scene.sprite[i].anchor.y < this.boundaries.y) {
-				this.scene.sprite[i].position.y = this.boundaries.y + this.scene.sprite[i].anchor.y;
-			}
-			if(this.scene.sprite[i].position.y + this.scene.sprite[i].frame.height - this.scene.sprite[i].anchor.y > this.boundaries.y + this.boundaries.height) {
-				this.scene.sprite[i].position.y = this.boundaries.y + this.boundaries.height - this.scene.sprite[i].frame.height + this.scene.sprite[i].anchor.y;
-			}
-		}
-	}
-};
+    p.draw = function (game) {
 
-Game.prototype.resetMove = function() {
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		this.scene.sprite[i].resetMove();
-	}
-	if(this.map !== null)
-		this.map.resetScroll();
-};
+        game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+        if (game.map !== null && game.map.visible) {
+            game.map.draw(false);
+        }
+        for (var i = 0; i < game.scene.sprites.length; i++) {
+            if (game.scene.sprites[i].visible) {
+                game.scene.sprites[i].draw(false);
+            }
+        }
+        for (var i = 0; i < game.scene.sprites.length; i++) {
+            if (game.scene.sprites[i].visible) {
+                game.scene.sprites[i].draw(true);
+            }
+        }
+        if (game.map !== null && game.map.visible) {
+            game.map.draw(true);
+        }
+        for (var i = 0; i < game.scene.text.length; i++) {
+            if (game.scene.text[i].visible) {
+                game.scene.text[i].draw();
+            }
+        }
 
-Game.prototype.draw = function() {
-	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);	
-	if(this.map !== null && this.map.visible) {
-		this.map.draw(false);
-	}
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].visible) {
-			this.scene.sprite[i].draw(false);
-		}
-	}
-	for(var i = 0; i < this.scene.sprite.length; i++) {
-		if(this.scene.sprite[i].visible) {
-			this.scene.sprite[i].draw(true);
-		}
-	}
-	if(this.map !== null && this.map.visible) {
-		this.map.draw(true);
-	}
-	for(var i = 0; i < this.scene.text.length; i++) {
-		if(this.scene.text[i].visible) {
-			this.scene.text[i].draw();
-		}
-	}
-};
+    };
 
-Game.prototype.removeSprite = function() {
-	for(var i = this.scene.sprite.length - 1; i >= 0; i--) {
-		if(this.scene.sprite[i].kill) {
-			this.scene.sprite.splice(i, 1);
-		}
-	}
-};
+    p.requestAnimFrame = (function () {
+        var requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+            window.setTimeout(callback, 1000 / 60)
+        };
+        return requestAnimFrame.bind(window);
+    })();
 
-Game.prototype.play = function() {
-	this.status = 1;
-};
+    p.start = function (game) {
+        var interval = setInterval(function () {
+            p.loadResources(interval, game);
+        }, 100);
+    };
 
-Game.prototype.stop = function() {
-	this.status = 0;
-};
+    var Game = function (_width, _height, _scale) {
 
-window.requestAnimFrame = (function(){
-	return  window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback){window.setTimeout(callback, 1000 / 60)};
-})();
+        this.canvas = null;
+        this.context = null;
+        this.scale = _scale || 1;
+        this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
+        this.boundaries = {x: null, y: null, width: null, height: null};
+        this.tilemap = new MapFile(this);
+        this.camera = new Camera(this);
+        this.scene = new Scene(this);
+        this.map = new Map(this);
+        this.next = {scene: null, fade: null};
+        this.sprite = new ImageFile(this);
+        this.audio = new AudioFile(this);
+        this.sound = new Array();
+        this.input = new Input(this);
+        this.status = 1;
+        this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
+        this.width = _width;
+        this.height = _height;
 
-window.cancelRequestAnimFrame = (function() {
-    return window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelRequestAnimationFrame || window.msCancelRequestAnimationFrame || clearTimeout
-})();
+        this.canvas = document.createElement('canvas');
+        this.canvas.setAttribute('id', 'canvas');
+
+        this.canvas.width = _width;
+        this.canvas.height = _height;
+
+        this.canvas.style.width = _width * this.scale + "px";
+        this.canvas.style.height = _height * this.scale + "px";
+        this.context = this.canvas.getContext('2d');
+
+        document.body.appendChild(this.canvas);
+    };
+
+    Game.prototype.init = function (callback) {
+        p.start(this);
+        callback();
+    };
+
+    Game.prototype.init = function (callback) {
+        p.init = callback;
+        p.start(this);
+        delete this.init;
+    };
+
+    Game.prototype.update = function (callback) {
+        p.run = callback;
+    };
+
+    Game.prototype.text = function (_font) {
+        var t = new Text(_font, this);
+        this.scene.text.push(t);
+        return t;
+    };
+
+// Not in use, remove?
+    Game.prototype.updateTimer = function () {
+        this.timer.frame++;
+        this.timer.now = new Date().getTime();
+        if (this.timer.previus !== null)
+            this.timer.loop = (this.timer.now - this.timer.previus) / 1000;
+        if (this.timer.now - this.timer.previus >= 1000) {
+            this.timer.previus = this.timer.now;
+            this.timer.fps = this.timer.frame;
+            this.timer.frame = 0;
+        }
+    };
+
+    Game.prototype.play = function () {
+        this.status = 1;
+    };
+
+    Game.prototype.stop = function () {
+        this.status = 0;
+    };
+
+    Game.prototype.resetMove = function () {
+
+        for (var i = 0; i < this.scene.sprites.length; i++) {
+            this.scene.sprites[i].resetMove();
+        }
+        if (this.map !== null) {
+            this.map.resetScroll();
+        }
+
+        p.update(null, this);
+
+    };
+
+    Game.prototype.run = function () {
+        console.log('running');
+        p.run();
+    }
+
+
+//    Game.prototype.cancelRequestAnimFrame = (function () {
+//        return window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelRequestAnimationFrame || window.msCancelRequestAnimationFrame || clearTimeout
+//    })();
+
+    return Game;
+
+});
