@@ -8,10 +8,10 @@ Molecule.module('Molecule.Game', function (require, p) {
         AudioFile = require('Molecule.AudioFile'),
         Input = require('Molecule.Input'),
         Text = require('Molecule.Text'),
-        physics = require('Molecule.Game.physics'),
-        move = require('Molecule.Game.move'),
-        calculateSpriteCollisions = require('Molecule.Game.calculateSpriteCollisions'),
-        calculateMapCollisions = require('Molecule.Game.calculateMapCollisions');
+        physics = require('Molecule.Physics'),
+        move = require('Molecule.Move'),
+        calculateSpriteCollisions = require('Molecule.CalculateSpriteCollisions'),
+        calculateMapCollisions = require('Molecule.CalculateMapCollisions');
 
     p.init = null;
     p.run = null;
@@ -259,10 +259,21 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     };
 
+	Game.prototype.cameraUpdate = function(_exit) {
+		for(var i = 0; i < this.scene.sprites.length; i++) {
+			this.scene.sprites[i].update();
+			this.scene.sprites[i].flipUpdate();
+			if(this.scene.sprites[i].animation !== null && _exit)
+				this.scene.sprites[i].animation.nextFrame();
+		}
+		if(this.map !== null)
+			this.map.update();
+	};
+
     Game.prototype.run = function () {
         console.log('running');
         p.run();
-    }
+    };
 
 
 //    Game.prototype.cancelRequestAnimFrame = (function () {

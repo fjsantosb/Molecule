@@ -1,4 +1,4 @@
-Molecule.module('Molecule.Game.move', function (require, p) {
+Molecule.module('Molecule.Move', function (require, p) {
 
    return function (sprites) {
        var r = true,

@@ -1,7 +1,6 @@
-Molecule.module('Molecule.Game.physics', function (require, p) {
+Molecule.module('Molecule.Physics', function (require, p) {
 
     p.addFriction = function (sprite, game) {
-
         if (sprite.speed.x > 0) {
             sprite.speed.x = sprite.speed.x * (1 - game.physics.friction.x);
             if (sprite.speed.x < 0.05) {
@@ -24,31 +23,30 @@ Molecule.module('Molecule.Game.physics', function (require, p) {
                 sprite.speed.y = 0;
             }
         }
-
     };
 
     p.spriteHitsPlatformBelow = function (sprite, game) {
-        return sprite.affects.physics.gravity && game.physics.gravity.y > 0 && sprite.collision.sprite.down && game.scene.sprite[sprite.collision.sprite.id].platform;
+    	return sprite.affects.physics.gravity && game.physics.gravity.y > 0 && sprite.collision.sprite.down && game.scene.sprites[sprite.collision.sprite.id].platform;
     };
 
     p.spriteHitsPlatformAbove = function (sprite, game) {
-      return sprite.affects.physics.gravity && game.physics.gravity.y < 0 && sprite.collision.sprite.up && this.scene.sprite[sprite.collision.sprite.id].platform;
+      	return sprite.affects.physics.gravity && game.physics.gravity.y < 0 && sprite.collision.sprite.up && game.scene.sprites[sprite.collision.sprite.id].platform;
     };
 
     p.spriteHitsPlatformRight = function (sprite, game) {
-      return sprite.affects.physics.gravity && game.physics.gravity.x > 0 && sprite.collision.sprite.right && game.scene.sprite[sprite.collision.sprite.id].platform
+      	return sprite.affects.physics.gravity && game.physics.gravity.x > 0 && sprite.collision.sprite.right && game.scene.sprites[sprite.collision.sprite.id].platform;
     };
 
     p.spriteHitsPlatformLeft = function (sprite, game) {
-
+		return sprite.affects.physics.gravity && game.physics.gravity.x < 0 && sprite.collision.sprite.left && game.scene.sprites[sprite.collision.sprite.id].platform;
     };
 
     p.spriteSlowerThanCollisionSprite = function (axis, sprite, game) {
-        return sprite.speed[axis] >= 0 && sprite.speed[axis] < game.scene.sprite[sprite.collision.sprite.id].speed[axis];
+        return sprite.speed[axis] >= 0 && sprite.speed[axis] < game.scene.sprites[sprite.collision.sprite.id].speed[axis];
     };
 
     p.spriteFasterThanCollisionSprite = function (axis, sprite, game) {
-        return sprite.speed[axis] <= 0 && sprite.speed[axis] > game.scene.sprite[sprite.collision.sprite.id].speed[axis];
+        return sprite.speed[axis] <= 0 && sprite.speed[axis] > game.scene.sprites[sprite.collision.sprite.id].speed[axis];
     };
 
     p.increaseAcceleration = function (sprite) {
@@ -102,21 +100,21 @@ Molecule.module('Molecule.Game.physics', function (require, p) {
             if (sprite.affects.physics.friction) {
                 p.addFriction(sprite, game);
             }
-
+            
             if (p.spriteHitsPlatformBelow(sprite, game) || p.spriteHitsPlatformAbove(sprite, game)) {
 
                 if (p.spriteSlowerThanCollisionSprite('x', sprite, game)) {
-                    sprite.speed.x = game.scene.sprite[sprite.collision.sprite.id].speed.x;
+                    sprite.speed.x = game.scene.sprites[sprite.collision.sprite.id].speed.x;
                 } else if (p.spriteFasterThanCollisionSprite('x', sprite, game)) {
-                    sprite.speed.x = game.scene.sprite[sprite.collision.sprite.id].speed.x;
+                    sprite.speed.x = game.scene.sprites[sprite.collision.sprite.id].speed.x;
                 }
 
             } else if (p.spriteHitsPlatformRight(sprite, game) || p.spriteHitsPlatformLeft(sprite, game)) {
 
                 if (p.spriteSlowerThanCollisionSprite('y', sprite, game)) {
-                    sprite.speed.y = game.scene.sprite[sprite.collision.sprite.id].speed.y;
+                    sprite.speed.y = game.scene.sprites[sprite.collision.sprite.id].speed.y;
                 } else if (p.spriteFasterThanCollisionSprite('y', sprite, game)) {
-                    sprite.speed.y = game.scene.sprite[sprite.collision.sprite.id].speed.y;
+                    sprite.speed.y = game.scene.sprites[sprite.collision.sprite.id].speed.y;
                 }
 
             }

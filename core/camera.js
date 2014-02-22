@@ -35,14 +35,14 @@ Molecule.module('Molecule.Camera', function (require, p) {
             for (var i = 0; i < _x; i++) {
                 this.sprite.move.x = 1;
                 this.update(this.game.scene.sprites);
-//                this.game.run();
+                this.game.cameraUpdate();
                 this.game.resetMove();
             }
 
             for (var i = 0; i < _y; i++) {
                 this.sprite.move.y = 1;
                 this.update(this.game.scene.sprites);
-//                this.game.run();
+                this.game.cameraUpdate();
                 this.game.resetMove();
             }
         }

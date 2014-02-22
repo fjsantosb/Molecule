@@ -1,15 +1,11 @@
-Molecule.module('Molecule.Game.calculateMapCollisions', function (require, p) {
+Molecule.module('Molecule.CalculateMapCollisions', function (require, p) {
 
     p.spriteCollidesWithLayer = function (layer, sprite) {
-
         return layer.type === 'tilelayer' && layer.properties.collidable && sprite.collides.map;
-
     };
 
     p.getHeight = function (tileHeight, sprite) {
-
         return Math.ceil((sprite.frame.height - sprite.frame.offset.height) / tileHeight);
-
     };
 
     p.getWidth = function (tileWidth, sprite) {
@@ -25,7 +21,6 @@ Molecule.module('Molecule.Game.calculateMapCollisions', function (require, p) {
     };
 
     p.updateCollisionX = function (layer, sprite, tile, j, physics) {
-
         if (sprite.collidesWithTile(layer, tile, j)) {
             if (sprite.move.y > 0) {
                 sprite.collision.map.down = true;
@@ -47,7 +42,6 @@ Molecule.module('Molecule.Game.calculateMapCollisions', function (require, p) {
                 sprite.speed.t.y = 0;
             }
         }
-
     };
 
     p.updateCollisionY = function (layer, sprite, tile, j, physics) {
@@ -76,7 +70,6 @@ Molecule.module('Molecule.Game.calculateMapCollisions', function (require, p) {
                 }
             }
         }
-
     };
 
     return function (game) {
@@ -132,5 +125,4 @@ Molecule.module('Molecule.Game.calculateMapCollisions', function (require, p) {
             }
         }
     }
-
 });

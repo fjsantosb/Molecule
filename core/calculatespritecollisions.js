@@ -1,13 +1,10 @@
-Molecule.module('Molecule.Game.calculateSpriteCollisions', function (require, p) {
+Molecule.module('Molecule.CalculateSpriteCollisions', function (require, p) {
 
     p.spritesCollide = function (spriteI, spriteJ) {
-
         return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ))
-
     };
 
     p.updateCollisionY = function (spriteI, spriteJ, i, j, physics) {
-
         if (spriteI.collidesWithSprite(spriteJ)) {
             if (spriteI.move.y > 0) {
                 spriteI.collision.sprite.down = true;
@@ -29,12 +26,9 @@ Molecule.module('Molecule.Game.calculateSpriteCollisions', function (require, p)
             spriteI.speed.y = 0;
             spriteI.speed.t.y = 0;
         }
-
-
     };
 
     p.updateCollisionX = function (spriteI, spriteJ, i, j, physics) {
-
         if (spriteI.collidesWithSprite(spriteJ)) {
             if (spriteI.move.x > 0) {
                 spriteI.collision.sprite.right = true;
@@ -56,12 +50,10 @@ Molecule.module('Molecule.Game.calculateSpriteCollisions', function (require, p)
             spriteI.speed.x = 0;
             spriteI.speed.t.x = 0;
         }
-
     };
 
 
     return function (game) {
-
         var sprites = game.scene.sprites,
             physics = game.physics,
             i,
@@ -118,7 +110,5 @@ Molecule.module('Molecule.Game.calculateSpriteCollisions', function (require, p)
                 }
             }
         }
-
     };
-
 });

@@ -46,7 +46,6 @@ Molecule(320, 480, function (game, require) {
             }
         }
         if(tube.counter >= tube.create) {
-            console.log('drawing tube', game.timer.fps);
             obstacles.push(new Obstacle(game));
             obstacles[obstacles.length - 1].init(Math.random() * 300);
             tube.counter = 0;
