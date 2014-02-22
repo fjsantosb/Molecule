@@ -7,7 +7,7 @@ function ImageFile(_game) {
 	return this;
 };
 
-ImageFile.prototype.image = function(_imageSrc) {
+ImageFile.prototype.preload = function(_imageSrc) {
 	var _name = _imageSrc.substring(0, _imageSrc.length - 4);
 	if(!this.getImageDataByName(_name)) {
 		var self = this;
@@ -24,7 +24,7 @@ ImageFile.prototype.image = function(_imageSrc) {
 ImageFile.prototype.load = function(_imageSrc, _width, _height) {
 	var s = new Sprite(_imageSrc, _width, _height);
 	s.game = this.game;
-	s.image = this.image(_imageSrc);
+	s.image = this.preload(_imageSrc);
 	if(this.isLoaded())
 		s.getAnimation();
 	this.game.scene.sprite.push(s);
