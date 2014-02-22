@@ -36,7 +36,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                 game.scene.sprites[i].getAnimation();
             }
             p.init();
-            game.camera.set();
             p.loop(game);
         }
     };
