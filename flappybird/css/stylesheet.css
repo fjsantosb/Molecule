@@ -1,0 +1,22 @@
+@font-face {
+	font-family: 'angies'; 
+	src: url('../fonts/Angies.ttf');
+}
+
+body {
+	background-color: #222222; 
+	border: none; 
+	margin: 0; 
+	padding: 0; 
+	text-align: center;
+}
+
+#canvas {
+	background-color: #000000; 
+	image-rendering: optimizeSpeed; 
+	image-rendering: -moz-crisp-edges; 
+	image-rendering: -webkit-optimize-contrast; 
+	image-rendering: optimize-contrast; 
+	-ms-interpolation-mode: nearest-neighbor; 
+	-webkit-font-smoothing: none;
+}

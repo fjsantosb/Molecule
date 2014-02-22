@@ -1,3 +1,5 @@
+Molecule.module('Molecule.Animation', function (require, p) {
+
 // Animation var.
 function Animation() {
 	this.frame = new Array();
@@ -47,7 +49,7 @@ Animation.prototype.run = function(_name, _reverse) {
 	}
 };
 
-Animation.prototype.halt = function() {
+Animation.prototype.stop = function() {
 	this.halt = true;
 };
 
@@ -79,3 +81,7 @@ Animation.prototype.nextFrame = function() {
 		}
 	}
 };
+
+return Animation;
+
+});
