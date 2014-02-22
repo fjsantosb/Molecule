@@ -1,9 +1,36 @@
 {
-  "name": "Molecule",
-  "version": "0.1",
-  "main": "build/molecule-0.1-min.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/fjsantosb/Molecule",
-  }
+  "name": "molecule",
+  "version": "0.9",
+  "homepage": "http://www.moleculejs.net",
+  "authors": [
+    "Francisco Santos Belmonte <fjsantosb@moleculejs.net>"
+  ],
+  "description": "A fast, lightweight, simple yet powerful HTML5 Game Framework to build cross-platform games on an easy and efficient way.",
+  "main": "build/molecule.min.js",
+  "keywords": [
+    "html5",
+    "game",
+    "games",
+    "framework",
+    "canvas",
+    "WebGL",
+    "tilemaps",
+    "physics",
+    "sprites",
+    "fonts",
+    "images",
+    "audio",
+    "Web",
+    "Audio",
+    "touch",
+    "input",
+    "mobile"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "tests"
+  ]
 }
