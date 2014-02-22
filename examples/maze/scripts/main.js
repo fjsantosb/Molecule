@@ -35,7 +35,6 @@ Molecule(320, 480, function (game, require) {
 		score_text.color = '#ffffff';
 		score_text.x = 160;
 		score_text.y = 1;
-		console.log(player);
 		// Init Player
 		player.init();
 		// Init Enemies

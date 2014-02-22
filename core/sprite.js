@@ -89,7 +89,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     };
 
 // Sprite prototype Method is_touched
-    Sprite.prototype.isTouched = function () {
+    Sprite.prototype.touch = function () {
         var _touch = this.game.input.touch;
         for (var i = 0; i < _touch.length; i++) {
             if (this.position.x - this.anchor.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _touch[i].x && this.position.y - this.anchor.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _touch[i].y) {
@@ -100,7 +100,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     };
 
 // Sprite prototype Method is_clicked
-    Sprite.prototype.isClicked = function (_button) {
+    Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
         if (this.position.x - this.anchor.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _mouse.x && this.position.y - this.anchor.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _mouse.y && _button)
             return true;

@@ -6,6 +6,7 @@ function Animation() {
 	this.id = new Array();
 	this.current = {animation: 0, frame: 0};
 	this.timer = 0;
+	this.loop = true;
 	this.reverse = false;
 	this.halt = false;
 	
@@ -25,16 +26,17 @@ Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidt
 };
 
 // Method to add an animation
-Animation.prototype.add = function(_name, _frames, _speed, _loop) {
-	if(_loop === undefined)
-		_loop = true;
-	this.id.push({name: _name, frame: _frames, speed: _speed, loop: _loop});
+Animation.prototype.add = function(_name, _frames, _speed) {
+	this.id.push({name: _name, frame: _frames, speed: _speed});
 };
 
 //Method to play current animation
-Animation.prototype.run = function(_name, _reverse) {
+Animation.prototype.run = function(_name, _loop, _reverse) {
+	if(_loop === undefined)
+		_loop = true;
 	if(_reverse === undefined)
 		_reverse = false;
+	this.loop = _loop;
 	this.reverse = _reverse;
 	this.halt = false;
 	if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
@@ -62,7 +64,7 @@ Animation.prototype.nextFrame = function() {
 			if(!this.reverse) {
 				this.current.frame++;
 				if(this.current.frame >= this.id[this.current.animation].frame.length) {
-					if(this.id[this.current.animation].loop) {
+					if(this.loop) {
 						this.current.frame = 0;
 					} else {
 						this.current.frame = this.id[this.current.animation].frame.length - 1;
@@ -71,7 +73,7 @@ Animation.prototype.nextFrame = function() {
 			} else {
 				this.current.frame--;
 				if(this.current.frame < 0) {
-					if(this.id[this.current.animation].loop) {
+					if(this.loop) {
 						this.current.frame = this.id[this.current.animation].frame.length - 1;
 					} else {
 						this.current.frame = 0;

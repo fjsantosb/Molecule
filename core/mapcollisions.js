@@ -1,4 +1,4 @@
-Molecule.module('Molecule.CalculateMapCollisions', function (require, p) {
+Molecule.module('Molecule.MapCollisions', function (require, p) {
 
     p.spriteCollidesWithLayer = function (layer, sprite) {
         return layer.type === 'tilelayer' && layer.properties.collidable && sprite.collides.map;

@@ -1,4 +1,4 @@
-Molecule.module('Molecule.CalculateSpriteCollisions', function (require, p) {
+Molecule.module('Molecule.SpriteCollisions', function (require, p) {
 
     p.spritesCollide = function (spriteI, spriteJ) {
         return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ))

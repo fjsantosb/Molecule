@@ -57,16 +57,16 @@ Molecule.module('Player', function (require, p) {
 				this.current.acceleration.x = 0;
 			}
 			
-			if(this.game.input.key.LEFT_ARROW || this.arrow_left.isTouched()) {
+			if(this.game.input.key.LEFT_ARROW || this.arrow_left.touch()) {
 				this.current.acceleration.x = -1;
 			}
-			if(this.game.input.key.RIGHT_ARROW || this.arrow_right.isTouched()) {
+			if(this.game.input.key.RIGHT_ARROW || this.arrow_right.touch()) {
 				this.current.acceleration.x = 1;
 			}
-			if(this.game.input.key.UP_ARROW || this.arrow_up.isTouched()) {
+			if(this.game.input.key.UP_ARROW || this.arrow_up.touch()) {
 				this.current.acceleration.y = -1;
 			}
-			if(this.game.input.key.DOWN_ARROW || this.arrow_down.isTouched()) {
+			if(this.game.input.key.DOWN_ARROW || this.arrow_down.touch()) {
 				this.current.acceleration.y = 1;
 			}
 			

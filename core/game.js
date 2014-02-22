@@ -10,8 +10,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         Text = require('Molecule.Text'),
         physics = require('Molecule.Physics'),
         move = require('Molecule.Move'),
-        calculateSpriteCollisions = require('Molecule.CalculateSpriteCollisions'),
-        calculateMapCollisions = require('Molecule.CalculateMapCollisions');
+        calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
+        calculateMapCollisions = require('Molecule.MapCollisions');
 
     p.init = null;
     p.run = null;
