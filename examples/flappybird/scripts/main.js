@@ -1,16 +1,17 @@
 Molecule(320, 480, function (game, require) {
 
-    var Player = require('Player'),
-        Obstacle = require('Obstacle'),
-        bird = new Player(game),
-        obstacles = [],
-        tap = null,
-        map = game.tilemap.load('media/game.json'),
-        tube = {counter: 0, create: 100},
-        text_score = game.text('55px Angies'),
-        score = 0;
+    var Player = require('Player');
+    var Obstacle = require('Obstacle');
+    
+    var bird = new Player(game);
+    var obstacles = [];
+    var tap = null;
+    var map = game.tilemap.load('media/game.json');
+    var tube = {counter: 0, create: 100};
+    var text_score = game.text('55px Angies');
+    var score = 0;
 
-//    game.input.enable('touch');
+	game.input.enable('touch');
     game.input.enable('keyboard');
 
     game.physics.friction.x = 1;
@@ -32,7 +33,6 @@ Molecule(320, 480, function (game, require) {
     });
 
     game.update(function () {
-
         text_score.title = score;
         if(bird.state === 0)
             tube.counter++;
@@ -56,7 +56,5 @@ Molecule(320, 480, function (game, require) {
         }
 
     });
-
-    window.timer = game.timer;
 
 });
