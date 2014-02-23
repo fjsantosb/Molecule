@@ -11,5 +11,5 @@ We provide a Grunt script that will build Molecule from source in both plain and
 
 Dependencies:
 
-- [Grunt](http://gruntjs.com/)
 - [npm](https://npmjs.org/) package manager
+- [Grunt](http://gruntjs.com/)
