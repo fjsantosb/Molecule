@@ -215,8 +215,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.run = callback;
     };
 
-    Game.prototype.text = function (_font) {
-        var t = new Text(_font, this);
+    Game.prototype.text = function (_font, _x, _y, _title) {
+        var t = new Text(_font, _x, _y, _title, this);
         this.scene.text.push(t);
         return t;
     };

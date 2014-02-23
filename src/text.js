@@ -1,10 +1,10 @@
 Molecule.module('Molecule.Text', function (require, p) {
 
-	function Text (_font, _game) {
+	function Text (_font, _x, _y, _title, _game) {
 		this.game = _game;
-		this.title = null;
-		this.x = 0;
-		this.y = 0;
+		this.title = _title === undefined ? null : _title;
+		this.x = _x || 0;
+		this.y = _y || 0;
 		this.align = 'left';
 		this.font = _font;
 		this.color = '#FFFFFF';
