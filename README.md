@@ -7,17 +7,9 @@ documentation, features and examples can be seen on the official website:
 
 ## Building your own version
 
+We provide a Grunt script that will build Molecule from source in both plain and minified formats.
+
 Dependencies:
 
 - [Grunt](http://gruntjs.com/)
 - [npm](https://npmjs.org/) package manager
-
-Open the terminal and type the following:
-
-	$ npm install grunt-cli
-
-After that:
-
-	$ npm install && grunt
-
-This will generate 1 minified version and 1 plain version on the `build` folder
