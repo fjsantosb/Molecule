@@ -29,10 +29,8 @@ Molecule.module('Molecule.Animation', function (require, p) {
 	
 	//Method to play current animation
 	Animation.prototype.run = function(_name, _loop, _reverse) {
-		if(_loop === undefined)
-			_loop = true;
-		if(_reverse === undefined)
-			_reverse = false;
+	    _loop = _loop === undefined ? true : _loop;
+	    _reverse = _reverse === undefined ? false : _reverse;
 		this.loop = _loop;
 		this.reverse = _reverse;
 		this.halt = false;
