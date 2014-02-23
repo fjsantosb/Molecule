@@ -19,4 +19,4 @@ node_modules/
 molecule.sublime-workspace
 bower_components
 
-examples/*.*
+examples/
