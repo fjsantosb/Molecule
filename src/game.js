@@ -32,7 +32,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        if (game.sprite.isLoaded() && game.tilemap.isLoaded()) {
+        if (game.sprite.isLoaded() && game.tilemap.isLoaded() && game.audio.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();

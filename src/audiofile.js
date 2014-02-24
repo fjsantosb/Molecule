@@ -1,5 +1,7 @@
 Molecule.module('Molecule.AudioFile', function (require, p) {
 
+    var Sound = require('Molecule.Sound');
+
 	function AudioFile(_game) {
 		this.game = _game;
 		this.name = new Array();
