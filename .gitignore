@@ -19,5 +19,6 @@ node_modules/
 molecule.sublime-workspace
 bower_components
 
-examples/flappybird
+examples/_flappybird
+examples/flappy_bird
 examples/maze
