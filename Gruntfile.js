@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         concat: {
             dist: {
                 src: sourceFiles,
-                dest: 'build/<%= pkg.name %>-<%= pkg.version %>.js'
+                dest: 'build/<%= pkg.name %>.js'
             }
         },
 
@@ -61,7 +61,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'build/<%= pkg.name %>-<%= pkg.version %>-min.js': [
+                    'build/<%= pkg.name %>.min.js': [
                         '<%= concat.dist.dest %>'
                     ]
                 }
@@ -88,8 +88,8 @@ module.exports = function(grunt) {
 
         clean: {
             dist: [
-                'build/<%= pkg.name %>-<%= pkg.version %>.js',
-                'build/<%= pkg.name %>-<%= pkg.version %>-min.js'
+                'build/<%= pkg.name %>.js',
+                'build/<%= pkg.name %>.min.js'
             ],
         },
         tdd: {
