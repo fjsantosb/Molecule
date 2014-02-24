@@ -24,7 +24,8 @@ Molecule.module('Molecule.Animation', function (require, p) {
 	
 	// Method to add an animation
 	Animation.prototype.add = function(_name, _frames, _speed) {
-		this.id.push({name: _name, frame: _frames, speed: _speed});
+	    var _speedFps = _speed * 60 / _frames.length;
+		this.id.push({name: _name, frame: _frames, speed: _speedFps});
 	};
 	
 	//Method to play current animation
