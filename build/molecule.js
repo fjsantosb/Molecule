@@ -1,9 +1,11 @@
 (function (window) {
 
     var definedModules = [];
+    var moleculeModules = [];
     var initializedModules = [];
     var isTest = false;
     var timeoutLimit = 100;
+    var game = null;
 
     var p = {
         Module: function Module(name, func) {
@@ -71,7 +73,12 @@
             }
         },
         contextToArray: function (context) {
-            return [context.require, context.privates];
+            if (game) {
+                return [game, context.require, context.privates];
+            } else {
+                return [context.require, context.privates];
+            }
+
         },
         registerTestModule: function (name, defined) {
             var module,
@@ -123,13 +130,18 @@
                 array.push(message);
             }
         },
+        createGame: function (width, height, scale) {
+            var GameConstructor = p.getModule('Molecule.Game', initializedModules).exports;
+            game = new GameConstructor(width, height, scale);
+        },
         createContext: function (modules) {
             var context = {
                 privates: {},
                 require: function (name) {
                     var module = p.getModule(name, modules);
                     return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
-                }
+                },
+                game: game
             }
             return context;
         },
@@ -218,8 +230,6 @@
     var Molecule = function (width, height, scale, callback) {
 
         var argsArray = Array.prototype.slice.call(arguments, 0),
-            GameConstructor,
-            game,
             context;
 
         argsArray.forEach(function (arg) {
@@ -234,13 +244,11 @@
             }
         });
 
+        p.registerModules(moleculeModules, initializedModules);
+        p.createGame(width, height, scale);
         p.registerModules(definedModules, initializedModules);
-
-
-        GameConstructor = p.getModule('Molecule.Game', initializedModules).exports;
-        game = new GameConstructor(width, height, scale);
         context = p.createContext(initializedModules);
-        callback.call(context, game, context.require);
+        callback.call(context, context.game, context.require);
 
     };
 
@@ -249,7 +257,12 @@
         if (!args.name || typeof args.name !== 'string' || !args.func || typeof args.func !== 'function') {
             p.throw('Invalid arguments for module creation, you have to pass a string and a function');
         }
-        p.addModule(definedModules, args.name, args.func);
+        if (args.name.match(/Molecule/)) {
+            p.addModule(moleculeModules, args.name, args.func);
+        } else {
+            p.addModule(definedModules, args.name, args.func);
+        }
+
     };
 
     Molecule.test = function (name, callback) {
@@ -288,15 +301,14 @@ Molecule.module('Molecule.Animation', function (require, p) {
 	
 	// Method to add an animation
 	Animation.prototype.add = function(_name, _frames, _speed) {
-		this.id.push({name: _name, frame: _frames, speed: _speed});
+	    var _speedFps = _speed * 60 / _frames.length;
+		this.id.push({name: _name, frame: _frames, speed: _speedFps});
 	};
 	
 	//Method to play current animation
 	Animation.prototype.run = function(_name, _loop, _reverse) {
-		if(_loop === undefined)
-			_loop = true;
-		if(_reverse === undefined)
-			_reverse = false;
+	    _loop = _loop === undefined ? true : _loop;
+	    _reverse = _reverse === undefined ? false : _reverse;
 		this.loop = _loop;
 		this.reverse = _reverse;
 		this.halt = false;
@@ -349,6 +361,8 @@ Molecule.module('Molecule.Animation', function (require, p) {
 
 });
 Molecule.module('Molecule.AudioFile', function (require, p) {
+
+    var Sound = require('Molecule.Sound');
 
 	function AudioFile(_game) {
 		this.game = _game;
@@ -559,7 +573,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        if (game.sprite.isLoaded() && game.tilemap.isLoaded()) {
+        if (game.sprite.isLoaded() && game.tilemap.isLoaded() && game.audio.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();
@@ -742,8 +756,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.run = callback;
     };
 
-    Game.prototype.text = function (_font) {
-        var t = new Text(_font, this);
+    Game.prototype.text = function (_font, _x, _y, _title) {
+        var t = new Text(_font, _x, _y, _title, this);
         this.scene.text.push(t);
         return t;
     };
@@ -2205,11 +2219,11 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
 });
 Molecule.module('Molecule.Text', function (require, p) {
 
-	function Text (_font, _game) {
+	function Text (_font, _x, _y, _title, _game) {
 		this.game = _game;
-		this.title = null;
-		this.x = 0;
-		this.y = 0;
+		this.title = _title === undefined ? null : _title;
+		this.x = _x || 0;
+		this.y = _y || 0;
 		this.align = 'left';
 		this.font = _font;
 		this.color = '#FFFFFF';
