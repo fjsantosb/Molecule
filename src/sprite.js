@@ -29,6 +29,8 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.overlap = false;
         this.kill = false;
         this.game = null;
+        this.width = 0;
+        this.height = 0;
 
         return this;
     };
@@ -37,6 +39,8 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.size = {width: this.image.width, height: this.image.height};
         this.frame.width = this.frame.width || this.size.width;
         this.frame.height = this.frame.height || this.size.height;
+        this.width = this.frame.width;
+        this.height = this.frame.height;
         this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
     };
 
