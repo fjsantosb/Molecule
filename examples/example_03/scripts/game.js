@@ -1,9 +1,9 @@
 Molecule(320, 320, function (game, require) {
     
-    game.init(function () {
+    // Enable keyboard
+    game.input.enable('keyboard');
     
-        // Enable keyboard
-        game.input.enable('keyboard');
+    game.init(function () {
         
     });
     
