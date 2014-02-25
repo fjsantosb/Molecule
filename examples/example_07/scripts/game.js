@@ -7,7 +7,7 @@ Molecule(320, 320, function (game, require) {
     
     // Change friction
     game.physics.friction.x = 0;
-    game.physics.friction.y = 0.05;
+    game.physics.friction.y = 0.025;
     
     // Change gravity (pixels per frame)
     game.physics.gravity.x = 0;
@@ -26,19 +26,16 @@ Molecule(320, 320, function (game, require) {
         // Add animation with parameters: animation name, animation frames, speed
         sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
         
-        // Stop current animation
-        sprite.animation.stop();
-        
-        // Run animation with parameters: animation name, loop, reverse 
-        sprite.animation.run('fly', true, false);
+        // Run animation with parameters: animation name, loop, reverse (loop and reverse parameters are optional) 
+        sprite.animation.run('fly');
         
     });
     
     game.update(function () {
 
-        if(sprite.position.y < 50) {
+        if(sprite.position.y - sprite.anchor.y < 70) {
             game.physics.gravity.y = 9.78 / 60;
-        } else if(sprite.position.y + sprite.frame.height > game.width - 50) {
+        } else if(sprite.position.y - sprite.anchor.y + sprite.frame.height > game.width - 70) {
             game.physics.gravity.y = -9.78 / 60;
         }
 
