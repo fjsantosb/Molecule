@@ -18,8 +18,8 @@ Molecule(320, 320, function (game, require) {
         sprite.rotation = 0;
         
         // Change sprite anchor
-        sprite.anchor.x = 0.5;
-        sprite.anchor.y = 0.5;
+        sprite.anchor.x = sprite.width / 2;
+        sprite.anchor.y = sprite.height / 2;
         
         // Hide sprite
         sprite.visible = true;
@@ -28,13 +28,9 @@ Molecule(320, 320, function (game, require) {
         sprite.flip.x = false;
         sprite.flip.y = false;
         
-        // Get full sprite dimensions
-        var full_width = sprite.width;
-        var full_height = sprite.height;
-        
-        // Get frame sprite dimensions
-        var frame_width = sprite.frame.width;
-        var frame_height = sprite.frame.height;
+        // Get sprite width and height
+        var width = sprite.width;
+        var height = sprite.height;
         
     });
     
