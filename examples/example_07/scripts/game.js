@@ -35,7 +35,7 @@ Molecule(320, 320, function (game, require) {
 
         if(sprite.position.y - sprite.anchor.y < 70) {
             game.physics.gravity.y = 9.78 / 60;
-        } else if(sprite.position.y - sprite.anchor.y + sprite.frame.height > game.width - 70) {
+        } else if(sprite.position.y + sprite.anchor.y > game.width - 70) {
             game.physics.gravity.y = -9.78 / 60;
         }
 
