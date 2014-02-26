@@ -417,6 +417,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.sprite = null;
         this.scroll = {x: false, y: false};
         this.type = 0;
+        this.offset = {x: 0, y: 0};
     };
 
 	// Method for attach an sprite, map, and main layer
@@ -478,10 +479,10 @@ Molecule.module('Molecule.Camera', function (require, p) {
             wy = -this.game.map.json.layers[this.layer].y + this.game.canvas.height + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scrollable) {
-            if ((-this.game.map.json.layers[this.layer].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.sprite.scroll.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.sprite.scroll.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+            if ((-this.game.map.json.layers[this.layer].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
                 this.scroll.x = true;
             }
-            if ((-this.game.map.json.layers[this.layer].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.sprite.scroll.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.sprite.scroll.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+            if ((-this.game.map.json.layers[this.layer].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
                 this.scroll.y = true;
             }
         }
@@ -499,7 +500,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
                 if (this.game.map.json.layers[i].properties.scroll.infinite.y) {
                     wy = -this.game.map.json.layers[i].y + this.game.canvas.height + 1;
                 }
-                if ((-this.game.map.json.layers[i].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.sprite.scroll.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.sprite.scroll.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+                if ((-this.game.map.json.layers[i].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
                     if (this.scroll.x) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.x = this.sprite.move.x * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -509,7 +510,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
 
                     }
                 }
-                if ((-this.game.map.json.layers[i].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.sprite.scroll.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.sprite.scroll.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+                if ((-this.game.map.json.layers[i].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
                     if (this.scroll.y) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.y = this.sprite.move.y * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -1963,7 +1964,6 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y: 0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
         this.affects = {physics: {gravity: true, friction: true}};
         this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
-        this.scroll = {offset: {x: 0, y: 0}};
         this.overlap = false;
         this.kill = false;
         this.game = null;
