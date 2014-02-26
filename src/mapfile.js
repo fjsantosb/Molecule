@@ -64,6 +64,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 						_sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'false' ? false : true || true;
 						_sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'false' ? false : true || true;
 						_sprite.bounciness = this.game.map.json.layers[i].objects[j].properties['bounciness'] === 'true' ? true : false || false;
+						_sprite.overlap = this.game.map.json.layers[i].objects[j].properties['overlap'] === 'true' ? true : false || false;
 						return _sprite;
 					}
 				}
