@@ -13,7 +13,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.anchor = {x: 0, y: 0};
         this.visible = true;
         this.alpha = 1;
-        this.frame = {width: _width, height: _height, offset: {width: 0, height: 0}};
+        this.frame = {width: _width, height: _height, offset: {x: 0, y: 0, width: 0, height: 0}};
         this.animation = new Animation(this.frame.width, this.frame.height);
         this.size = {width: 0, height: 0};
         this.collides = {sprite: true, map: true};
@@ -64,8 +64,8 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             this.position.absolute.x += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].x);
             this.position.absolute.y += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].y);
         }
-        this.size.width = this.frame.width - this.frame.offset.width;
-        this.size.height = this.frame.height - this.frame.offset.height;
+        this.size.width = this.frame.width;
+        this.size.height = this.frame.height;
     };
 
 	// Sprite prototype Method resetMove
@@ -96,7 +96,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     Sprite.prototype.touch = function () {
         var _touch = this.game.input.touch;
         for (var i = 0; i < _touch.length; i++) {
-            if (this.position.x - this.anchor.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _touch[i].x && this.position.y - this.anchor.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _touch[i].y) {
+            if (this.position.x - this.anchor.x + this.frame.offset.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _touch[i].x && this.position.y - this.anchor.y + this.frame.offset.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _touch[i].y) {
                 return true;
             }
         }
@@ -106,14 +106,14 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 	// Sprite prototype Method is_clicked
     Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
-        if (this.position.x - this.anchor.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _mouse.x && this.position.y - this.anchor.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _mouse.y && _button)
+        if (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button)
             return true;
         return false;
     };
 
 	// Sprite prototype Method collidesWithSprite
     Sprite.prototype.collidesWithSprite = function (_object) {
-        if (((this.position.x - this.anchor.x + this.move.x <= _object.position.x - _object.anchor.x + _object.move.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x > _object.position.x - _object.anchor.x + _object.move.x) || (_object.position.x - _object.anchor.x + _object.move.x <= this.position.x - this.anchor.x + this.move.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.width > this.position.x - this.anchor.x + this.move.x)) && ((this.position.y - this.anchor.y + this.move.y <= _object.position.y - _object.anchor.y + _object.move.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y > _object.position.y - _object.anchor.y + _object.move.y) || (_object.position.y - _object.anchor.y + _object.move.y <= this.position.y - this.anchor.y + this.move.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.height > this.position.y - this.anchor.y + this.move.y)))
+        if (((this.position.x - this.anchor.x + this.move.x + this.frame.offset.x <= _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x > _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x) || (_object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x <= this.position.x - this.anchor.x + this.move.x + this.frame.offset.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.x > this.position.x - this.anchor.x + this.move.x + this.frame.offset.x)) && ((this.position.y - this.anchor.y + this.move.y + this.frame.offset.y <= _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y > _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y) || (_object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y <= this.position.y - this.anchor.y + this.move.y + this.frame.offset.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.y > this.position.y - this.anchor.y + this.move.y + this.frame.offset.y)))
             return true;
         return false;
     };
@@ -125,10 +125,10 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
         _object = {position: {x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth, y: Math.floor(_tile / _layer.width) * this.game.map.json.tilewidth}, width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth, height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
 
-        var px1 = this.position.x - this.anchor.x + this.move.x + _lpx;
-        var px2 = this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx;
-        var px3 = this.position.x - this.anchor.x + this.move.x + _lpx;
-        var px4 = this.position.x - this.anchor.x + this.move.x + _lpx;
+        var px1 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
+        var px2 = this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x + _lpx;
+        var px3 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
+        var px4 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
         if (_layer.properties.scroll.infinite.x) {
             if (px1 >= this.game.map.canvas[_j].width) {
                 px1 = Math.floor(px1 % this.game.map.canvas[_j].width);
@@ -144,10 +144,10 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             }
         }
 
-        var py1 = this.position.y - this.anchor.y + this.move.y + _lpy;
-        var py2 = this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy;
-        var py3 = this.position.y - this.anchor.y + this.move.y + _lpy;
-        var py4 = this.position.y - this.anchor.y + this.move.y + _lpy;
+        var py1 = this.position.y - this.anchor.y + this.move.y + this.frame.offset.y + _lpy;
+        var py2 = this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y + _lpy;
+        var py3 = this.position.y - this.anchor.y + this.move.y + this.frame.offset.y + _lpy;
+        var py4 = this.position.y - this.anchor.y + this.move.y + this.frame.offset.y + _lpy;
         if (_layer.properties.scroll.infinite.y) {
             if (py1 >= this.game.map.canvas[_j].height) {
                 py1 = Math.floor(py1 % this.game.map.canvas[_j].height);

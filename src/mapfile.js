@@ -51,8 +51,8 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 						_sprite.flip.y = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.y']) || _sprite.flip.y;
 						_sprite.frame.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.width']) || _sprite.frame.width;
 						_sprite.frame.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.height']) || _sprite.frame.height;
-						_sprite.frame.offset.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.width']) || _sprite.frame.offset.width;
-						_sprite.frame.offset.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.heigh']) || _sprite.frame.offset.height;
+						_sprite.frame.offset.x = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.x']) || _sprite.frame.offset.x;
+						_sprite.frame.offset.y = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.y']) || _sprite.frame.offset.y;
 						_sprite.collides.sprite = this.game.map.json.layers[i].objects[j].properties['collides.sprite'] === 'false' ? false : true || true;
 						_sprite.collides.map = this.game.map.json.layers[i].objects[j].properties['collides.map'] === 'false' ? false : true || true;
 						_sprite.scrollable = this.game.map.json.layers[i].objects[j].properties['scrollable'] === 'false' ? false : true || true;

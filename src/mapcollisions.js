@@ -5,11 +5,11 @@ Molecule.module('Molecule.MapCollisions', function (require, p) {
     };
 
     p.getHeight = function (tileHeight, sprite) {
-        return Math.ceil((sprite.frame.height - sprite.frame.offset.height) / tileHeight);
+        return Math.ceil((sprite.frame.height - sprite.frame.offset.y - sprite.frame.offset.y) / tileHeight);
     };
 
     p.getWidth = function (tileWidth, sprite) {
-        return Math.ceil((sprite.frame.width - sprite.frame.offset.width) / tileWidth);
+        return Math.ceil((sprite.frame.width - sprite.frame.offset.x - sprite.frame.offset.x) / tileWidth);
     };
 
     p.getPosX = function (layer, sprite, tileWidth) {
