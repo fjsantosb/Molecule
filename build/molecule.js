@@ -1520,11 +1520,11 @@ Molecule.module('Molecule.MapCollisions', function (require, p) {
     };
 
     p.getHeight = function (tileHeight, sprite) {
-        return Math.ceil((sprite.frame.height - sprite.frame.offset.height) / tileHeight);
+        return Math.ceil((sprite.frame.height - sprite.frame.offset.y - sprite.frame.offset.y) / tileHeight);
     };
 
     p.getWidth = function (tileWidth, sprite) {
-        return Math.ceil((sprite.frame.width - sprite.frame.offset.width) / tileWidth);
+        return Math.ceil((sprite.frame.width - sprite.frame.offset.x - sprite.frame.offset.x) / tileWidth);
     };
 
     p.getPosX = function (layer, sprite, tileWidth) {
@@ -1694,8 +1694,8 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 						_sprite.flip.y = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.y']) || _sprite.flip.y;
 						_sprite.frame.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.width']) || _sprite.frame.width;
 						_sprite.frame.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.height']) || _sprite.frame.height;
-						_sprite.frame.offset.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.width']) || _sprite.frame.offset.width;
-						_sprite.frame.offset.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.heigh']) || _sprite.frame.offset.height;
+						_sprite.frame.offset.x = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.x']) || _sprite.frame.offset.x;
+						_sprite.frame.offset.y = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.y']) || _sprite.frame.offset.y;
 						_sprite.collides.sprite = this.game.map.json.layers[i].objects[j].properties['collides.sprite'] === 'false' ? false : true || true;
 						_sprite.collides.map = this.game.map.json.layers[i].objects[j].properties['collides.map'] === 'false' ? false : true || true;
 						_sprite.scrollable = this.game.map.json.layers[i].objects[j].properties['scrollable'] === 'false' ? false : true || true;
@@ -1707,6 +1707,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 						_sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'false' ? false : true || true;
 						_sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'false' ? false : true || true;
 						_sprite.bounciness = this.game.map.json.layers[i].objects[j].properties['bounciness'] === 'true' ? true : false || false;
+						_sprite.overlap = this.game.map.json.layers[i].objects[j].properties['overlap'] === 'true' ? true : false || false;
 						return _sprite;
 					}
 				}
@@ -1950,7 +1951,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.anchor = {x: 0, y: 0};
         this.visible = true;
         this.alpha = 1;
-        this.frame = {width: _width, height: _height, offset: {width: 0, height: 0}};
+        this.frame = {width: _width, height: _height, offset: {x: 0, y: 0, width: 0, height: 0}};
         this.animation = new Animation(this.frame.width, this.frame.height);
         this.size = {width: 0, height: 0};
         this.collides = {sprite: true, map: true};
@@ -2001,8 +2002,10 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             this.position.absolute.x += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].x);
             this.position.absolute.y += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].y);
         }
-        this.size.width = this.frame.width - this.frame.offset.width;
-        this.size.height = this.frame.height - this.frame.offset.height;
+        this.size.width = this.frame.width - this.frame.offset.x - this.frame.offset.x;
+        this.size.height = this.frame.height - this.frame.offset.y - this.frame.offset.y;
+        this.width = this.size.width;
+        this.height = this.size.height;
     };
 
 	// Sprite prototype Method resetMove
@@ -2017,7 +2020,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite prototype Method draw
     Sprite.prototype.draw = function (_overlap) {
-        if (this.overlap === _overlap) {
+        if (this.overlap === _overlap && this.position.x - this.anchor.x + this.frame.width >= 0 && this.position.y - this.anchor.y + this.frame.height >= 0 && this.position.x - this.anchor.x <= this.game.width && this.position.y - this.anchor.y <= this.game.height) {
             this.game.context.save();
             this.game.context.globalAlpha = this.alpha;
             this.game.context.scale(1 * this.flip.f.x, 1 * this.flip.f.y);
@@ -2033,7 +2036,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     Sprite.prototype.touch = function () {
         var _touch = this.game.input.touch;
         for (var i = 0; i < _touch.length; i++) {
-            if (this.position.x - this.anchor.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _touch[i].x && this.position.y - this.anchor.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _touch[i].y) {
+            if (this.position.x - this.anchor.x + this.frame.offset.x <= _touch[i].x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _touch[i].x && this.position.y - this.anchor.y + this.frame.offset.y <= _touch[i].y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _touch[i].y) {
                 return true;
             }
         }
@@ -2043,14 +2046,14 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 	// Sprite prototype Method is_clicked
     Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
-        if (this.position.x - this.anchor.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width > _mouse.x && this.position.y - this.anchor.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height > _mouse.y && _button)
+        if (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button)
             return true;
         return false;
     };
 
 	// Sprite prototype Method collidesWithSprite
     Sprite.prototype.collidesWithSprite = function (_object) {
-        if (((this.position.x - this.anchor.x + this.move.x <= _object.position.x - _object.anchor.x + _object.move.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x > _object.position.x - _object.anchor.x + _object.move.x) || (_object.position.x - _object.anchor.x + _object.move.x <= this.position.x - this.anchor.x + this.move.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.width > this.position.x - this.anchor.x + this.move.x)) && ((this.position.y - this.anchor.y + this.move.y <= _object.position.y - _object.anchor.y + _object.move.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y > _object.position.y - _object.anchor.y + _object.move.y) || (_object.position.y - _object.anchor.y + _object.move.y <= this.position.y - this.anchor.y + this.move.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.height > this.position.y - this.anchor.y + this.move.y)))
+        if (((this.position.x - this.anchor.x + this.move.x + this.frame.offset.x <= _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x > _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x) || (_object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x <= this.position.x - this.anchor.x + this.move.x + this.frame.offset.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.x > this.position.x - this.anchor.x + this.move.x + this.frame.offset.x)) && ((this.position.y - this.anchor.y + this.move.y + this.frame.offset.y <= _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y > _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y) || (_object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y <= this.position.y - this.anchor.y + this.move.y + this.frame.offset.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.y > this.position.y - this.anchor.y + this.move.y + this.frame.offset.y)))
             return true;
         return false;
     };
@@ -2062,10 +2065,10 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
         _object = {position: {x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth, y: Math.floor(_tile / _layer.width) * this.game.map.json.tilewidth}, width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth, height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
 
-        var px1 = this.position.x - this.anchor.x + this.move.x + _lpx;
-        var px2 = this.position.x - this.anchor.x + this.frame.width - this.frame.offset.width + this.move.x + _lpx;
-        var px3 = this.position.x - this.anchor.x + this.move.x + _lpx;
-        var px4 = this.position.x - this.anchor.x + this.move.x + _lpx;
+        var px1 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
+        var px2 = this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x + _lpx;
+        var px3 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
+        var px4 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
         if (_layer.properties.scroll.infinite.x) {
             if (px1 >= this.game.map.canvas[_j].width) {
                 px1 = Math.floor(px1 % this.game.map.canvas[_j].width);
@@ -2081,10 +2084,10 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             }
         }
 
-        var py1 = this.position.y - this.anchor.y + this.move.y + _lpy;
-        var py2 = this.position.y - this.anchor.y + this.frame.height - this.frame.offset.height + this.move.y + _lpy;
-        var py3 = this.position.y - this.anchor.y + this.move.y + _lpy;
-        var py4 = this.position.y - this.anchor.y + this.move.y + _lpy;
+        var py1 = this.position.y - this.anchor.y + this.move.y + this.frame.offset.y + _lpy;
+        var py2 = this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y + _lpy;
+        var py3 = this.position.y - this.anchor.y + this.move.y + this.frame.offset.y + _lpy;
+        var py4 = this.position.y - this.anchor.y + this.move.y + this.frame.offset.y + _lpy;
         if (_layer.properties.scroll.infinite.y) {
             if (py1 >= this.game.map.canvas[_j].height) {
                 py1 = Math.floor(py1 % this.game.map.canvas[_j].height);
