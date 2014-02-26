@@ -80,7 +80,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite prototype Method draw
     Sprite.prototype.draw = function (_overlap) {
-        if (this.overlap === _overlap) {
+        if (this.overlap === _overlap && this.position.x - this.anchor.x + this.frame.width >= 0 && this.position.y - this.anchor.y + this.frame.height >= 0 && this.position.x - this.anchor.x <= this.game.width && this.position.y - this.anchor.y <= this.game.height) {
             this.game.context.save();
             this.game.context.globalAlpha = this.alpha;
             this.game.context.scale(1 * this.flip.f.x, 1 * this.flip.f.y);
