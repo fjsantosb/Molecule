@@ -6,6 +6,7 @@
     var isTest = false;
     var timeoutLimit = 100;
     var game = null;
+    var world = {};
 
     var p = {
         Module: function Module(name, func) {
@@ -141,7 +142,8 @@
                     var module = p.getModule(name, modules);
                     return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
                 },
-                game: game
+                game: game,
+                world: world
             }
             return context;
         },
@@ -227,28 +229,25 @@
     };
 
 
-    var Molecule = function (width, height, scale, callback) {
+    var Molecule = function (options) {
 
-        var argsArray = Array.prototype.slice.call(arguments, 0),
-            context;
+        var context;
 
-        argsArray.forEach(function (arg) {
-            if (typeof arg === 'function') {
-                callback = arg;
-            } else if (typeof arg === 'number' && width === undefined) {
-                width = arg;
-            } else if (typeof arg === 'number' && height === undefined) {
-                height = arg;
-            } else if (typeof arg === 'number' && scale === undefined) {
-                scale = arg;
-            }
-        });
+        if (!options.assets) {
+            options.assets = function () {};
+        }
+
+        if (!options.init) {
+            options.init = function () {};
+        }
+
+        if (!options.update) {
+            options.update = function () {};
+        }
 
         p.registerModules(moleculeModules, initializedModules);
-        p.createGame(width, height, scale);
+        p.createGame(options, world);
         p.registerModules(definedModules, initializedModules);
-        context = p.createContext(initializedModules);
-        callback.call(context, context.game, context.require);
 
     };
 

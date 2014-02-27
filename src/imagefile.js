@@ -29,6 +29,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		s.image = this.preload(_imageSrc);
 		if(this.isLoaded())
 			s.getAnimation();
+
 		this.game.scene.sprites.push(s);
 		return s;
 	};

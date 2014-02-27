@@ -167,10 +167,10 @@ Molecule.module('Molecule.Game', function (require, p) {
         }, 100);
     };
 
-    var Game = function (_width, _height, _scale) {
+    var Game = function (options, world) {
         this.canvas = null;
         this.context = null;
-        this.scale = _scale || 1;
+        this.scale = options.scale || 1;
         this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
         this.boundaries = {x: null, y: null, width: null, height: null};
         this.tilemap = new MapFile(this);
@@ -184,35 +184,29 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.input = new Input(this);
         this.status = 1;
         this.timer = {loop: 60 / 1000, previus: null, now: null, fps: 60, frame: 0};
-        this.width = _width;
-        this.height = _height;
+        this.width = options.width;
+        this.height = options.height;
 
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'canvas');
 
-        this.canvas.width = _width;
-        this.canvas.height = _height;
+        this.canvas.width = options.width;
+        this.canvas.height = options.height;
 
-        this.canvas.style.width = _width * this.scale + "px";
-        this.canvas.style.height = _height * this.scale + "px";
+        this.canvas.style.width = options.width * this.scale + "px";
+        this.canvas.style.height = options.height * this.scale + "px";
         this.context = this.canvas.getContext('2d');
 
         document.body.appendChild(this.canvas);
-    };
 
-    Game.prototype.init = function (callback) {
+        this.assets = new options.assets(this, world, require);
+        p.run = options.update.bind(this, this, world, require);
+        p.init = options.init.bind(this, this, world, require);
         p.start(this);
-        callback();
-    };
 
-    Game.prototype.init = function (callback) {
-        p.init = callback;
-        p.start(this);
-        delete this.init;
-    };
 
-    Game.prototype.update = function (callback) {
-        p.run = callback;
+
+
     };
 
     Game.prototype.text = function (_font, _x, _y, _title) {
