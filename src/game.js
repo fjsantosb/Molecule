@@ -13,8 +13,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions');
 
-	p.init = null;
-	
+    p.init = null;
+
     p.run = null;
     
     p.update = function (_exit, game) {
@@ -221,7 +221,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         return t;
     };
 
-	// Not in use, remove?
+    // Not in use, remove?
     Game.prototype.updateTimer = function () {
         this.timer.frame++;
         this.timer.now = new Date().getTime();
@@ -255,19 +255,18 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     };
 
-	Game.prototype.cameraUpdate = function(_exit) {
-		for(var i = 0; i < this.scene.sprites.length; i++) {
-			this.scene.sprites[i].update();
-			this.scene.sprites[i].flipUpdate();
-			if(this.scene.sprites[i].animation !== null && _exit)
-				this.scene.sprites[i].animation.nextFrame();
-		}
-		if(this.map !== null)
-			this.map.update();
-	};
+    Game.prototype.cameraUpdate = function(_exit) {
+        for(var i = 0; i < this.scene.sprites.length; i++) {
+            this.scene.sprites[i].update();
+            this.scene.sprites[i].flipUpdate();
+            if(this.scene.sprites[i].animation !== null && _exit)
+                this.scene.sprites[i].animation.nextFrame();
+        }
+        if(this.map !== null)
+            this.map.update();
+    };
 
     Game.prototype.run = function () {
-        console.log('running');
         p.run();
     };
 
