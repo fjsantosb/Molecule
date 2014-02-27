@@ -21,7 +21,7 @@ Molecule(320, 320, function (game, require) {
         // Run animation with parameters: animation name, loop, reverse 
         sprite.animation.run('fly');
         
-        // Change max speed sprite (pixels per frame)
+        // Change sprite max speed (pixels per frame)
         sprite.speed.max.x = 1;
         sprite.speed.max.y = 0;
         
