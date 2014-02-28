@@ -277,136 +277,132 @@
 }(window));
 Molecule.module('Molecule.Animation', function (require, p) {
 
-	function Animation() {
-		this.frame = new Array();
-		this.id = new Array();
-		this.current = {animation: 0, frame: 0};
-		this.timer = 0;
-		this.loop = true;
-		this.reverse = false;
-		this.halt = false;
-	};
-	
-	// Method to get frames of the sprite sheet
-	Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
-		for(var i = 0; i < _imageHeight - 1; i += _frameHeight) {
-			for(var j = 0; j < _imageWidth - 1; j += _frameWidth) {
-				this.frame.push({x:j, y:i});
-			}
-		}
-		if(_imageWidth === _frameWidth && _imageHeight === _frameHeight) {
-			this.add('', [0], 60);
-		}
-	};
-	
-	// Method to add an animation
-	Animation.prototype.add = function(_name, _frames, _speed) {
-	    var _speedFps = _speed * 60 / _frames.length;
-		this.id.push({name: _name, frame: _frames, speed: _speedFps});
-	};
-	
-	//Method to play current animation
-	Animation.prototype.run = function(_name, _loop, _reverse) {
-	    _loop = _loop === undefined ? true : _loop;
-	    _reverse = _reverse === undefined ? false : _reverse;
-		this.loop = _loop;
-		this.reverse = _reverse;
-		this.halt = false;
-		if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
-			this.current.frame = -1;
-			for(var i = 0; i < this.id.length; i++) {
-				if(this.id[i].name === _name) {
-					this.current.animation = i;
-					this.current.frame = 0;
-					this.timer = 0;
-				}
-			}
-		}
-	};
-	
-	Animation.prototype.stop = function() {
-		this.halt = true;
-	};
-	
-	// Method to get next animation frame
-	Animation.prototype.nextFrame = function() {
-		if(!this.halt) {
-			this.timer++;
-			if(this.timer > this.id[this.current.animation].speed) {
-				this.timer = 0;
-				if(!this.reverse) {
-					this.current.frame++;
-					if(this.current.frame >= this.id[this.current.animation].frame.length) {
-						if(this.loop) {
-							this.current.frame = 0;
-						} else {
-							this.current.frame = this.id[this.current.animation].frame.length - 1;
-						}
-					}
-				} else {
-					this.current.frame--;
-					if(this.current.frame < 0) {
-						if(this.loop) {
-							this.current.frame = this.id[this.current.animation].frame.length - 1;
-						} else {
-							this.current.frame = 0;
-						}
-					}
-				}
-			}
-		}
-	};
+    function Animation() {
+        this.frame = new Array();
+        this.id = new Array();
+        this.current = {animation: 0, frame: 0};
+        this.timer = 0;
+        this.loop = true;
+        this.reverse = false;
+        this.halt = false;
+    };
 
-	return Animation;
+    Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
+        for(var i = 0; i < _imageHeight - 1; i += _frameHeight) {
+            for(var j = 0; j < _imageWidth - 1; j += _frameWidth) {
+                this.frame.push({x:j, y:i});
+            }
+        }
+        if(_imageWidth === _frameWidth && _imageHeight === _frameHeight) {
+            this.add('', [0], 60);
+        }
+    };
+
+    Animation.prototype.add = function(_name, _frames, _speed) {
+        var _speedFps = _speed * 60 / _frames.length;
+        this.id.push({name: _name, frame: _frames, speed: _speedFps});
+    };
+
+    Animation.prototype.run = function(_name, _loop, _reverse) {
+        _loop = _loop === undefined ? true : _loop;
+        _reverse = _reverse === undefined ? false : _reverse;
+        this.loop = _loop;
+        this.reverse = _reverse;
+        this.halt = false;
+        if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
+            this.current.frame = -1;
+            for(var i = 0; i < this.id.length; i++) {
+                if(this.id[i].name === _name) {
+                    this.current.animation = i;
+                    this.current.frame = 0;
+                    this.timer = 0;
+                }
+            }
+        }
+    };
+    
+    Animation.prototype.stop = function() {
+        this.halt = true;
+    };
+
+    Animation.prototype.nextFrame = function() {
+        if(!this.halt) {
+            this.timer++;
+            if(this.timer > this.id[this.current.animation].speed) {
+                this.timer = 0;
+                if(!this.reverse) {
+                    this.current.frame++;
+                    if(this.current.frame >= this.id[this.current.animation].frame.length) {
+                        if(this.loop) {
+                            this.current.frame = 0;
+                        } else {
+                            this.current.frame = this.id[this.current.animation].frame.length - 1;
+                        }
+                    }
+                } else {
+                    this.current.frame--;
+                    if(this.current.frame < 0) {
+                        if(this.loop) {
+                            this.current.frame = this.id[this.current.animation].frame.length - 1;
+                        } else {
+                            this.current.frame = 0;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    return Animation;
 
 });
 Molecule.module('Molecule.AudioFile', function (require, p) {
 
     var Sound = require('Molecule.Sound');
 
-	function AudioFile(_game) {
-		this.game = _game;
-		this.name = new Array();
-		this.data = new Array();
-		this.counter = 0;
-	};
+    function AudioFile(_game) {
+        this.game = _game;
+        this.name = new Array();
+        this.data = new Array();
+        this.counter = 0;
+    };
 
-	AudioFile.prototype.load = function(_audioSrc) {
-		if(!this.getAudioDataByName(_audioSrc)) {
-			var self = this;
-			var _audio = new Audio();
-			var _audioSrcFile;
-			for(var i = 0; i < _audioSrc.length; i++) {
-				var t = _audioSrc[i].split('.');
-				if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
-					_audioSrcFile = _audioSrc[i];
-				}
-			}
-			_audio.addEventListener('canplay', function(){self.counter++});
-			_audio.src = _audioSrcFile;
-			this.name.push(_audioSrc);
-			this.data.push(_audio);
-		}
+    AudioFile.prototype.load = function(_audioSrc) {
+        if(!this.getAudioDataByName(_audioSrc)) {
+            var self = this;
+            var _audio = new Audio();
+            var _audioSrcFile;
+            for(var i = 0; i < _audioSrc.length; i++) {
+                var t = _audioSrc[i].split('.');
+                if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
+                    _audioSrcFile = _audioSrc[i];
+                }
+            }
+            _audio.addEventListener('canplay', function(){self.counter++});
+            _audio.src = _audioSrcFile;
+            this.name.push(_audioSrc);
+            this.data.push(_audio);
+        }
 
-		var s = new Sound();
-		s.sound = this.getAudioDataByName(_audioSrc);
-		this.game.sound.push(s);
+        var s = new Sound();
+        s.sound = this.getAudioDataByName(_audioSrc);
+        this.game.sound.push(s);
 
-		return s;
-	};
-	
-	AudioFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
-	};
+        return s;
+    };
 
-	AudioFile.prototype.getAudioDataByName = function(_audioName) {
-		return this.data[this.name.indexOf(_audioName)];
-	};
+    AudioFile.prototype.isLoaded = function() {
+        if(this.counter === this.data.length) {
+            return true;
+        }
+        return false;
+    };
 
-	return AudioFile;
+    AudioFile.prototype.getAudioDataByName = function(_audioName) {
+        return this.data[this.name.indexOf(_audioName)];
+    };
+
+    return AudioFile;
 
 });
 Molecule.module('Molecule.Camera', function (require, p) {
@@ -420,14 +416,12 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.offset = {x: 0, y: 0};
     };
 
-	// Method for attach an sprite, map, and main layer
     Camera.prototype.attach = function (_sprite) {
         this.sprite = _sprite;
         this.type = 1;
         this.set();
     };
 
-	// Method for detach an sprite
     Camera.prototype.detach = function () {
         this.sprite = null;
         this.type = 0;
@@ -457,7 +451,6 @@ Molecule.module('Molecule.Camera', function (require, p) {
         }
     };
 
-	// Method for update the camera. It will update map & sprite
     Camera.prototype.update = function (_sprite) {
         if (this.game.map !== null && this.layer !== -1) {
             this.makeScroll();
@@ -466,7 +459,6 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.makeSpriteScroll(_sprite, this.sprite.move.x, this.sprite.move.y);
     };
 
-	// Method to check if scroll is necessary
     Camera.prototype.makeScroll = function () {
         this.scroll.x = false;
         this.scroll.y = false;
@@ -488,7 +480,6 @@ Molecule.module('Molecule.Camera', function (require, p) {
         }
     };
 
-	// Method to scroll map
     Camera.prototype.makeMapScroll = function () {
         for (var i = 0; i < this.game.map.json.layers.length; i++) {
             if (this.game.map.json.layers[i].type === 'tilelayer' && this.game.map.json.layers[i].properties.scrollable) {
@@ -523,7 +514,6 @@ Molecule.module('Molecule.Camera', function (require, p) {
         }
     };
 
-	// Method to scroll sprite
     Camera.prototype.makeSpriteScroll = function (_sprite, _x, _y) {
         for (var i = 0; i < _sprite.length; i++) {
             if (_sprite[i].scrollable) {
@@ -555,8 +545,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions');
 
-	p.init = null;
-	
+    p.init = null;
+
     p.run = null;
     
     p.update = function (_exit, game) {
@@ -763,7 +753,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         return t;
     };
 
-	// Not in use, remove?
+    // Not in use, remove?
     Game.prototype.updateTimer = function () {
         this.timer.frame++;
         this.timer.now = new Date().getTime();
@@ -797,19 +787,18 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     };
 
-	Game.prototype.cameraUpdate = function(_exit) {
-		for(var i = 0; i < this.scene.sprites.length; i++) {
-			this.scene.sprites[i].update();
-			this.scene.sprites[i].flipUpdate();
-			if(this.scene.sprites[i].animation !== null && _exit)
-				this.scene.sprites[i].animation.nextFrame();
-		}
-		if(this.map !== null)
-			this.map.update();
-	};
+    Game.prototype.cameraUpdate = function(_exit) {
+        for(var i = 0; i < this.scene.sprites.length; i++) {
+            this.scene.sprites[i].update();
+            this.scene.sprites[i].flipUpdate();
+            if(this.scene.sprites[i].animation !== null && _exit)
+                this.scene.sprites[i].animation.nextFrame();
+        }
+        if(this.map !== null)
+            this.map.update();
+    };
 
     Game.prototype.run = function () {
-        console.log('running');
         p.run();
     };
 
@@ -1955,7 +1944,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.frame = {width: _width, height: _height, offset: {x: 0, y: 0, width: 0, height: 0}};
         this.animation = new Animation(this.frame.width, this.frame.height);
         this.size = {width: 0, height: 0};
-        this.collides = {sprite: true, map: true};
+        this.collides = {sprite: true, map: true, group: null};
         this.scrollable = true;
         this.collidable = true;
         this.platform = false;
@@ -2114,7 +2103,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 Molecule.module('Molecule.SpriteCollisions', function (require, p) {
 
     p.spritesCollide = function (spriteI, spriteJ) {
-        return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ))
+        return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ)) && (spriteI.collides.group === null || spriteI.collides.group !== spriteJ.collides.group)
     };
 
     p.updateCollisionY = function (spriteI, spriteJ, i, j, physics) {
