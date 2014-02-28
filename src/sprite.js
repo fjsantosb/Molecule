@@ -16,7 +16,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.frame = {width: _width, height: _height, offset: {x: 0, y: 0, width: 0, height: 0}};
         this.animation = new Animation(this.frame.width, this.frame.height);
         this.size = {width: 0, height: 0};
-        this.collides = {sprite: true, map: true, group: null};
+        this.collides = {sprite: true, map: true, boundaries: true, group: null};
         this.scrollable = true;
         this.collidable = true;
         this.platform = false;
@@ -24,7 +24,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.acceleration = {x: 0, y: 0};
         this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y: 0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
         this.affects = {physics: {gravity: true, friction: true}};
-        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
+        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: false}, check: {map: {up: true, down: true, left: true, right: true}}};
         this.overlap = false;
         this.kill = false;
         this.game = null;
