@@ -108,10 +108,10 @@ Molecule.module('Molecule.Map', function (require, p) {
 
 	Map.prototype.getTileset = function(_data) {
 		for(var i = 0; i < this.json.tilesets.length; i++) {
-			if(this.json.tilesets.length === 1 || this.json.tilesets.length === i || this.json.tilesets[i].firstgid === _data) {
-				return i;
-			} else if(this.json.tilesets[i].firstgid > _data) {
+			if(this.json.tilesets[i].firstgid > _data) {
 				return i - 1;
+			} else if(this.json.tilesets.length === 1 || this.json.tilesets.length - 1 === i || this.json.tilesets[i].firstgid === _data) {
+				return i;
 			}
 		}
 	};
