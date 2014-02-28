@@ -1,7 +1,7 @@
 Molecule.module('Molecule.SpriteCollisions', function (require, p) {
 
     p.spritesCollide = function (spriteI, spriteJ) {
-        return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ))
+        return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ)) && (spriteI.collides.group === null || spriteI.collides.group !== spriteJ.collides.group)
     };
 
     p.updateCollisionY = function (spriteI, spriteJ, i, j, physics) {

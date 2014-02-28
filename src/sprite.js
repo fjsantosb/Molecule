@@ -16,7 +16,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.frame = {width: _width, height: _height, offset: {x: 0, y: 0, width: 0, height: 0}};
         this.animation = new Animation(this.frame.width, this.frame.height);
         this.size = {width: 0, height: 0};
-        this.collides = {sprite: true, map: true};
+        this.collides = {sprite: true, map: true, group: null};
         this.scrollable = true;
         this.collidable = true;
         this.platform = false;
