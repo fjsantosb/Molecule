@@ -597,6 +597,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprite.collision.map.right = false;
             sprite.collision.map.up = false;
             sprite.collision.map.down = false;
+            
+            sprite.collision.boundaries.id = null;
+            sprite.collision.boundaries.left = false;
+            sprite.collision.boundaries.right = false;
+            sprite.collision.boundaries.up = false;
+            sprite.collision.boundaries.down = false;
         }
     };
 
@@ -642,20 +648,48 @@ Molecule.module('Molecule.Game', function (require, p) {
         var sprite;
         for (var i = 0; i < game.scene.sprites.length; i++) {
             sprite = game.scene.sprites[i];
-            if (game.boundaries.x !== null) {
-                if (sprite.position.x - sprite.anchor.x < game.boundaries.x) {
-                    sprite.position.x = game.boundaries.x + sprite.anchor.x;
+            if (game.boundaries.x !== null && sprite.collides.boundaries) {
+                if (sprite.position.x - sprite.anchor.x + sprite.frame.offset.x < game.boundaries.x) {
+                    sprite.position.x = game.boundaries.x + sprite.anchor.x - sprite.frame.offset.x;
+                    sprite.collision.boundaries.left = true;
+                    sprite.collision.boundaries.id = 0;
+                    sprite.move.x = 0;
+                    sprite.speed.x = 0;
+                    sprite.speed.t.x = 0;
+                    if(game.physics.gravity.x < 0)
+                        sprite.speed.gravity.x = 0;
                 }
-                if (sprite.position.x + sprite.frame.width - sprite.anchor.x > game.boundaries.x + game.boundaries.width) {
-                    sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x;
+                if (sprite.position.x + sprite.frame.width - sprite.anchor.x - sprite.frame.offset.x > game.boundaries.x + game.boundaries.width) {
+                    sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x + sprite.frame.offset.x;
+                    sprite.collision.boundaries.right = true;
+                    sprite.collision.boundaries.id = 1;
+                    sprite.move.x = 0;
+                    sprite.speed.x = 0;
+                    sprite.speed.t.x = 0;
+                    if(game.physics.gravity.x > 0)
+                        sprite.speed.gravity.x = 0;
                 }
             }
-            if (game.boundaries.y !== null) {
-                if (sprite.position.y - sprite.anchor.y < game.boundaries.y) {
-                    sprite.position.y = game.boundaries.y + sprite.anchor.y;
+            if (game.boundaries.y !== null && sprite.collides.boundaries) {
+                if (sprite.position.y - sprite.anchor.y + sprite.frame.offset.y < game.boundaries.y) {
+                    sprite.position.y = game.boundaries.y + sprite.anchor.y - sprite.frame.offset.y;
+                    sprite.collision.boundaries.up = true;
+                    sprite.collision.boundaries.id = 2;
+                    sprite.move.y = 0;
+                    sprite.speed.y = 0;
+                    sprite.speed.t.y = 0;
+                    if(game.physics.gravity.y < 0)
+                        sprite.speed.gravity.y = 0;
                 }
-                if (sprite.position.y + sprite.frame.height - sprite.anchor.y > game.boundaries.y + game.boundaries.height) {
-                    sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y;
+                if (sprite.position.y + sprite.frame.height - sprite.anchor.y - sprite.frame.offset.y > game.boundaries.y + game.boundaries.height) {
+                    sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y + sprite.frame.offset.y;
+                    sprite.collision.boundaries.down = true;
+                    sprite.collision.boundaries.id = 3;
+                    sprite.move.y = 0;
+                    sprite.speed.y = 0;
+                    sprite.speed.t.y = 0;
+                    if(game.physics.gravity.y > 0)
+                        sprite.speed.gravity.y = 0;
                 }
             }
         }
@@ -1944,7 +1978,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.frame = {width: _width, height: _height, offset: {x: 0, y: 0, width: 0, height: 0}};
         this.animation = new Animation(this.frame.width, this.frame.height);
         this.size = {width: 0, height: 0};
-        this.collides = {sprite: true, map: true, group: null};
+        this.collides = {sprite: true, map: true, boundaries: true, group: null};
         this.scrollable = true;
         this.collidable = true;
         this.platform = false;
@@ -1952,7 +1986,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.acceleration = {x: 0, y: 0};
         this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y: 0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
         this.affects = {physics: {gravity: true, friction: true}};
-        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
+        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: false}, check: {map: {up: true, down: true, left: true, right: true}}};
         this.overlap = false;
         this.kill = false;
         this.game = null;
