@@ -564,7 +564,9 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        if (game.sprite.isLoaded() && game.tilemap.isLoaded() && game.audio.isLoaded()) {
+        var total = game.sprite.data.length + game.tilemap.map.length + game.audio.data.length;
+        var total_loaded = game.sprite.counter + game.tilemap.getCounter() + game.audio.counter;
+        if (game.tilemap.isLoaded() && game.sprite.isLoaded() && game.audio.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();
@@ -572,6 +574,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             p.init();
             p.loop(game);
         }
+        game.context.save();
+        game.context.fillStyle='#f8f8f8';
+        game.context.fillRect(30, Math.round(game.height / 1.25), (game.width - (30 * 2)), 16);
+        game.context.fillStyle='#ea863a';
+        game.context.fillRect(30, Math.round(game.height / 1.25), (game.width - (30 * 2)) * (total_loaded / total), 16);
+        game.context.restore();
     };
 
     p.removeSprites = function (sprites) {
@@ -1692,6 +1700,16 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 		}
 		return loaded;
 	};
+
+    MapFile.prototype.getCounter = function() {
+        var c = 0;
+    	for(var i = 0; i < this.map.length; i++) {
+    		if(this.map[i].loaded) {
+    			c++;
+    		}
+		}
+		return c;
+    };
 
 	MapFile.prototype.set = function(_map, _reset) {
 		_reset = _reset || false;
