@@ -26,6 +26,16 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 		return loaded;
 	};
 
+    MapFile.prototype.getCounter = function() {
+        var c = 0;
+    	for(var i = 0; i < this.map.length; i++) {
+    		if(this.map[i].loaded) {
+    			c++;
+    		}
+		}
+		return c;
+    };
+
 	MapFile.prototype.set = function(_map, _reset) {
 		_reset = _reset || false;
 		this.game.camera.detach();
