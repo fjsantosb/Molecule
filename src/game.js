@@ -147,7 +147,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 game.scene.sprites[i].draw(true);
             }
         }
-        if (game.map  && game.map.visible) {
+        if (game.map && game.map.visible) {
             game.map.draw(true);
         }
         for (var i = 0; i < game.scene.text.length; i++) {
