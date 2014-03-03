@@ -6,6 +6,7 @@ Molecule.module('Molecule.Map', function (require, p) {
 		this.context = [];
 		this.name = null;
 		this.visible = true;
+        this.sprites = [];
 		this.image = [];
 		this.path = '';
 		this.response = null;
@@ -13,13 +14,15 @@ Molecule.module('Molecule.Map', function (require, p) {
 		this.loaded = false;
 	};
 
-	Map.prototype.load = function(_name) {
+	Map.prototype.load = function(_id, _name) {
+        this.id = _id;
 		this.name = _name;
 		var t = _name.split('/');
 		for(var i = 0; i < t.length - 1; i++) {
 			this.path += t[i] + '/';
 		}
 		this.ajaxJsonReq(this.name);
+        this.game.tilemaps[_id] = this;
 	};
 
 	Map.prototype.ajaxJsonReq = function(_name) {
@@ -52,14 +55,18 @@ Molecule.module('Molecule.Map', function (require, p) {
 	Map.prototype.loadImages = function() {
 		var self = this;
 		for(var i = 0; i < this.json.tilesets.length; i++) {
-			var image = this.game.sprite.preload(this.path + this.json.tilesets[i].image);
+            // Can also load as referenceable sprites
+//            Molecule.sprite(this.json.tilesets[i].name, this.json.tilesets[i].image);
+//			var image = this.game.imageFile.preload(this.path + this.json.tilesets[i].image);
+//            var image = this.game.sprite(this.json.tilesets[i].name).image;
+			var image = this.game.imageFile.preload(this.path + this.json.tilesets[i].image);
 			this.image.push(image);
 		}
 		var interval = setInterval(function(){self.loadResources(interval)}, 100);
 	};
 
 	Map.prototype.loadResources = function(_interval) {
-		if(this.game.sprite.isLoaded()) {
+		if(this.game.imageFile.isLoaded()) {
 			clearInterval(_interval);
 			this.createContext();
 			this.loaded = true;
@@ -98,7 +105,17 @@ Molecule.module('Molecule.Map', function (require, p) {
 						var tileset = this.getTileset(data);
 						this.context[i].save();
 						this.context[i].globalAlpha = this.json.layers[i].opacity;
-						this.context[i].drawImage(this.image[tileset], Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tilewidth, this.json.tilesets[tileset].tileheight, (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth), (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth), this.json.tilewidth, this.json.tileheight);
+						this.context[i].drawImage(
+                            this.image[tileset],
+
+                            Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
+                            Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
+                            this.json.tilesets[tileset].tilewidth,
+                            this.json.tilesets[tileset].tileheight,
+                            (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth),
+                            (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth),
+                            this.json.tilewidth,
+                            this.json.tileheight);
 						this.context[i].restore();
 					}
 				}

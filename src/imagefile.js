@@ -4,8 +4,8 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 
 	function ImageFile(_game) {
 		this.game = _game;
-		this.name = new Array();
-		this.data = new Array();
+		this.name = [];
+		this.data = [];
 		this.counter = 0;
 	};
 
@@ -23,13 +23,15 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		return this.getImageDataByName(_name);
 	};
 
-	ImageFile.prototype.load = function(_imageSrc, _width, _height) {
+    // Load up a new sprite
+    // TODO: Make it just load up the new image, the sprites are created later
+	ImageFile.prototype.load = function(_id, _imageSrc, _width, _height) {
 		var s = new Sprite(_imageSrc, _width, _height);
 		s.game = this.game;
 		s.image = this.preload(_imageSrc);
 		if(this.isLoaded())
 			s.getAnimation();
-		this.game.scene.sprites.push(s);
+        this.game.sprites[_id] = s;
 		return s;
 	};
 
