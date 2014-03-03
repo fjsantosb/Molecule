@@ -11,6 +11,7 @@ module.exports = function(grunt) {
         'src/map.js',
         'src/mapcollisions.js',
         'src/mapfile.js',
+        'src/mobject.js',
         'src/move.js',
         'src/physics.js',
         'src/scene.js',
