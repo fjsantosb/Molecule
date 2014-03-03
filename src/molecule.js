@@ -6,7 +6,6 @@
     var isTest = false;
     var timeoutLimit = 100;
     var game = null;
-    var world = {};
 
     var p = {
         Module: function Module(name, func) {
@@ -131,9 +130,9 @@
                 array.push(message);
             }
         },
-        createGame: function (width, height, scale) {
-            var GameConstructor = p.getModule('Molecule.Game', initializedModules).exports;
-            game = new GameConstructor(width, height, scale);
+        createGame: function (options) {
+            var Game = p.getModule('Molecule.Game', initializedModules).exports;
+            game = new Game(options);
         },
         createContext: function (modules) {
             var context = {
@@ -142,8 +141,7 @@
                     var module = p.getModule(name, modules);
                     return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
                 },
-                game: game,
-                world: world
+                game: game
             }
             return context;
         },
@@ -230,25 +228,9 @@
 
 
     var Molecule = function (options) {
-
-        var context;
-
-        if (!options.assets) {
-            options.assets = function () {};
-        }
-
-        if (!options.init) {
-            options.init = function () {};
-        }
-
-        if (!options.update) {
-            options.update = function () {};
-        }
-
         p.registerModules(moleculeModules, initializedModules);
-        p.createGame(options, world);
-        p.registerModules(definedModules, initializedModules);
-
+        p.createGame(options);
+        return Molecule;
     };
 
     Molecule.module = function () {
@@ -262,6 +244,38 @@
             p.addModule(definedModules, args.name, args.func);
         }
 
+        return this;
+
+    };
+
+    Molecule.init = function (callback) {
+
+
+        p.registerModules(definedModules, initializedModules);
+        game.init(callback);
+        game.start();
+        return this;
+
+    };
+
+    Molecule.update = function (callback) {
+        game.update(callback);
+        return this;
+    };
+
+    Molecule.sprite = function (id, spriteSrc, frameWidth, frameHeight) {
+        game.imageFile.load(id, spriteSrc, frameWidth, frameHeight);
+        return this;
+    };
+
+    Molecule.sound = function (id, soundSrc) {
+        game.audioFile.load(id, soundSrc);
+        return this;
+    };
+
+    Molecule.tilemap = function (id, mapSrc) {
+        game.mapFile.load(id, mapSrc);
+        return this;
     };
 
     Molecule.test = function (name, callback) {

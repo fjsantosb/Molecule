@@ -6,20 +6,20 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 	function MapFile(_game) {
 		this.game = _game;
 		this.tile = new Tile(_game);
-		this.map = [];
+		this.maps = [];
 	};
 
-	MapFile.prototype.load = function(_name) {
+	MapFile.prototype.load = function(_id, _name) {
 		var m = new Map(this.game);
-		m.load(_name);
-		this.map.push(m);
+		m.load(_id, _name);
+		this.maps.push(m);
 		return m;
 	};
 
 	MapFile.prototype.isLoaded = function() {
 		var loaded = true;
-		for(var i = 0; i < this.map.length; i++) {
-			if(!this.map[i].loaded) {
+		for(var i = 0; i < this.maps.length; i++) {
+			if(!this.maps[i].loaded) {
 				loaded = false;
 			}
 		}

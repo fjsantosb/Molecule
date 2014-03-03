@@ -4,22 +4,20 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 
 	function AudioFile(_game) {
 		this.game = _game;
-		this.name = new Array();
-		this.data = new Array();
+		this.name = [];
+		this.data = [];
 		this.counter = 0;
 	};
 
-	AudioFile.prototype.load = function(_audioSrc) {
+	AudioFile.prototype.load = function(_id, _audioSrc) {
 		if(!this.getAudioDataByName(_audioSrc)) {
 			var self = this;
 			var _audio = new Audio();
 			var _audioSrcFile;
-			for(var i = 0; i < _audioSrc.length; i++) {
-				var t = _audioSrc[i].split('.');
-				if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
-					_audioSrcFile = _audioSrc[i];
-				}
-			}
+            var t = _audioSrc.split('.');
+            if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
+                _audioSrcFile = _audioSrc;
+            }
 			_audio.addEventListener('canplay', function(){self.counter++});
 			_audio.src = _audioSrcFile;
 			this.name.push(_audioSrc);
@@ -27,8 +25,9 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 		}
 
 		var s = new Sound();
+        s.id = _id;
 		s.sound = this.getAudioDataByName(_audioSrc);
-		this.game.sound.push(s);
+		this.game.sounds[_id] = s;
 
 		return s;
 	};
