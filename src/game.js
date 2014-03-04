@@ -42,7 +42,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        var total = game.imageFile.data.length + game.mapFile.map.length + game.audioFile.data.length;
+        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length;
         var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter;
         if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded()) {
             clearInterval(_interval);
