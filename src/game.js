@@ -222,6 +222,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             s = new Sprite(loadedSprite.name, loadedSprite.frame.width, loadedSprite.frame.height);
         s.game = this;
         s.image = loadedSprite.image;
+        s.id = _id;
         s.getAnimation();
         return s;
 
