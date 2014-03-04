@@ -249,10 +249,10 @@
     };
 
     Molecule.init = function (callback) {
-
-
-        p.registerModules(definedModules, initializedModules);
-        game.init(callback);
+        var initializeModules = function () {
+            p.registerModules(definedModules, initializedModules);
+        };
+        game.init(initializeModules, callback);
         game.start();
         return this;
 
@@ -564,7 +564,12 @@ Molecule.module('Molecule.Game', function (require, p) {
     p.run = function () {};
 
     p.update = function (_exit, game) {
-        var sprite;
+        var sprite,
+            object;
+        for (var i = 0; i < game.scene.objects.length; i++) {
+            object = game.scene.objects[i];
+            if (object.update) object.update();
+        }
         for (var i = 0; i < game.scene.sprites.length; i++) {
             sprite = game.scene.sprites[i];
             sprite.update();
@@ -572,13 +577,17 @@ Molecule.module('Molecule.Game', function (require, p) {
             if (sprite.animation !== null && _exit)
                 sprite.animation.nextFrame();
         }
+
         if (game.map) {
             game.map.update();
         }
 
+
     };
 
     p.loadResources = function (_interval, game) {
+        var total = game.sprite.data.length + game.tilemap.map.length + game.audio.data.length;
+        var total_loaded = game.sprite.counter + game.tilemap.getCounter() + game.audio.counter;
         if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
@@ -587,6 +596,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             p.init();
             p.loop(game);
         }
+        game.context.save();
+        game.context.fillStyle='#f8f8f8';
+        game.context.fillRect(30, Math.round(game.height / 1.25), (game.width - (30 * 2)), 16);
+        game.context.fillStyle='#ea863a';
+        game.context.fillRect(30, Math.round(game.height / 1.25), (game.width - (30 * 2)) * (total_loaded / total), 16);
+        game.context.restore();
     };
 
     p.removeSprites = function (sprites) {
@@ -612,6 +627,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprite.collision.map.right = false;
             sprite.collision.map.up = false;
             sprite.collision.map.down = false;
+            
+            sprite.collision.boundaries.id = null;
+            sprite.collision.boundaries.left = false;
+            sprite.collision.boundaries.right = false;
+            sprite.collision.boundaries.up = false;
+            sprite.collision.boundaries.down = false;
         }
     };
 
@@ -657,20 +678,52 @@ Molecule.module('Molecule.Game', function (require, p) {
         var sprite;
         for (var i = 0; i < game.scene.sprites.length; i++) {
             sprite = game.scene.sprites[i];
-            if (game.boundaries.x !== null) {
-                if (sprite.position.x - sprite.anchor.x < game.boundaries.x) {
-                    sprite.position.x = game.boundaries.x + sprite.anchor.x;
+            if (game.boundaries.x !== null && sprite.collides.boundaries) {
+                if (sprite.position.x - sprite.anchor.x + sprite.frame.offset.x < game.boundaries.x) {
+                    sprite.position.x = game.boundaries.x + sprite.anchor.x - sprite.frame.offset.x;
+                    sprite.collision.boundaries.left = true;
+                    sprite.collision.boundaries.id = 0;
+                    sprite.move.x = 0;
+                    sprite.speed.x = 0;
+                    sprite.speed.t.x = 0;
+                    if(game.physics.gravity.x < 0) {
+                        sprite.speed.gravity.x = 0;
+                    }
                 }
-                if (sprite.position.x + sprite.frame.width - sprite.anchor.x > game.boundaries.x + game.boundaries.width) {
-                    sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x;
+                if (sprite.position.x + sprite.frame.width - sprite.anchor.x - sprite.frame.offset.x > game.boundaries.x + game.boundaries.width) {
+                    sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x + sprite.frame.offset.x;
+                    sprite.collision.boundaries.right = true;
+                    sprite.collision.boundaries.id = 1;
+                    sprite.move.x = 0;
+                    sprite.speed.x = 0;
+                    sprite.speed.t.x = 0;
+                    if(game.physics.gravity.x > 0) {
+                        sprite.speed.gravity.x = 0;
+                    }
                 }
             }
-            if (game.boundaries.y !== null) {
-                if (sprite.position.y - sprite.anchor.y < game.boundaries.y) {
-                    sprite.position.y = game.boundaries.y + sprite.anchor.y;
+            if (game.boundaries.y !== null && sprite.collides.boundaries) {
+                if (sprite.position.y - sprite.anchor.y + sprite.frame.offset.y < game.boundaries.y) {
+                    sprite.position.y = game.boundaries.y + sprite.anchor.y - sprite.frame.offset.y;
+                    sprite.collision.boundaries.up = true;
+                    sprite.collision.boundaries.id = 2;
+                    sprite.move.y = 0;
+                    sprite.speed.y = 0;
+                    sprite.speed.t.y = 0;
+                    if(game.physics.gravity.y < 0) {
+                        sprite.speed.gravity.y = 0;
+                    }
                 }
-                if (sprite.position.y + sprite.frame.height - sprite.anchor.y > game.boundaries.y + game.boundaries.height) {
-                    sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y;
+                if (sprite.position.y + sprite.frame.height - sprite.anchor.y - sprite.frame.offset.y > game.boundaries.y + game.boundaries.height) {
+                    sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y + sprite.frame.offset.y;
+                    sprite.collision.boundaries.down = true;
+                    sprite.collision.boundaries.id = 3;
+                    sprite.move.y = 0;
+                    sprite.speed.y = 0;
+                    sprite.speed.t.y = 0;
+                    if(game.physics.gravity.y > 0) {
+                        sprite.speed.gravity.y = 0;
+                    }
                 }
             }
         }
@@ -766,6 +819,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             s = new Sprite(loadedSprite.name, loadedSprite.frame.width, loadedSprite.frame.height);
         s.game = this;
         s.image = loadedSprite.image;
+        s.id = _id;
         s.getAnimation();
         return s;
 
@@ -929,8 +983,12 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.start(this);
     };
 
-    Game.prototype.init = function (callback) {
-        p.init = callback.bind(this, this, require);
+    Game.prototype.init = function (initializeModules, callback) {
+        var self = this;
+        p.init = function () {
+            initializeModules();
+            callback.call(self, self, require);
+        }
     };
 
     Game.prototype.update = function (callback) {
