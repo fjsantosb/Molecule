@@ -778,6 +778,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.sounds = {};
         this.sprites = {};
         this.tilemaps = {};
+        this.globals = options.globals || {};
 
         // OPTIONS
         this.scale = options.scale || 1;
@@ -991,12 +992,12 @@ Molecule.module('Molecule.Game', function (require, p) {
         var self = this;
         p.init = function () {
             initializeModules();
-            callback.call(self, self, require);
+            callback.call(self.globals, self, require);
         }
     };
 
     Game.prototype.update = function (callback) {
-        p.run = callback.bind(this, this, require);
+        p.run = callback.bind(this.globals, this, require);
     };
 
     Game.prototype.Object = MObject;
