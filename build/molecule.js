@@ -854,6 +854,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                     }
                 }
             }
+            return obj;
 
         } else if (object instanceof Array) {
             // Loop objects to add
@@ -874,14 +875,19 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
             }
 
+            return obj;
+
 
         } else if (object instanceof Sprite) {
             // Adds a sprite directly to the game as an object and as sprite
             this.scene.objects.push(object);
             this.scene.sprites.push(object);
 
+            return object;
+
         } else if (object instanceof Map) {
             this.mapFile.set(object);
+            return object;
             // Make a more sensible method for doing this
         }
 
