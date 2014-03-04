@@ -38,6 +38,8 @@ Molecule.module('Molecule.MObject', function (require, p) {
                 this.sprites[sprite] = this.sprites[sprite].clone();
             }
         }
+
+        this.init()
     }
 
     MObject.prototype.sprite = null;

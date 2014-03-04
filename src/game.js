@@ -310,7 +310,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                     }
                 }
             }
-            obj.init(this);
 
         } else if (object instanceof Array) {
             // Loop objects to add
@@ -331,7 +330,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
             }
 
-            obj.init(this);
 
         } else if (object instanceof Sprite) {
             // Adds a sprite directly to the game as an object and as sprite
