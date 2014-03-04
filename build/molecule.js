@@ -586,8 +586,8 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        var total = game.sprite.data.length + game.tilemap.map.length + game.audio.data.length;
-        var total_loaded = game.sprite.counter + game.tilemap.getCounter() + game.audio.counter;
+        var total = game.imageFile.data.length + game.mapFile.map.length + game.audioFile.data.length;
+        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter;
         if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
