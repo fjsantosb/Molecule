@@ -386,8 +386,12 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.start(this);
     };
 
-    Game.prototype.init = function (callback) {
-        p.init = callback.bind(this, this, require);
+    Game.prototype.init = function (initializeModules, callback) {
+        var self = this;
+        p.init = function () {
+            initializeModules();
+            callback.call(self, self, require);
+        }
     };
 
     Game.prototype.update = function (callback) {
