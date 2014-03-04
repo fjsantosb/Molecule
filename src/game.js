@@ -241,18 +241,17 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     // TODO: Should not be able to add objects more than once
     Game.prototype.add = function (object, options) {
-
         if (typeof object === 'string') {
-
             var Obj = require(object),
                 obj = new Obj(options);
-            obj.sprites.bird = this.sprite('bird');
             this.scene.objects.push(obj);
             if (obj.sprite) {
+                obj.sprite.getAnimation();
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
                 for (var sprite in obj.sprites) {
                     if (obj.sprites.hasOwnProperty(sprite)) {
+                        obj.sprites[sprite].getAnimation();
                         this.scene.sprites.push(obj.sprites[sprite]);
                     }
                 }
