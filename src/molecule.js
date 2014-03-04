@@ -249,10 +249,10 @@
     };
 
     Molecule.init = function (callback) {
-
-
-        p.registerModules(definedModules, initializedModules);
-        game.init(callback);
+        var initializeModules = function () {
+            p.registerModules(definedModules, initializedModules);
+        };
+        game.init(initializeModules, callback);
         game.start();
         return this;
 
