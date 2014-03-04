@@ -27,8 +27,20 @@ Molecule.module('Molecule.MObject', function (require, p) {
                 this[prop] = options[prop];
             }
         }
+
+        // Clone sprites
+        if (this.sprite) {
+            this.sprite = this.sprite.clone();
+        }
+
+        for (var sprite in this.sprites) {
+            if (this.sprites.hasOwnProperty(sprite)) {
+                this.sprites[sprite] = this.sprites[sprite].clone();
+            }
+        }
     }
 
+    MObject.prototype.sprite = null;
     MObject.prototype.sprites = {};
 
     MObject.prototype.init = function () {

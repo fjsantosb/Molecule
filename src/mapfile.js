@@ -28,8 +28,8 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 
     MapFile.prototype.getCounter = function() {
         var c = 0;
-    	for(var i = 0; i < this.map.length; i++) {
-    		if(this.map[i].loaded) {
+    	for(var i = 0; i < this.maps.length; i++) {
+    		if(this.maps[i].loaded) {
     			c++;
     		}
 		}

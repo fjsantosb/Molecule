@@ -169,6 +169,14 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         return false;
     };
 
+    Sprite.prototype.clone = function () {
+        var sprite = new Sprite(this.name, this.width, this.height);
+        sprite.image = this.image;
+        sprite.game = this.game;
+        sprite.getAnimation();
+        return sprite;
+    }
+
     return Sprite;
 
 });
