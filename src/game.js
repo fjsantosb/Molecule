@@ -17,7 +17,7 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     p.init = null;
 
-    p.run = function () {};
+    p.updateGame = function () {};
 
     p.update = function (_exit, game) {
         var sprite;
@@ -122,7 +122,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
         p.draw(game);
         p.updateObjects(game);
-        p.run();
+        p.updateGame();
     };
 
     p.updateSpriteCollisionCheck = function (sprites) {
@@ -441,10 +441,6 @@ Molecule.module('Molecule.Game', function (require, p) {
             this.map.update();
     };
 
-    Game.prototype.run = function () {
-        p.run();
-    };
-
     Game.prototype.start = function () {
         p.start(this);
     };
@@ -458,7 +454,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     Game.prototype.update = function (callback) {
-        p.run = callback.bind(this.globals, this, require);
+        p.updateGame = callback.bind(this.globals, this, require);
     };
 
     Game.prototype.Object = MObject;
