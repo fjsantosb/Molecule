@@ -20,12 +20,8 @@ Molecule.module('Molecule.Game', function (require, p) {
     p.run = function () {};
 
     p.update = function (_exit, game) {
-        var sprite,
-            object;
-        for (var i = 0; i < game.scene.objects.length; i++) {
-            object = game.scene.objects[i];
-            if (object.update) object.update();
-        }
+        var sprite;
+
         for (var i = 0; i < game.scene.sprites.length; i++) {
             sprite = game.scene.sprites[i];
             sprite.update();
@@ -92,6 +88,14 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
     };
 
+    p.updateObjects = function (game) {
+        var object;
+        for (var i = 0; i < game.scene.objects.length; i++) {
+            object = game.scene.objects[i];
+            if (object.update) object.update();
+        }
+    }
+
     p.loop = function (game) {
 
         p.requestAnimFrame(function () {
@@ -117,6 +121,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             }
         }
         p.draw(game);
+        p.updateObjects(game);
         p.run();
     };
 
