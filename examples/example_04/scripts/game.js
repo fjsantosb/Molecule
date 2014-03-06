@@ -1,25 +1,19 @@
-Molecule(320, 320, function (game, require) {
+Molecule({
+    width: 320,
+    height: 320
+})
+.sound('castle', 'assets/castle.mp3')
+.init(function (game) {
 
-    game.assets = require('assets');
-    
-    // Create audio
-    var audio = game.assets.audio.castle;
-    
-    game.init(function () {
-    
-        // Pause audio
-        audio.pause();
-        
-        // Stop audio
-        audio.stop();
-        
-        // Play audio with parameter: loop
-        audio.play(false);
-        
-    });
-    
-    game.update(function () {
+    var sound = game.sound('castle');
 
-    });
+    // Pause sound
+    sound.pause();
+
+    // Stop sound
+    sound.stop();
+
+    // Play sound with parameter: loop
+    sound.play(false);
 
 });
