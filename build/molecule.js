@@ -1530,11 +1530,11 @@ Molecule.module('Molecule.Map', function (require, p) {
                         this.context[i].drawImage(
                             this.image[tileset],
                             Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
-                            Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
+                            Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tileheight,
                             this.json.tilesets[tileset].tilewidth,
                             this.json.tilesets[tileset].tileheight,
                             (Math.floor(j % this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth),
-                            (Math.floor(j / this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth),
+                            (Math.floor(j / this.json.layers[i].width) * this.json.tilesets[tileset].tileheight),
                             this.json.tilesets[tileset].tilewidth,
                             this.json.tilesets[tileset].tileheight);
                         this.context[i].restore();
@@ -1561,6 +1561,7 @@ Molecule.module('Molecule.Map', function (require, p) {
 
                     sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
                     image = new Image();
+
 
                     ctx.save();
                     ctx.globalAlpha = this.json.layers[i].opacity;
