@@ -128,7 +128,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
         _object = {position: {
             x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth,
-            y: Math.floor(_tile / _layer.width) * this.game.map.json.tileheighton},
+            y: Math.floor(_tile / _layer.width) * this.game.map.json.tileheight},
             width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth,
             height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
 
