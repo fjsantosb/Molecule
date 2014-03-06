@@ -1,36 +1,36 @@
 Molecule({
     width: 320,
-    height: 320
+    height: 320,
+    globals: {
+        sprite: null
+    }
 })
 .sprite('flappy', 'assets/flappy.png', 34, 24)
 .init(function (game) {
 
-    var sprite = game.sprite('flappy');
-    sprite.id = 'flappy';
+    this.sprite = game.sprite('flappy');
 
     // Change sprite position
-    sprite.position.x = game.width / 2;
-    sprite.position.y = game.width / 2;
+    this.sprite.position.x = game.width / 2;
+    this.sprite.position.y = game.width / 2;
 
     // Add animation with parameters: animation name,
     // animation frames, speed
-    sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
+    this.sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
 
     // Run animation with parameters: animation name,
     // loop, reverse
-    sprite.animation.run('fly');
+    this.sprite.animation.run('fly');
 
     // Change sprite max speed (pixels per frame)
-    sprite.speed.max.x = 1;
-    sprite.speed.max.y = 0;
+    this.sprite.speed.max.x = 1;
+    this.sprite.speed.max.y = 0;
 
 })
 .update(function (game) {
 
-    var sprite = game.get('flappy');
-
     // Set acceleration (pixels per frame)
-    sprite.acceleration.x = 1;
-    sprite.acceleration.y = 0;
+    this.sprite.acceleration.x = 1;
+    this.sprite.acceleration.y = 0;
 
 });
