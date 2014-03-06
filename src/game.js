@@ -287,7 +287,7 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     };
 
-    Game.prototype.sound = function (_id) {
+    Game.prototype.audio = function (_id) {
 
         return this.sounds[_id];
 

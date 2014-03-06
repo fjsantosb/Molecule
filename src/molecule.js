@@ -268,7 +268,7 @@
         return this;
     };
 
-    Molecule.sound = function (id, soundSrc) {
+    Molecule.audio = function (id, soundSrc) {
         game.audioFile.load(id, soundSrc);
         return this;
     };

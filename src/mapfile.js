@@ -42,6 +42,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 		if(_reset)
 			_map.reset();
 		this.game.map = _map;
+        this.game.map.createContext();
 	};
 
 	MapFile.prototype.sprite = function(_name) {
