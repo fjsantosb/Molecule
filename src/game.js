@@ -374,6 +374,10 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
 
         if (obj instanceof Map) {
+            var game = this;
+            this.map.objects.forEach(function (object) {
+                game.remove(object);
+            });
             return this.map = null;
         }
 

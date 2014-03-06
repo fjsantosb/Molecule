@@ -9,6 +9,7 @@ Molecule.module('Molecule.Map', function (require, p) {
         this.name = null;
         this.visible = true;
         this.sprites = [];
+        this.objects = [];
         this.image = [];
         this.path = '';
         this.response = null;
@@ -161,12 +162,12 @@ Molecule.module('Molecule.Map', function (require, p) {
                     sprite.game = this.game;
                     sprite.image = image;
                     sprite.image.src = canvas.toDataURL("image/png");
-                    console.log(sprite);
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     object.sprite.position.x = this.json.layers[i].objects[j].x;
                     object.sprite.position.y = this.json.layers[i].objects[j].y;
+                    this.objects.push(object);
 
 
                 }
