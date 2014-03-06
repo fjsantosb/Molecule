@@ -561,7 +561,7 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     p.init = null;
 
-    p.run = function () {};
+    p.updateGame = function () {};
 
     p.update = function (_exit, game) {
         var sprite;
@@ -666,7 +666,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
         p.draw(game);
         p.updateObjects(game);
-        p.run();
+        p.updateGame();
     };
 
     p.updateSpriteCollisionCheck = function (sprites) {
@@ -985,10 +985,6 @@ Molecule.module('Molecule.Game', function (require, p) {
             this.map.update();
     };
 
-    Game.prototype.run = function () {
-        p.run();
-    };
-
     Game.prototype.start = function () {
         p.start(this);
     };
@@ -1002,7 +998,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     Game.prototype.update = function (callback) {
-        p.run = callback.bind(this.globals, this, require);
+        p.updateGame = callback.bind(this.globals, this, require);
     };
 
     Game.prototype.Object = MObject;
@@ -1416,6 +1412,8 @@ Molecule.module('Molecule.Input', function (require, p) {
 });
 Molecule.module('Molecule.Map', function (require, p) {
 
+    var Sprite = require('Molecule.Sprite');
+
 	function Map(_game) {
 		this.game = _game;
 		this.canvas = [];
@@ -1456,6 +1454,7 @@ Molecule.module('Molecule.Map', function (require, p) {
 			this.json = JSON.parse(this.response);
 			this.addProperties();
 			this.loadImages();
+
 		}
 	};
 
@@ -1484,7 +1483,7 @@ Molecule.module('Molecule.Map', function (require, p) {
 	Map.prototype.loadResources = function(_interval) {
 		if(this.game.imageFile.isLoaded()) {
 			clearInterval(_interval);
-			this.createContext();
+
 			this.loaded = true;
 		}
 	};
@@ -1535,7 +1534,55 @@ Molecule.module('Molecule.Map', function (require, p) {
 						this.context[i].restore();
 					}
 				}
-			}
+			} else if (this.json.layers[i].type === 'objectgroup') {
+                var width = this.json.tileWidth,
+                    height = this.json.tileHeight,
+                    sprite = new Sprite(this.json.layers[i].name, width, height),
+                    canvas = document.createElement('canvas'),
+                    ctx = canvas.getContext('2d'),
+                    image = new Image();
+
+                canvas.width = width;
+                canvas.height = height;
+
+                for(j = 0; j < this.json.layers[i].objects.length; j++) {
+                    var data = this.json.layers[i].objects[j].gid;
+                    if(data > 0) {
+                        var tileset = this.getTileset(data);
+                        ctx.save();
+                        ctx.globalAlpha = this.json.layers[i].opacity;
+                        ctx.drawImage(
+                            this.image[tileset],
+
+                            Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
+                            Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
+                            this.json.tilesets[tileset].tilewidth,
+                            this.json.tilesets[tileset].tileheight,
+                            (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth),
+                            (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth),
+                            this.json.tilewidth,
+                            this.json.tileheight);
+                        ctx.restore();
+                    }
+                }
+
+                var self = this;
+                sprite.game = this.game;
+                sprite.image = image;
+                sprite.image.src = canvas.toDataURL("image/png");
+                setTimeout(function () {
+                    sprite.position.x = self.json.layers[i].x;
+                    sprite.position.y = self.json.layers[i].y;
+                    sprite.getAnimation();
+                    self.game.add(self.json.layers[i].name, {
+                        sprite: sprite,
+                        init: function () {
+                            console.log('Created a sign!');
+                        }
+                    });
+                }, 500);
+
+            }
 		}
 	};
 
@@ -1899,6 +1946,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 		if(_reset)
 			_map.reset();
 		this.game.map = _map;
+        this.game.map.createContext();
 	};
 
 	MapFile.prototype.sprite = function(_name) {
@@ -1957,15 +2005,17 @@ Molecule.module('Molecule.MObject', function (require, p) {
             passedObject = args[x];
             for (prop in passedObject) {
                 if (passedObject.hasOwnProperty(prop)) {
-                    object[prop] = passedObject[prop];
+                    object[prop] = passedObject[prop]
+
                 }
+
             }
         }
 
         return object;
     };
 
-    function MObject (options) {
+    function MObject(options) {
         for (var prop in options) {
             if (options.hasOwnProperty(prop)) {
                 this[prop] = options[prop];
@@ -1977,9 +2027,11 @@ Molecule.module('Molecule.MObject', function (require, p) {
             this.sprite = this.sprite.clone();
         }
 
-        for (var sprite in this.sprites) {
-            if (this.sprites.hasOwnProperty(sprite)) {
-                this.sprites[sprite] = this.sprites[sprite].clone();
+        var sprites = this.sprites;
+        this.sprites = {};
+        for (var sprite in sprites) {
+            if (sprites.hasOwnProperty(sprite)) {
+                this.sprites[sprite] = sprites[sprite].clone();
             }
         }
 
@@ -1999,14 +2051,20 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     // TODO: Create correct inheritance to check INSTANCEOF
     MObject.extend = function (options) {
+
         var parent = this;
         var child;
 
-            child = function(){ return parent.apply(this, arguments); };
+
+        child = function () {
+            return parent.apply(this, arguments);
+        };
 
         p.mergeObjects(child, parent, options);
 
-        var Surrogate = function(){ this.constructor = child; };
+        var Surrogate = function () {
+            this.constructor = child;
+        };
         Surrogate.prototype = parent.prototype;
         child.prototype = new Surrogate;
 
