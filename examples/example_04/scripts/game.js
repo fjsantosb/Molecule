@@ -2,18 +2,18 @@ Molecule({
     width: 320,
     height: 320
 })
-.sound('castle', 'assets/castle.mp3')
+.audio('castle', 'assets/castle.mp3')
 .init(function (game) {
 
-    var sound = game.sound('castle');
+    var audio = game.audio('castle');
 
-    // Pause sound
-    sound.pause();
+    // Pause audio
+    audio.pause();
 
-    // Stop sound
-    sound.stop();
+    // Stop audio
+    audio.stop();
 
-    // Play sound with parameter: loop
-    sound.play(false);
+    // Play audio with parameter: loop
+    audio.play(false);
 
 });
