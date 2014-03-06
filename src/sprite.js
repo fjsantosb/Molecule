@@ -122,10 +122,15 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite prototype Method collidesWithTile
     Sprite.prototype.collidesWithTile = function (_layer, _tile, _j) {
+
         var _lpx = Math.abs(_layer.x);
         var _lpy = Math.abs(_layer.y);
 
-        _object = {position: {x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth, y: Math.floor(_tile / _layer.width) * this.game.map.json.tilewidth}, width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth, height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
+        _object = {position: {
+            x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth,
+            y: Math.floor(_tile / _layer.width) * this.game.map.json.tileheighton},
+            width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth,
+            height: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tileheight};
 
         var px1 = this.position.x - this.anchor.x + this.move.x + this.frame.offset.x + _lpx;
         var px2 = this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x + _lpx;
