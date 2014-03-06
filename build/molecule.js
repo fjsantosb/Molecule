@@ -4,7 +4,7 @@
     var moleculeModules = [];
     var initializedModules = [];
     var isTest = false;
-    var timeoutLimit = 100;
+    var timeoutLimit = 1000;
     var game = null;
 
     var p = {
@@ -291,8 +291,8 @@
 Molecule.module('Molecule.Animation', function (require, p) {
 
     function Animation() {
-        this.frame = new Array();
-        this.id = new Array();
+        this.frame = [];
+        this.id = [];
         this.current = {animation: 0, frame: 0};
         this.timer = 0;
         this.loop = true;
@@ -822,11 +822,10 @@ Molecule.module('Molecule.Game', function (require, p) {
     // Will now load the sprite to the scene, but should maybe do that with a game object instead?
     Game.prototype.sprite = function (_id) {
         var loadedSprite = this.sprites[_id],
-            s = new Sprite(loadedSprite.name, loadedSprite.frame.width, loadedSprite.frame.height);
-        s.game = this;
-        s.image = loadedSprite.image;
+            s = loadedSprite.clone();
+
         s.id = _id;
-        s.getAnimation();
+
         return s;
 
     };
@@ -850,12 +849,10 @@ Molecule.module('Molecule.Game', function (require, p) {
                 obj = new Obj(options);
             this.scene.objects.push(obj);
             if (obj.sprite) {
-                obj.sprite.getAnimation();
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
                 for (var sprite in obj.sprites) {
                     if (obj.sprites.hasOwnProperty(sprite)) {
-                        obj.sprites[sprite].getAnimation();
                         this.scene.sprites.push(obj.sprites[sprite]);
                     }
                 }
@@ -1517,6 +1514,7 @@ Molecule.module('Molecule.Map', function (require, p) {
     };
 
     Map.prototype.createContext = function () {
+        console.log(this.json);
         for (var i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 this.canvas.push(document.createElement('canvas'));
@@ -1531,60 +1529,60 @@ Molecule.module('Molecule.Map', function (require, p) {
                         this.context[i].globalAlpha = this.json.layers[i].opacity;
                         this.context[i].drawImage(
                             this.image[tileset],
-
                             Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
                             Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
                             this.json.tilesets[tileset].tilewidth,
                             this.json.tilesets[tileset].tileheight,
-                            (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth),
-                            (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth),
-                            this.json.tilewidth,
-                            this.json.tileheight);
+                            (Math.floor(j % this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth),
+                            (Math.floor(j / this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth),
+                            this.json.tilesets[tileset].tilewidth,
+                            this.json.tilesets[tileset].tileheight);
                         this.context[i].restore();
                     }
                 }
             } else if (this.json.layers[i].type === 'objectgroup') {
-                var width = this.json.tilewidth,
-                    height = this.json.tileheight,
-                    sprite = new Sprite(this.json.layers[i].name, width, height),
-                    canvas = document.createElement('canvas'),
-                    ctx = canvas.getContext('2d'),
-                    image = new Image();
-
-                canvas.width = width;
-                canvas.height = height;
 
                 for (j = 0; j < this.json.layers[i].objects.length; j++) {
-                    var data = this.json.layers[i].objects[j].gid;
-                    var tileset = this.getTileset(data);
 
-                    sprite = new Sprite(this.json.layers[i].name, width, height);
+                    var data = this.json.layers[i].objects[j].gid,
+                        tileset = this.getTileset(data),
+                        width = this.json.tilesets[tileset].imagewidth,
+                        height = this.json.tilesets[tileset].imageheight,
+                        frameWidth = this.json.tilesets[tileset].tilewidth,
+                        frameHeight = this.json.tilesets[tileset].tileheight,
+                        sprite = new Sprite(this.json.layers[i].name, width, height),
+                        canvas = document.createElement('canvas'),
+                        ctx = canvas.getContext('2d'),
+                        image = new Image();
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+
+                    sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
                     image = new Image();
 
                     ctx.save();
                     ctx.globalAlpha = this.json.layers[i].opacity;
                     ctx.drawImage(
                         this.image[tileset],
-                        Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
-                        Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
-                        this.json.tilesets[tileset].tilewidth,
-                        this.json.tilesets[tileset].tileheight,
-                        (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth),
-                        (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth),
-                        this.json.tilewidth,
-                        this.json.tileheight);
+                        0,
+                        0,
+                        this.json.tilesets[tileset].imagewidth,
+                        this.json.tilesets[tileset].imageheight
+                    );
                     ctx.restore();
 
                     sprite.game = this.game;
                     sprite.image = image;
                     sprite.image.src = canvas.toDataURL("image/png");
+
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     object.sprite.position.x = this.json.layers[i].objects[j].x;
                     object.sprite.position.y = this.json.layers[i].objects[j].y;
                     this.objects.push(object);
-
 
                 }
 
@@ -2312,6 +2310,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite var.
     function Sprite(_name, _width, _height) {
+
         this.name = _name;
         this.image = null;
         this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
@@ -2478,10 +2477,14 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     };
 
     Sprite.prototype.clone = function () {
-        var sprite = new Sprite(this.name, this.width, this.height);
+        var sprite = new Sprite(this.name, this.frame.width, this.frame.height);
         sprite.image = this.image;
         sprite.game = this.game;
         sprite.getAnimation();
+        if (this.width && this.height) {
+            sprite.animation.add('idle', [0], 1);
+        }
+
         return sprite;
     }
 

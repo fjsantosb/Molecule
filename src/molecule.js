@@ -4,7 +4,7 @@
     var moleculeModules = [];
     var initializedModules = [];
     var isTest = false;
-    var timeoutLimit = 100;
+    var timeoutLimit = 1000;
     var game = null;
 
     var p = {

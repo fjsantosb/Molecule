@@ -101,6 +101,7 @@ Molecule.module('Molecule.Map', function (require, p) {
     };
 
     Map.prototype.createContext = function () {
+        console.log(this.json);
         for (var i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 this.canvas.push(document.createElement('canvas'));
@@ -115,60 +116,60 @@ Molecule.module('Molecule.Map', function (require, p) {
                         this.context[i].globalAlpha = this.json.layers[i].opacity;
                         this.context[i].drawImage(
                             this.image[tileset],
-
                             Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
                             Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
                             this.json.tilesets[tileset].tilewidth,
                             this.json.tilesets[tileset].tileheight,
-                            (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth),
-                            (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth),
-                            this.json.tilewidth,
-                            this.json.tileheight);
+                            (Math.floor(j % this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth),
+                            (Math.floor(j / this.json.layers[i].width) * this.json.tilesets[tileset].tilewidth),
+                            this.json.tilesets[tileset].tilewidth,
+                            this.json.tilesets[tileset].tileheight);
                         this.context[i].restore();
                     }
                 }
             } else if (this.json.layers[i].type === 'objectgroup') {
-                var width = this.json.tilewidth,
-                    height = this.json.tileheight,
-                    sprite = new Sprite(this.json.layers[i].name, width, height),
-                    canvas = document.createElement('canvas'),
-                    ctx = canvas.getContext('2d'),
-                    image = new Image();
-
-                canvas.width = width;
-                canvas.height = height;
 
                 for (j = 0; j < this.json.layers[i].objects.length; j++) {
-                    var data = this.json.layers[i].objects[j].gid;
-                    var tileset = this.getTileset(data);
 
-                    sprite = new Sprite(this.json.layers[i].name, width, height);
+                    var data = this.json.layers[i].objects[j].gid,
+                        tileset = this.getTileset(data),
+                        width = this.json.tilesets[tileset].imagewidth,
+                        height = this.json.tilesets[tileset].imageheight,
+                        frameWidth = this.json.tilesets[tileset].tilewidth,
+                        frameHeight = this.json.tilesets[tileset].tileheight,
+                        sprite = new Sprite(this.json.layers[i].name, width, height),
+                        canvas = document.createElement('canvas'),
+                        ctx = canvas.getContext('2d'),
+                        image = new Image();
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+
+                    sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
                     image = new Image();
 
                     ctx.save();
                     ctx.globalAlpha = this.json.layers[i].opacity;
                     ctx.drawImage(
                         this.image[tileset],
-                        Math.floor((data - this.json.tilesets[tileset].firstgid) % (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
-                        Math.floor((data - this.json.tilesets[tileset].firstgid) / (this.json.tilesets[tileset].imagewidth / this.json.tilesets[tileset].tilewidth)) * this.json.tilesets[tileset].tilewidth,
-                        this.json.tilesets[tileset].tilewidth,
-                        this.json.tilesets[tileset].tileheight,
-                        (Math.floor(j % this.json.layers[i].width) * this.json.tilewidth),
-                        (Math.floor(j / this.json.layers[i].width) * this.json.tilewidth),
-                        this.json.tilewidth,
-                        this.json.tileheight);
+                        0,
+                        0,
+                        this.json.tilesets[tileset].imagewidth,
+                        this.json.tilesets[tileset].imageheight
+                    );
                     ctx.restore();
 
                     sprite.game = this.game;
                     sprite.image = image;
                     sprite.image.src = canvas.toDataURL("image/png");
+
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     object.sprite.position.x = this.json.layers[i].objects[j].x;
                     object.sprite.position.y = this.json.layers[i].objects[j].y;
                     this.objects.push(object);
-
 
                 }
 

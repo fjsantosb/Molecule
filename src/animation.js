@@ -1,8 +1,8 @@
 Molecule.module('Molecule.Animation', function (require, p) {
 
     function Animation() {
-        this.frame = new Array();
-        this.id = new Array();
+        this.frame = [];
+        this.id = [];
         this.current = {animation: 0, frame: 0};
         this.timer = 0;
         this.loop = true;

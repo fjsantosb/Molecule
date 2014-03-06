@@ -4,6 +4,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite var.
     function Sprite(_name, _width, _height) {
+
         this.name = _name;
         this.image = null;
         this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
@@ -170,10 +171,14 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     };
 
     Sprite.prototype.clone = function () {
-        var sprite = new Sprite(this.name, this.width, this.height);
+        var sprite = new Sprite(this.name, this.frame.width, this.frame.height);
         sprite.image = this.image;
         sprite.game = this.game;
         sprite.getAnimation();
+        if (this.width && this.height) {
+            sprite.animation.add('idle', [0], 1);
+        }
+
         return sprite;
     }
 

@@ -278,11 +278,10 @@ Molecule.module('Molecule.Game', function (require, p) {
     // Will now load the sprite to the scene, but should maybe do that with a game object instead?
     Game.prototype.sprite = function (_id) {
         var loadedSprite = this.sprites[_id],
-            s = new Sprite(loadedSprite.name, loadedSprite.frame.width, loadedSprite.frame.height);
-        s.game = this;
-        s.image = loadedSprite.image;
+            s = loadedSprite.clone();
+
         s.id = _id;
-        s.getAnimation();
+
         return s;
 
     };
@@ -306,12 +305,10 @@ Molecule.module('Molecule.Game', function (require, p) {
                 obj = new Obj(options);
             this.scene.objects.push(obj);
             if (obj.sprite) {
-                obj.sprite.getAnimation();
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
                 for (var sprite in obj.sprites) {
                     if (obj.sprites.hasOwnProperty(sprite)) {
-                        obj.sprites[sprite].getAnimation();
                         this.scene.sprites.push(obj.sprites[sprite]);
                     }
                 }
