@@ -1,19 +1,13 @@
-Molecule(320, 320, function (game, require) {
+Molecule({
+    width: 320,
+    height: 320
+})
+.tilemap('map', 'assets/game.json')
+.init(function (game) {
 
-    game.assets = require('assets');
+    var tilemap = game.tilemap('map');
     
-    // Create tilemap
-    var map = game.assets.tilemap.game;
-    
-    game.init(function () {
-    
-        // Set tilemap as game map
-        game.tilemap.set(map);
-        
-    });
-    
-    game.update(function () {
-
-    });
+    // Add tilemap to the game
+    game.add(tilemap);
 
 });
