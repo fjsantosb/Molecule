@@ -13,15 +13,17 @@ Molecule.module('Molecule.MObject', function (require, p) {
             passedObject = args[x];
             for (prop in passedObject) {
                 if (passedObject.hasOwnProperty(prop)) {
-                    object[prop] = passedObject[prop];
+                    object[prop] = passedObject[prop]
+
                 }
+
             }
         }
 
         return object;
     };
 
-    function MObject (options) {
+    function MObject(options) {
         for (var prop in options) {
             if (options.hasOwnProperty(prop)) {
                 this[prop] = options[prop];
@@ -33,9 +35,11 @@ Molecule.module('Molecule.MObject', function (require, p) {
             this.sprite = this.sprite.clone();
         }
 
-        for (var sprite in this.sprites) {
-            if (this.sprites.hasOwnProperty(sprite)) {
-                this.sprites[sprite] = this.sprites[sprite].clone();
+        var sprites = this.sprites;
+        this.sprites = {};
+        for (var sprite in sprites) {
+            if (sprites.hasOwnProperty(sprite)) {
+                this.sprites[sprite] = sprites[sprite].clone();
             }
         }
 
@@ -55,14 +59,20 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     // TODO: Create correct inheritance to check INSTANCEOF
     MObject.extend = function (options) {
+
         var parent = this;
         var child;
 
-            child = function(){ return parent.apply(this, arguments); };
+
+        child = function () {
+            return parent.apply(this, arguments);
+        };
 
         p.mergeObjects(child, parent, options);
 
-        var Surrogate = function(){ this.constructor = child; };
+        var Surrogate = function () {
+            this.constructor = child;
+        };
         Surrogate.prototype = parent.prototype;
         child.prototype = new Surrogate;
 
