@@ -1,44 +1,52 @@
-Molecule(320, 320, function (game, require) {
+Molecule({
+    width: 320,
+    height: 320,
+    globals: {
+        sprite: null
+    }
+    }
+})
+.sprite('flappy', 'assets/flappy.png', 34, 24)
+.init(function (game) {
 
-    game.assets = require('assets');
-    
     // Create sprite
-    var sprite = game.assets.sprites.flappy;
-    
+    this.sprite = game.sprite('flappy');
+
     // Change friction
     game.physics.friction.x = 0;
-    game.physics.friction.y = 0.025;
-    
+    game.physics.friction.y = 0.05;
+
     // Change gravity (pixels per frame)
     game.physics.gravity.x = 0;
     game.physics.gravity.y = 9.78 / 60;
-    
-    game.init(function () {
-    
-        // Change sprite position
-        sprite.position.x = game.width / 2;
-        sprite.position.y = game.width / 2;
-        
-        // Change sprite anchor
-        sprite.anchor.x = sprite.width / 2;
-        sprite.anchor.y = sprite.height / 2;
-        
-        // Add animation with parameters: animation name, animation frames, speed
-        sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
-        
-        // Run animation with parameters: animation name, loop, reverse (loop and reverse parameters are optional) 
-        sprite.animation.run('fly');
-        
-    });
-    
-    game.update(function () {
 
-        if(sprite.position.y - sprite.anchor.y < 70) {
-            game.physics.gravity.y = 9.78 / 60;
-        } else if(sprite.position.y + sprite.anchor.y > game.width - 70) {
-            game.physics.gravity.y = -9.78 / 60;
-        }
+    // Change sprite position
+    this.sprite.position.x = game.width / 2;
+    this.sprite.position.y = game.width / 2;
 
-    });
+    // Change sprite anchor
+    this.sprite.anchor.x = sprite.width / 2;
+    this.sprite.anchor.y = sprite.height / 2;
+
+    // Add animation with parameters: animation name,
+    // animation frames, speed
+    this.sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
+
+    // Stop current animation
+    this.sprite.animation.stop();
+
+    // Run animation with parameters: animation name,
+    // loop, reverse
+    this.sprite.animation.run('fly', true, false);
+
+})
+.update(function (game) {
+
+    if(this.sprite.position.y - this.sprite.anchor.y < 70) {
+        game.physics.gravity.y = 9.78 / 60;
+    } else if(this.sprite.position.y + this.sprite.anchor.y > game.width - 70) {
+        game.physics.gravity.y = -9.78 / 60;
+    }
 
 });
+
