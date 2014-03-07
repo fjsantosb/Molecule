@@ -22,6 +22,7 @@ Molecule({
     // loop, reverse
     sprite.animation.run('fly', true, false);
 
+    // Add sprite to the game
     game.add(sprite);
 
 });

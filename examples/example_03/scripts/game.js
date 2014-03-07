@@ -2,7 +2,6 @@ Molecule({
     width: 320,
     height: 320
 })
-.sprite('flappy', 'assets/flappy.png', 32, 24)
 .init(function (game) {
 
     // Enable keyboard

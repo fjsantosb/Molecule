@@ -4,11 +4,9 @@ Molecule({
     globals: {
         sprite: null
     }
-    }
 })
 .sprite('flappy', 'assets/flappy.png', 34, 24)
 .init(function (game) {
-
     // Create sprite
     this.sprite = game.sprite('flappy');
 
@@ -25,8 +23,8 @@ Molecule({
     this.sprite.position.y = game.width / 2;
 
     // Change sprite anchor
-    this.sprite.anchor.x = sprite.width / 2;
-    this.sprite.anchor.y = sprite.height / 2;
+    this.sprite.anchor.x = this.sprite.width / 2;
+    this.sprite.anchor.y = this.sprite.height / 2;
 
     // Add animation with parameters: animation name,
     // animation frames, speed
@@ -38,6 +36,9 @@ Molecule({
     // Run animation with parameters: animation name,
     // loop, reverse
     this.sprite.animation.run('fly', true, false);
+    
+    // Add sprite to the game
+    game.add(this.sprite);
 
 })
 .update(function (game) {
