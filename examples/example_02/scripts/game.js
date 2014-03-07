@@ -10,6 +10,10 @@ Molecule({
     // Change sprite position
     sprite.position.x = game.width / 2;
     sprite.position.y = game.width / 2;
+    
+    // Change sprite anchor
+    sprite.anchor.x = sprite.width / 2;
+    sprite.anchor.y = sprite.height / 2;
 
     // Add animation with parameters: animation name,
     // animation frames, speed

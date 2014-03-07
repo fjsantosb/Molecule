@@ -14,6 +14,10 @@ Molecule({
     this.sprite.position.x = game.width / 2;
     this.sprite.position.y = game.width / 2;
 
+    // Change sprite anchor
+    this.sprite.anchor.x = this.sprite.width / 2;
+    this.sprite.anchor.y = this.sprite.height / 2;
+
     // Add animation with parameters: animation name,
     // animation frames, speed
     this.sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
