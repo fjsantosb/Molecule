@@ -9,7 +9,7 @@ Molecule({
 
     // Change sprite position
     sprite.position.x = game.width / 2;
-    sprite.position.y = game.width / 2;
+    sprite.position.y = game.height / 2;
     
     // Change sprite anchor
     sprite.anchor.x = sprite.width / 2;
