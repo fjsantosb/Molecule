@@ -11,7 +11,7 @@ Molecule({
 
     // Change sprite position
     sprite.position.x = game.width / 2;
-    sprite.position.y = game.width / 2;
+    sprite.position.y = game.height / 2;
 
     // Change sprite alpha
     sprite.alpha = 0.75;
