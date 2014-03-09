@@ -35,6 +35,11 @@ Molecule.module('Molecule.Text', function (require, p) {
 		return this.game.context.measureText(this.title).width;
 	};
 
+    Text.prototype.clone = function () {
+        var text = new Text(this.font, this.x, this.y, this.title, this.game);
+        return text;
+    };
+
 	return Text;
 
 });

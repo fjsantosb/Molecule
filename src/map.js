@@ -101,7 +101,7 @@ Molecule.module('Molecule.Map', function (require, p) {
     };
 
     Map.prototype.createContext = function () {
-        console.log(this.json);
+
         for (var i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 this.canvas.push(document.createElement('canvas'));

@@ -1,3 +1,10 @@
+/*
+    MOLECULE @VERSION
+
+    HTML5 game development library by Francisco Santos Belmonte and Christian Alfoni Jørgensen
+
+ */
+
 (function (window) {
 
     var definedModules = [];

@@ -19,7 +19,7 @@ module.exports = function(grunt) {
         'src/sprite.js',
         'src/spritecollisions.js',
         'src/text.js',
-        'src/tile.js',
+        'src/tile.js'
     ];
 
     // Project configuration.
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
         concat: {
             dist: {
                 src: sourceFiles,
-                dest: 'build/<%= pkg.name %>.js'
+                dest: 'build/<%= pkg.name %>-<%= pkg.version %>.js'
             }
         },
 
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'build/<%= pkg.name %>.min.js': [
+                    'build/<%= pkg.name %>-<%= pkg.version %>.min.js': [
                         '<%= concat.dist.dest %>'
                     ]
                 }

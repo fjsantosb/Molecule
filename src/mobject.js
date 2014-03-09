@@ -1,5 +1,7 @@
 Molecule.module('Molecule.MObject', function (require, p) {
 
+    var Text = require('Molecule.Text');
+
     p.mergeObjects = function () {
         var object = arguments[0],
             args = Array.prototype.slice.call(arguments, 0),
@@ -40,6 +42,13 @@ Molecule.module('Molecule.MObject', function (require, p) {
         for (var sprite in sprites) {
             if (sprites.hasOwnProperty(sprite)) {
                 this.sprites[sprite] = sprites[sprite].clone();
+            }
+        }
+
+        for (var prop in this) {
+
+            if (this[prop] instanceof Text) {
+                this[prop] = this[prop].clone();
             }
         }
 

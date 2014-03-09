@@ -337,6 +337,11 @@ Molecule.module('Molecule.Game', function (require, p) {
             return obj;
 
 
+        } else if (object instanceof Text) {
+
+            this.scene.text.push(object);
+            return object;
+
         } else if (object instanceof Sprite) {
             // Adds a sprite directly to the game as an object and as sprite
             this.scene.objects.push(object);
@@ -366,8 +371,14 @@ Molecule.module('Molecule.Game', function (require, p) {
             return;
         }
 
+        if (obj instanceof Text) {
+            this.scene.text.splice(this.scene.indexOf(obj), 1);
+            return obj;
+        }
+
         if (obj instanceof Sprite) {
-            return this.scene.sprites.splice(this.scene.sprites.indexOf(obj), 1);
+            this.scene.sprites.splice(this.scene.sprites.indexOf(obj), 1);
+            return obj;
         }
 
         if (obj instanceof Map) {
@@ -393,7 +404,6 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     Game.prototype.text = function (_font, _x, _y, _title) {
         var t = new Text(_font, _x, _y, _title, this);
-        this.scene.text.push(t);
         return t;
     };
 

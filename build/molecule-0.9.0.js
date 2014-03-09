@@ -1,5 +1,5 @@
 /*
-    MOLECULE @VERSION
+    MOLECULE 0.9.0
 
     HTML5 game development library by Francisco Santos Belmonte and Christian Alfoni Jørgensen
 
