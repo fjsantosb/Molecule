@@ -168,8 +168,7 @@ Molecule.module('Molecule.Map', function (require, p) {
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
-                    object.sprite.position.x = this.json.layers[i].objects[j].x;
-                    object.sprite.position.y = this.json.layers[i].objects[j].y;
+                    this.game.mapFile.sprite(i, j, object.sprite);
                     this.objects.push(object);
 
                 }
