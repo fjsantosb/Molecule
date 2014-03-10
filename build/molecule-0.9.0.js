@@ -2397,10 +2397,6 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             this.position.absolute.x += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].x);
             this.position.absolute.y += Math.abs(this.game.map.json.layers[this.game.map.getMainLayer()].y);
         }
-        this.size.width = this.frame.width - this.frame.offset.x - this.frame.offset.x;
-        this.size.height = this.frame.height - this.frame.offset.y - this.frame.offset.y;
-        this.width = this.size.width;
-        this.height = this.size.height;
     };
 
 	// Sprite prototype Method resetMove
