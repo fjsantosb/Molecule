@@ -45,8 +45,9 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         this.game.map.createContext();
 	};
 
-    MapFile.prototype.sprite = function(i, j, _sprite) {
+    MapFile.prototype.sprite = function(i, j, _sprite, _path) {
         _sprite.name = this.game.map.json.layers[i].objects[j].name;
+        _sprite.image = this.game.imageFile.getImageDataByName(_path + _sprite.name);
         _sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
         _sprite.position.y = parseInt(this.game.map.json.layers[i].objects[j].y) - _sprite.frame.height;
         _sprite.visible = this.game.map.json.layers[i].objects[j].visible;
