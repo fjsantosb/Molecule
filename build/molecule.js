@@ -308,6 +308,8 @@ Molecule.module('Molecule.Animation', function (require, p) {
     };
 
     Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
+        this.frame = [];
+        this.id = [];
         for(var i = 0; i < _imageHeight - 1; i += _frameHeight) {
             for(var j = 0; j < _imageWidth - 1; j += _frameWidth) {
                 this.frame.push({x:j, y:i});
@@ -1598,7 +1600,8 @@ Molecule.module('Molecule.Map', function (require, p) {
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
-                    this.game.mapFile.sprite(i, j, object.sprite);
+                    this.game.mapFile.sprite(i, j, object.sprite, this.path);
+                    object.sprite.getAnimation();
                     this.objects.push(object);
 
                 }
@@ -1971,8 +1974,9 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         this.game.map.createContext();
 	};
 
-    MapFile.prototype.sprite = function(i, j, _sprite) {
+    MapFile.prototype.sprite = function(i, j, _sprite, _path) {
         _sprite.name = this.game.map.json.layers[i].objects[j].name;
+        _sprite.image = this.game.imageFile.getImageDataByName(_path + _sprite.name);
         _sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
         _sprite.position.y = parseInt(this.game.map.json.layers[i].objects[j].y) - _sprite.frame.height;
         _sprite.visible = this.game.map.json.layers[i].objects[j].visible;
