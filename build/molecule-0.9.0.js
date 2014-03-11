@@ -1596,7 +1596,6 @@ Molecule.module('Molecule.Map', function (require, p) {
                     sprite.game = this.game;
                     sprite.image = image;
                     sprite.image.src = canvas.toDataURL("image/png");
-
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
@@ -1988,18 +1987,18 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         _sprite.frame.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.height']) || _sprite.frame.height;
         _sprite.frame.offset.x = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.x']) || _sprite.frame.offset.x;
         _sprite.frame.offset.y = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.y']) || _sprite.frame.offset.y;
-        _sprite.collides.sprite = this.game.map.json.layers[i].objects[j].properties['collides.sprite'] === 'false' ? false : true || true;
-        _sprite.collides.map = this.game.map.json.layers[i].objects[j].properties['collides.map'] === 'false' ? false : true || true;
-        _sprite.scrollable = this.game.map.json.layers[i].objects[j].properties['scrollable'] === 'false' ? false : true || true;
-        _sprite.collidable = this.game.map.json.layers[i].objects[j].properties['collidable'] === 'false' ? false : true || true;
+        _sprite.collides.sprite = this.game.map.json.layers[i].objects[j].properties['collides.sprite'] === 'false' ? false : true || _sprite.collides.sprite;
+        _sprite.collides.map = this.game.map.json.layers[i].objects[j].properties['collides.map'] === 'false' ? false : true || _sprite.collides.map;
+        _sprite.scrollable = this.game.map.json.layers[i].objects[j].properties['scrollable'] === 'false' ? false : true || _sprite.scrollable;
+        _sprite.collidable = this.game.map.json.layers[i].objects[j].properties['collidable'] === 'false' ? false : true || _sprite.collidable;
         _sprite.speed.min.x = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.min.x']).toFixed(3) || _sprite.speed.min.x;
         _sprite.speed.min.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.min.y']).toFixed(3) || _sprite.speed.min.y;
         _sprite.speed.max.x = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.x']).toFixed(3) || _sprite.speed.max.x;
         _sprite.speed.max.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.y']).toFixed(3) || _sprite.speed.max.y;
-        _sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'false' ? false : true || true;
-        _sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'false' ? false : true || true;
-        _sprite.bounciness = this.game.map.json.layers[i].objects[j].properties['bounciness'] === 'true' ? true : false || false;
-        _sprite.overlap = this.game.map.json.layers[i].objects[j].properties['overlap'] === 'true' ? true : false || false;
+        _sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'false' ? false : true || _sprite.affects.physics.gravity;
+        _sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'false' ? false : true || _sprite.affects.physics.friction;
+        _sprite.bounciness = this.game.map.json.layers[i].objects[j].properties['bounciness'] === 'true' ? true : false || _sprite.bounciness;
+        _sprite.overlap = this.game.map.json.layers[i].objects[j].properties['overlap'] === 'true' ? true : false || _sprite.overlap;
     };
 
     return MapFile;
