@@ -164,7 +164,6 @@ Molecule.module('Molecule.Map', function (require, p) {
                     sprite.game = this.game;
                     sprite.image = image;
                     sprite.image.src = canvas.toDataURL("image/png");
-
                     var object = this.game.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
