@@ -7,9 +7,10 @@ Molecule({
 })
 .sprite('flappy', 'assets/flappy.png', 34, 24)
 .init(function (game) {
-    // Create sprite
-    this.sprite = game.sprite('flappy');
 
+    // Create sprite and add to game
+    this.sprite = game.sprite.add('flappy');
+    
     // Change friction
     game.physics.friction.x = 0;
     game.physics.friction.y = 0.05;
@@ -26,19 +27,14 @@ Molecule({
     this.sprite.anchor.x = this.sprite.width / 2;
     this.sprite.anchor.y = this.sprite.height / 2;
 
-    // Add animation with parameters: animation name,
-    // animation frames, speed
-    this.sprite.animation.add('fly', [0, 1, 0, 2], 0.5);
+    // Add animation
+    this.sprite.animation.add('fly', {
+        frames: [0, 1, 0, 2],
+        speed: 0.5
+    });
 
-    // Stop current animation
-    this.sprite.animation.stop();
-
-    // Run animation with parameters: animation name,
-    // loop, reverse
-    this.sprite.animation.run('fly', true, false);
-    
-    // Add sprite to the game
-    game.add(this.sprite);
+    // Run animation
+    this.sprite.animation.run('fly');
 
 })
 .update(function (game) {
@@ -50,4 +46,3 @@ Molecule({
     }
 
 });
-

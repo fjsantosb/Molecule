@@ -4,10 +4,11 @@ Molecule({
 })
 
 // Load sprite setting sprite frame width and height
-.sprite('flappy', 'assets/flappy.png', 34, 24)
+.sprite('flappy', 'assets/flappy.png')
 .init(function (game) {
 
-    var sprite = game.sprite('flappy');
+    // Create Sprite
+    var sprite = game.sprite.create('flappy');
 
     // Change sprite position
     sprite.position.x = game.width / 2;
