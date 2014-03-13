@@ -19,7 +19,8 @@ module.exports = function(grunt) {
         'src/sprite.js',
         'src/spritecollisions.js',
         'src/text.js',
-        'src/tile.js'
+        'src/tile.js',
+        'src/utils.js'
     ];
 
     // Project configuration.

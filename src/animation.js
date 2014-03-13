@@ -19,20 +19,30 @@ Molecule.module('Molecule.Animation', function (require, p) {
             }
         }
         if(_imageWidth === _frameWidth && _imageHeight === _frameHeight) {
-            this.add('', [0], 60);
+            this.add('');
         }
     };
 
-    Animation.prototype.add = function(_name, _frames, _speed) {
-        var _speedFps = _speed * 60 / _frames.length;
-        this.id.push({name: _name, frame: _frames, speed: _speedFps});
+    Animation.prototype.add = function(_name, options) {
+        options = options || {};
+
+        if (!options.frames) {
+            options.frames = [0];
+        }
+
+        if (!options.speed) {
+            options.speed = 60;
+        }
+
+        var _speedFps = options.speed * 60 / options.frames.length;
+        this.id.push({name: _name, frame: options.frames, speed: _speedFps});
     };
 
-    Animation.prototype.run = function(_name, _loop, _reverse) {
-        _loop = _loop === undefined ? true : _loop;
-        _reverse = _reverse === undefined ? false : _reverse;
-        this.loop = _loop;
-        this.reverse = _reverse;
+    Animation.prototype.run = function(_name, options) {
+        options = options || {};
+
+        this.loop = typeof options.loop === 'undefined' ? true : options.loop;
+        this.reverse = typeof options.reverse === 'undefined' ? false : options.reverse;
         this.halt = false;
         if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
             this.current.frame = -1;

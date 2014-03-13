@@ -5,6 +5,24 @@ This is the official repository for the Molecule HTML5 Game Framework. All
 documentation, features and examples can be seen on the official website:
 [http://www.moleculejs.net](http://www.moleculejs.net)
 
+### CHANGE LOG
+
+##### 0.9.1
+- Changed API of creating, adding and removing sprites, Molecule Objects and text. It is now more consistent. Check out the tutorials
+- Added a powerful "get" API to let you easily fetch entities in your game
+- You can now add Molecule properties on objects in Tiled map editor. Tutorial coming soon!
+- game.Object.extend is now changed to game.object.define, for consistency reasons. You can still do:<br> var myObj = game.object.define({});<br> var extendedObj = myObj.extend({});
+- You can now append the canvas to a target dom node using ID. Check basic tutorial
+- Changed text.x and text.y to text.position.x and text.position.y for consistency
+- Added game.once method. game.once(function () { console.log('hey'); }). Will only trigger once. Nice for debug
+
+´´´javascript
+
+var myObj = game.object.define({});
+var myExtendedObject = myObject.extend({});
+
+´´´
+
 ### Build instructions
 
 The easiest way to build molecule uses [grunt](http://gruntjs.com/), which requires [node](http://www.nodejs.org/) and [npm](https://npmjs.org/). Once installed, run ```npm install``` from molecule root directory (this will pull down about 30MB of node packages). From then on, just simply run ```grunt``` to build (it will create molecule.js and molecule.min.js on the build directory).

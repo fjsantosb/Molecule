@@ -10,6 +10,7 @@
     var definedModules = [];
     var moleculeModules = [];
     var initializedModules = [];
+    var onceCallbacks = [];
     var isTest = false;
     var timeoutLimit = 1000;
     var game = null;
@@ -140,6 +141,7 @@
         createGame: function (options) {
             var Game = p.getModule('Molecule.Game', initializedModules).exports;
             game = new Game(options);
+            game.once = Molecule.once;
         },
         createContext: function (modules) {
             var context = {
@@ -289,6 +291,14 @@
         isTest = true;
         var context = p.registerTestModule(name, definedModules);
         callback.apply(context, [context.exports, context.privates, context.deps]);
+    };
+
+    Molecule.once = function (func, context) {
+        var funcString = func.toString();
+        if (onceCallbacks.indexOf(funcString) === -1) {
+            func.call(context);
+            onceCallbacks.push(funcString);
+        }
     };
 
 

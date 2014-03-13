@@ -1,11 +1,13 @@
 Molecule.module('Molecule.Sprite', function (require, p) {
 
-    var Animation = require('Molecule.Animation');
+    var Animation = require('Molecule.Animation'),
+        utils = require('Molecule.utils');
 
 	// Sprite var.
-    function Sprite(_name, _width, _height) {
+    function Sprite(_name, _src, _width, _height) {
 
         this.name = _name;
+        this.src = _src;
         this.image = null;
         this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
         this.rotation = 0;
@@ -172,12 +174,39 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     };
 
     Sprite.prototype.clone = function () {
-        var sprite = new Sprite(this.name, this.frame.width, this.frame.height);
+        var sprite = new Sprite(this.name, this.src, this.frame.width, this.frame.height);
         sprite.image = this.image;
         sprite.game = this.game;
+
+        utils.deepClone(this, sprite, [
+            'name',
+            'src',
+            '_MoleculeType',
+            'position',
+            'rotation',
+            'move',
+            'flip',
+            'anchor',
+            'visible',
+            'alpha',
+            'frame',
+            'size',
+            'collides',
+            'scrollable',
+            'collidable',
+            'platform',
+            'bounciness',
+            'acceleration',
+            'speed',
+            'affects',
+            'collision',
+            'overlap',
+            'kill'
+        ]);
+
         sprite.getAnimation();
-        if (this.width && this.height) {
-            sprite.animation.add('idle', [0], 1);
+        if (this.frame.width && this.frame.height) {
+            sprite.animation.add('idle');
         }
 
         return sprite;

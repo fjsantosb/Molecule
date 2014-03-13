@@ -26,8 +26,9 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
     // Load up a new sprite
     // TODO: Make it just load up the new image, the sprites are created later
 	ImageFile.prototype.load = function(_id, _imageSrc, _width, _height) {
-		var s = new Sprite(_imageSrc, _width, _height);
+		var s = new Sprite(_id, _imageSrc, _width, _height);
 		s.game = this.game;
+        s._MoleculeType = _id;
 		s.image = this.preload(_imageSrc);
 		if(this.isLoaded())
 			s.getAnimation();

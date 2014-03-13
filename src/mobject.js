@@ -25,7 +25,36 @@ Molecule.module('Molecule.MObject', function (require, p) {
         return object;
     };
 
+    p.extend = function (options) {
+
+        var parent = this;
+        var MoleculeObject;
+
+
+        MoleculeObject = function () {
+            return parent.apply(this, arguments);
+        };
+
+        p.mergeObjects(MoleculeObject, parent, options);
+
+        var Surrogate = function () {
+            this.constructor = MoleculeObject;
+        };
+        Surrogate.prototype = parent.prototype;
+        MoleculeObject.prototype = new Surrogate;
+
+        if (options) p.mergeObjects(MoleculeObject.prototype, options);
+
+        MoleculeObject.__super__ = parent.prototype;
+
+        return MoleculeObject;
+
+    };
+
     function MObject(options) {
+
+        options = options || {};
+
         for (var prop in options) {
             if (options.hasOwnProperty(prop)) {
                 this[prop] = options[prop];
@@ -67,31 +96,7 @@ Molecule.module('Molecule.MObject', function (require, p) {
     };
 
     // TODO: Create correct inheritance to check INSTANCEOF
-    MObject.extend = function (options) {
-
-        var parent = this;
-        var child;
-
-
-        child = function () {
-            return parent.apply(this, arguments);
-        };
-
-        p.mergeObjects(child, parent, options);
-
-        var Surrogate = function () {
-            this.constructor = child;
-        };
-        Surrogate.prototype = parent.prototype;
-        child.prototype = new Surrogate;
-
-        if (options) p.mergeObjects(child.prototype, options);
-
-        child.__super__ = parent.prototype;
-
-        return child;
-
-    };
+    MObject.extend = p.extend;
 
 
     return MObject;

@@ -1,5 +1,5 @@
 /*
-    MOLECULE 0.9.0
+    MOLECULE 0.9.1
 
     HTML5 game development library by Francisco Santos Belmonte and Christian Alfoni Jørgensen
 
@@ -10,6 +10,7 @@
     var definedModules = [];
     var moleculeModules = [];
     var initializedModules = [];
+    var onceCallbacks = [];
     var isTest = false;
     var timeoutLimit = 1000;
     var game = null;
@@ -140,6 +141,7 @@
         createGame: function (options) {
             var Game = p.getModule('Molecule.Game', initializedModules).exports;
             game = new Game(options);
+            game.once = Molecule.once;
         },
         createContext: function (modules) {
             var context = {
@@ -291,6 +293,14 @@
         callback.apply(context, [context.exports, context.privates, context.deps]);
     };
 
+    Molecule.once = function (func, context) {
+        var funcString = func.toString();
+        if (onceCallbacks.indexOf(funcString) === -1) {
+            func.call(context);
+            onceCallbacks.push(funcString);
+        }
+    };
+
 
     window.Molecule = Molecule;
 
@@ -316,20 +326,30 @@ Molecule.module('Molecule.Animation', function (require, p) {
             }
         }
         if(_imageWidth === _frameWidth && _imageHeight === _frameHeight) {
-            this.add('', [0], 60);
+            this.add('');
         }
     };
 
-    Animation.prototype.add = function(_name, _frames, _speed) {
-        var _speedFps = _speed * 60 / _frames.length;
-        this.id.push({name: _name, frame: _frames, speed: _speedFps});
+    Animation.prototype.add = function(_name, options) {
+        options = options || {};
+
+        if (!options.frames) {
+            options.frames = [0];
+        }
+
+        if (!options.speed) {
+            options.speed = 60;
+        }
+
+        var _speedFps = options.speed * 60 / options.frames.length;
+        this.id.push({name: _name, frame: options.frames, speed: _speedFps});
     };
 
-    Animation.prototype.run = function(_name, _loop, _reverse) {
-        _loop = _loop === undefined ? true : _loop;
-        _reverse = _reverse === undefined ? false : _reverse;
-        this.loop = _loop;
-        this.reverse = _reverse;
+    Animation.prototype.run = function(_name, options) {
+        options = options || {};
+
+        this.loop = typeof options.loop === 'undefined' ? true : options.loop;
+        this.reverse = typeof options.reverse === 'undefined' ? false : options.reverse;
         this.halt = false;
         if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
             this.current.frame = -1;
@@ -566,9 +586,16 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions'),
         Sprite = require('Molecule.Sprite'),
-        MObject = require('Molecule.MObject')
+        MObject = require('Molecule.MObject'),
+        utils = require('Molecule.utils');
 
     p.init = null;
+
+    // Objects defined inline
+    // game.object.define('Something', {});
+    p.inlineObjects = {
+
+    };
 
     p.updateGame = function () {
     };
@@ -812,6 +839,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.sprites = {};
         this.tilemaps = {};
         this.globals = options.globals || {};
+        this.node = options.node;
 
         // OPTIONS
         this.scale = options.scale || 1;
@@ -842,57 +870,14 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
         this.boundaries = {x: null, y: null, width: null, height: null};
 
-        // GETTERS
-        var game = this;
-        this.object.get = function (type, props) {
-            var results = [];
-            for (var x = 0 ; x < game.scene.objects.length; x++) {
-                if (game.is(game.scene.objects[x], type)) {
-                    if (!props) {
-                        results.push(game.scene.objects[x]);
-                    } else if (typeof props === 'function' && props(game.scene.objects[x])) {
-                        results.push(game.scene.objects[x]);
-                    } else if (props && typeof props !== 'function' && p.propertiesMatch(game.scene.objects[x], props)) {
-                        results.push(game.scene.objects[x]);
-                    }
-                } else if (!type) {
-                    results.push(game.scene.objects[x]);
-                }
-            }
-            return results;
-        };
 
-        this.sprite.get = function (type, props) {
-            var results = [];
+        // BINDERS
+        utils.bindMethods(this.object, this);
+        utils.bindMethods(this.sprite, this);
+        utils.bindMethods(this.text, this);
+        utils.bindMethods(this.tilemap, this);
 
-            for (var x = 0 ; x < game.scene.sprites.length; x++) {
-
-                if (game.is(game.scene.sprites[x], type)) {
-                    if (!props) {
-                        results.push(game.scene.sprites[x]);
-                    } else if (typeof props === 'function' && props(game.scene.sprites[x])) {
-                        results.push(game.scene.sprites[x]);
-                    } else if (props && typeof props !== 'function' && p.propertiesMatch(game.scene.sprites[x], props)) {
-                        results.push(game.scene.sprites[x]);
-                    }
-                } else if (!type) {
-                    results.push(game.scene.sprites[x]);
-                }
-            }
-            return results;
-        };
-
-        document.body.appendChild(this.canvas);
-
-    };
-
-    // TODO: Should clone the sprite instead
-    // Will now load the sprite to the scene, but should maybe do that with a game object instead?
-    Game.prototype.sprite = function (_id) {
-        var loadedSprite = this.sprites[_id],
-            s = loadedSprite.clone();
-
-        return s;
+        this.node ? document.getElementById(this.node).appendChild(this.canvas) : document.body.appendChild(this.canvas);
 
     };
 
@@ -902,150 +887,67 @@ Molecule.module('Molecule.Game', function (require, p) {
 
     };
 
-    Game.prototype.tilemap = function (_id) {
-
-        return this.tilemaps[_id];
-
-    };
-
     // TODO: Should not be able to add objects more than once
-    Game.prototype.add = function (object, options) {
-        if (typeof object === 'string') {
-            var Obj = require(object),
-                obj;
+    Game.prototype.add = function (obj) {
 
-            Obj.prototype._MoleculeType = object;
-            obj = new Obj(options);
-            obj._MoleculeType = object;
-            this.scene.objects.push(obj);
-            if (obj.sprite) {
-                this.scene.sprites.push(obj.sprite);
-            } else if (obj.sprites) {
-                for (var sprite in obj.sprites) {
-                    if (obj.sprites.hasOwnProperty(sprite)) {
-                        this.scene.sprites.push(obj.sprites[sprite]);
-                    }
-                }
-            }
-            return obj;
-
-        } else if (object instanceof Array) {
-            // Loop objects to add
-        } else if (typeof object === 'function') {
-
-            // Adds a game object to the game
-            // Also adds the objects sprites
-            var obj = new object(options);
-            this.scene.objects.push(obj);
-
-            if (obj.sprite) {
-                this.scene.sprites.push(obj.sprite);
-            } else if (obj.sprites) {
-                for (var sprite in obj.sprites) {
-                    if (obj.sprites.hasOwnProperty(sprite)) {
-                        this.scene.sprites.push(obj.sprites[sprite]);
-                    }
-                }
-            }
-
-            return obj;
-
-
-        } else if (object instanceof Text) {
-
-            this.scene.text.push(object);
-            return object;
-
-        } else if (object instanceof Sprite) {
-            // Adds a sprite directly to the game as an object and as sprite
-            this.scene.objects.push(object);
-            this.scene.sprites.push(object);
-
-            return object;
-
-        } else if (object instanceof Map) {
-            this.mapFile.set(object);
-            return object;
-            // Make a more sensible method for doing this
+        if (arguments.length === 0 || arguments.length > 1 || typeof arguments[0] === 'string') {
+            throw new Error('You can only add a single sprite, Molecule Object or text, use respective game.sprite.add, game.object.add and game.text.add');
         }
+
+        if (obj instanceof MObject) {
+            return this.object.add(obj);
+        }
+
+        if (obj instanceof Sprite) {
+            return this.sprite.add(obj)
+        }
+
+        if (obj instanceof Text) {
+            return this.text.add(obj);
+        }
+
+        if (typeof obj instanceof 'function') { // Constructor
+            return this.object.add(obj);
+        }
+
+        throw new Error('You did not pass sprite, Molecule Object or text');
 
     };
 
     Game.prototype.get = function () {
 
-        var id = typeof arguments[0] === 'string' || typeof arguments[0] === 'number' ? arguments[0] : null,
-            callback = typeof arguments[0] === 'function' ? arguments[0] : null,
-            retValue,
-            obj;
-
-        if (typeof id !== null) {
-
-            for (var x = 0; x < this.scene.objects.length; x++) {
-                if (this.scene.objects[x].id === id) {
-                    return this.scene.objects[x];
-                }
-            }
-
+        return {
+            sprites: this.scene.sprites,
+            objects: this.scene.objects,
+            text: this.scene.text
         }
 
-        if (callback !== null) {
+    };
 
-            for (var x = 0; x < this.scene.objects.length; x++) {
-                retValue = callback(this.scene.objects[x]);
-                if (retValue) {
-                    return this.scene.objects[x];
-                }
-            }
+    Game.prototype.remove = function (obj) {
 
+        if (arguments.length === 0 || arguments.length > 1) {
+            throw new Error('You can only remove a single sprite, Molecule Object or text');
         }
 
+        if (obj instanceof MObject) {
+            return this.object.remove(obj);
+        }
+
+        if (obj instanceof Sprite) {
+            return this.sprite.remove(obj)
+        }
+
+        if (obj instanceof Text) {
+            return this.text.remove(obj);
+        }
+
+        throw new Error('You did not pass sprite, Molecule Object or text');
 
     };
 
     Game.prototype.is = function (obj, type) {
         return obj._MoleculeType === type;
-    };
-
-    Game.prototype.remove = function (obj) {
-
-        if (!obj) {
-            return;
-        }
-
-        if (obj instanceof Text) {
-            this.scene.text.splice(this.scene.text.indexOf(obj), 1);
-            return obj;
-        }
-
-        if (obj instanceof Sprite) {
-            this.scene.sprites.splice(this.scene.sprites.indexOf(obj), 1);
-            return obj;
-        }
-
-        if (obj instanceof Map) {
-            var game = this;
-            this.map.objects.forEach(function (object) {
-                game.remove(object);
-            });
-            return this.map = null;
-        }
-
-        this.scene.objects.splice(this.scene.objects.indexOf(obj), 1);
-        if (obj.sprite) {
-            this.scene.sprites.splice(this.scene.sprites.indexOf(obj.sprite), 1);
-        } else if (obj.sprites) {
-            for (var sprite in obj.sprites) {
-                if (obj.sprites.hasOwnProperty(sprite)) {
-                    this.scene.sprites.splice(this.scene.sprites.indexOf(obj.sprites[sprite]), 1);
-                }
-            }
-        }
-
-    };
-
-    Game.prototype.text = function (_font, _x, _y, _title) {
-        var t = new Text(_font, _x, _y, _title, this);
-        return t;
     };
 
     // Not in use, remove?
@@ -1109,7 +1011,238 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.updateGame = callback.bind(this.globals, this, require);
     };
 
-    Game.prototype.object = MObject;
+    // All methods are bound to game object
+    Game.prototype.object = {
+        define: function () {
+            var name = arguments.length > 1 ? arguments[0] : null,
+                options = arguments.length === 1 ? arguments[0] : arguments[1],
+                Obj = MObject.extend.call(MObject, options);
+
+
+            // No name means it is coming from a module
+            if (!name) {
+                return Obj;
+            }
+
+            if (!p.inlineObjects[name]) {
+                p.inlineObjects[name] = Obj;
+            } else {
+                throw new Error(name + ' already exists as an object');
+            }
+
+            return Obj;
+
+        },
+        create: function () {
+            var name = arguments[0],
+                options = arguments[1],
+                Obj,
+                obj;
+
+            // If passing a constructor
+            if (typeof arguments[0] === 'function') {
+                return new arguments[0](arguments[1]);
+            }
+
+            if (p.inlineObjects[name]) {
+                Obj = p.inlineObjects[name];
+            } else {
+                Obj = require(name);
+            }
+
+            obj = new Obj(options);
+            obj._MoleculeType = name;
+            return obj;
+        },
+        add: function () {
+
+            var obj;
+
+            if (typeof arguments[0] === 'string') {
+                obj = this.object.create(arguments[0], arguments[1]);
+            } else if (utils.isMObject(arguments[0])) {
+                obj = arguments[0];
+            } else if (typeof arguments[0] === 'function') { // constructor
+                obj = new arguments[0](arguments[1]);
+            } else {
+                throw new Error('Wrong parameters, need a string or Molecule Object');
+            }
+
+            this.scene.objects.push(obj);
+
+            if (obj.sprite) {
+                this.scene.sprites.push(obj.sprite);
+            } else if (obj.sprites) {
+                for (var sprite in obj.sprites) {
+                    if (obj.sprites.hasOwnProperty(sprite)) {
+                        this.scene.sprites.push(obj.sprites[sprite]);
+                    }
+                }
+            }
+
+            return obj;
+        },
+        get: function () {
+
+            var options;
+
+            if (!arguments.length) {
+                return this.scene.objects;
+            }
+
+            if (typeof arguments[0] === 'string') {
+
+                options = arguments[1] || {};
+                options._MoleculeType = arguments[0]
+
+                return utils.find(this.scene.objects, options);
+
+            } else {
+                return utils.find(this.scene.objects, arguments[0]);
+            }
+
+        },
+        remove: function () {
+            var objectsToRemove = arguments[0] instanceof MObject ? [arguments[0]] : this.object.get.apply(this, arguments),
+                game = this;
+            objectsToRemove.forEach(function (obj) {
+                game.scene.objects.splice(game.scene.objects.indexOf(obj), 1);
+                if (obj.sprite) {
+                    game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
+                } else if (obj.sprites) {
+                    for (var sprite in obj.sprites) {
+                        if (obj.sprites.hasOwnProperty(sprite)) {
+                            game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprites[sprite]), 1);
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    // All methods are bound to game object
+    Game.prototype.sprite = {
+
+        create: function (_id) {
+            var loadedSprite,
+                sprite;
+
+            if (this.sprites[_id]) {
+                loadedSprite = this.sprites[_id];
+                sprite = loadedSprite.clone();
+            } else {
+                throw new Error('Sprite ' + _id + ' does not exist. Has it been loaded?');
+            }
+
+            return sprite;
+        },
+        add: function () {
+
+            var sprite;
+
+            if (typeof arguments[0] === 'string') {
+                sprite = this.sprite.create(arguments[0]);
+            } else if (utils.isSprite(arguments[0])) {
+                sprite = arguments[0];
+            } else {
+                throw new Error('Wrong parameters, need a string or sprite');
+            }
+
+            this.scene.sprites.push(sprite);
+
+            return sprite;
+        },
+        get: function () {
+
+            var options;
+
+            if (!arguments.length) {
+                return this.scene.sprites;
+            }
+
+            if (typeof arguments[0] === 'string') {
+
+                options = {
+                    name: arguments[0]
+                };
+
+                return utils.find(this.scene.sprites, options);
+
+            } else {
+                return utils.find(this.scene.sprites, arguments[0]);
+            }
+
+        },
+        remove: function () {
+            var spritesToRemove = arguments[0] instanceof Sprite ? [arguments[0]] : this.sprite.get.apply(this, arguments),
+                game = this;
+            spritesToRemove.forEach(function (sprite) {
+                game.scene.sprites.splice(game.scene.sprites.indexOf(sprite), 1);
+            });
+        }
+    };
+
+    // All methods are bound to game object
+    Game.prototype.text = {
+
+        create: function (options) {
+            var t = new Text(options, this);
+            return t;
+        },
+        add: function () {
+
+            var text;
+
+            if (utils.isText(arguments[0])) {
+                text = arguments[0];
+            } else if (utils.isObject(arguments[0])) {
+                text = this.text.create(arguments[0]);
+            } else {
+                throw new Error('Wrong parameters, need a new object or existing Text object');
+            }
+
+            this.scene.text.push(text);
+
+            return text;
+        },
+        get: function () {
+
+            if (!arguments.length) {
+                return this.scene.text;
+            }
+
+            return utils.find(this.scene.text, arguments[0]);
+
+        },
+        remove: function () {
+            var textToRemove = arguments[0] instanceof Text ? [arguments[0]] : this.text.get.apply(this, arguments),
+                game = this;
+            textToRemove.forEach(function (text) {
+                game.scene.text.splice(game.scene.text.indexOf(text), 1);
+            });
+        }
+
+    };
+
+    // All methods are bound to game object
+    Game.prototype.tilemap = {
+
+        set: function () {
+            var tilemap = this.tilemaps[arguments[0]] || arguments[0];
+            if (tilemap && utils.isTilemap(tilemap)) {
+                this.mapFile.set(tilemap);
+            } else {
+                throw new Error('There is no tilemap with the name ' + _id + ' loaded');
+            }
+        },
+        get: function () {
+            return this.map;
+        },
+        remove: function () {
+            this.map = null;
+        }
+
+    };
 
 
 //    Game.prototype.cancelRequestAnimFrame = (function () {
@@ -1147,7 +1280,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
     // Load up a new sprite
     // TODO: Make it just load up the new image, the sprites are created later
 	ImageFile.prototype.load = function(_id, _imageSrc, _width, _height) {
-		var s = new Sprite(_imageSrc, _width, _height);
+		var s = new Sprite(_id, _imageSrc, _width, _height);
 		s.game = this.game;
         s._MoleculeType = _id;
 		s.image = this.preload(_imageSrc);
@@ -1686,7 +1819,7 @@ Molecule.module('Molecule.Map', function (require, p) {
                     sprite.image = image;
                     sprite.image.src = canvas.toDataURL("image/png");
                     this.game.mapFile.sprite(i, j, sprite, this.path);
-                     var object = this.game.add(this.json.layers[i].name, {
+                     var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
 
@@ -2158,30 +2291,33 @@ Molecule.module('Molecule.MObject', function (require, p) {
     p.extend = function (options) {
 
         var parent = this;
-        var child;
+        var MoleculeObject;
 
 
-        child = function () {
+        MoleculeObject = function () {
             return parent.apply(this, arguments);
         };
 
-        p.mergeObjects(child, parent, options);
+        p.mergeObjects(MoleculeObject, parent, options);
 
         var Surrogate = function () {
-            this.constructor = child;
+            this.constructor = MoleculeObject;
         };
         Surrogate.prototype = parent.prototype;
-        child.prototype = new Surrogate;
+        MoleculeObject.prototype = new Surrogate;
 
-        if (options) p.mergeObjects(child.prototype, options);
+        if (options) p.mergeObjects(MoleculeObject.prototype, options);
 
-        child.__super__ = parent.prototype;
+        MoleculeObject.__super__ = parent.prototype;
 
-        return child;
+        return MoleculeObject;
 
     };
 
     function MObject(options) {
+
+        options = options || {};
+
         for (var prop in options) {
             if (options.hasOwnProperty(prop)) {
                 this[prop] = options[prop];
@@ -2223,8 +2359,7 @@ Molecule.module('Molecule.MObject', function (require, p) {
     };
 
     // TODO: Create correct inheritance to check INSTANCEOF
-    MObject.extend = p.extend; // Extend on myObject.extend
-    MObject.define = p.extend; // Define on game.object.define
+    MObject.extend = p.extend;
 
 
     return MObject;
@@ -2453,12 +2588,13 @@ Molecule.module('Molecule.Sound', function (require, p) {
 Molecule.module('Molecule.Sprite', function (require, p) {
 
     var Animation = require('Molecule.Animation'),
-        utils = require('Molecule.Utils');
+        utils = require('Molecule.utils');
 
 	// Sprite var.
-    function Sprite(_name, _width, _height) {
+    function Sprite(_name, _src, _width, _height) {
 
         this.name = _name;
+        this.src = _src;
         this.image = null;
         this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
         this.rotation = 0;
@@ -2625,13 +2761,13 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     };
 
     Sprite.prototype.clone = function () {
-        var sprite = new Sprite(this.name, this.frame.width, this.frame.height);
+        var sprite = new Sprite(this.name, this.src, this.frame.width, this.frame.height);
         sprite.image = this.image;
         sprite.game = this.game;
 
         utils.deepClone(this, sprite, [
             'name',
-            'id',
+            'src',
             '_MoleculeType',
             'position',
             'rotation',
@@ -2657,7 +2793,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
         sprite.getAnimation();
         if (this.frame.width && this.frame.height) {
-            sprite.animation.add('idle', [0], 1);
+            sprite.animation.add('idle');
         }
 
         return sprite;
@@ -2781,18 +2917,20 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
 });
 Molecule.module('Molecule.Text', function (require, p) {
 
-	function Text (_font, _x, _y, _title, _game) {
+    var utils = require('Molecule.utils');
+
+	function Text (options, _game) {
 		this.game = _game;
-		this.title = _title === undefined ? null : _title;
-		this.x = _x || 0;
-		this.y = _y || 0;
+		this.title = '';
+        this.position = options.position || {x:0,y:0};
 		this.align = 'left';
-		this.font = _font;
+		this.font = 'Arial 16px';
 		this.color = '#FFFFFF';
 		this.baseline = 'top';
 		this.alpha = 1;
 		this.visible = true;
-		this.stroke = {enable: false, color: '#000000'};
+		this.stroke = null;
+        utils.mergeSafely(options, this, ['game']);
 	};
 
 	Text.prototype.draw = function() {
@@ -2804,10 +2942,10 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.game.context.textAlign = this.align;
 		this.game.context.textBaseline = this.baseline;
 		this.game.context.fillStyle = this.color;
-		this.game.context.fillText(this.title, this.x, this.y);
-		if(this.stroke.enable) {
-			this.game.context.strokeStyle = this.stroke.color;
-			this.game.context.strokeText(this.title, this.x, this.y);
+		this.game.context.fillText(this.title, this.position.x, this.position.y);
+		if(this.stroke) {
+			this.game.context.strokeStyle = this.stroke;
+			this.game.context.strokeText(this.title, this.position.x, this.position.y);
 		}
 		this.game.context.restore();
 	};
@@ -2817,7 +2955,18 @@ Molecule.module('Molecule.Text', function (require, p) {
 	};
 
     Text.prototype.clone = function () {
-        var text = new Text(this.font, this.x, this.y, this.title, this.game);
+        var options = utils.deepClone(this, {}, [
+            'title',
+            'position',
+            'align',
+            'font',
+            'color',
+            'baseline',
+            'alpha',
+            'visible',
+            'stroke'
+        ]);
+        var text = new Text(options, this.game);
         return text;
     };
 
@@ -2849,7 +2998,35 @@ Molecule.module('Molecule.Tile', function (require, p) {
 
 });
 
-Molecule.module('Molecule.Utils', function () {
+Molecule.module('Molecule.utils', function (require, p) {
+
+    p.createMethodClosure = function (object, prop, context) {
+        return object[prop].bind(context);
+    };
+
+    p.matchByObject = function (returnArray, objToMatch, containsProps) {
+
+        return function (obj) {
+
+            if (containsProps(obj, objToMatch)) {
+                returnArray.push(obj);
+            }
+
+        }
+
+    };
+
+    p.matchByFunction = function (returnArray, matchFunc) {
+
+        return function (obj) {
+
+            if ((typeof matchFunc._MoleculeType === 'undefined' || matchFunc._MoleculeType === obj._MoleculeType) && matchFunc(obj)) {
+                returnArray.push(obj);
+            }
+
+        }
+
+    };
 
     return {
 
@@ -2870,6 +3047,74 @@ Molecule.module('Molecule.Utils', function () {
             }
 
             return target;
+
+        },
+        mergeSafely: function (source, target, invalidProps) {
+            invalidProps = invalidProps || [];
+            for (var prop in source) {
+                if (source.hasOwnProperty(prop) && invalidProps.indexOf(prop) === -1) {
+                    target[prop] = source[prop];
+                } else if (invalidProps.indexOf(prop) >= 0) {
+                    throw new Error('You can not set or change the property ' + prop);
+                }
+            }
+        },
+        bindMethods: function (object, context) {
+
+            for (var prop in object) {
+
+                if (object.hasOwnProperty(prop) && typeof object[prop] === 'function') {
+                    object[prop] = p.createMethodClosure(object, prop, context)
+                }
+            }
+
+        },
+        isMObject: function (obj) {
+
+            // Can not use instanceof here
+            return 'init' in obj && 'update' in obj;
+
+        },
+        isSprite: function (sprite) {
+            var Sprite = require('Molecule.Sprite');
+            return sprite instanceof Sprite;
+
+        },
+        isText: function (text) {
+            var Text = require('Molecule.Text');
+            return text instanceof Text;
+
+        },
+        isTilemap: function (tilemap) {
+            var Map = require('Molecule.Map');
+            return tilemap instanceof Map;
+        },
+        isObject: function (obj) {
+            return typeof obj === 'object' && !(obj instanceof Array) && obj !== null;
+        },
+        find: function (array) {
+            var returnArray = [];
+
+            if (typeof arguments[1] === 'function') {
+                array.forEach(p.matchByFunction(returnArray, arguments[1]));
+            } else {
+                array.forEach(p.matchByObject(returnArray, arguments[1], this.containsProps));
+            }
+
+            return returnArray;
+        },
+        containsProps: function (obj, objToMatch) {
+            var match = true,
+                prop;
+
+            for (prop in objToMatch) {
+
+                if (objToMatch.hasOwnProperty(prop) && obj[prop] !== objToMatch[prop]) {
+                    match = false;
+                }
+            }
+
+            return match;
 
         }
 

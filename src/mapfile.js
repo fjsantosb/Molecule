@@ -3,6 +3,38 @@ Molecule.module('Molecule.MapFile', function (require, p) {
     var Tile = require('Molecule.Tile'),
         Map = require('Molecule.Map');
 
+    p.Boolean = function (bool) {
+        if (bool === 'true') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    p.getProperty = function (property, Type, objectProperties, layerProperties, fallbackProperty) {
+
+        if (typeof objectProperties[property] !== 'undefined') {
+            return Type(objectProperties[property]);
+        }
+
+        if (typeof layerProperties[property] !== 'undefined') {
+            console.log('returning ' + property, Type(layerProperties[property]));
+            return Type(layerProperties[property]);
+        }
+
+        return fallbackProperty;
+
+    };
+
+    p.getMoleculeType = function (object, tilesets) {
+        var gid = object.gid;
+        for (var x = 0; x < tilesets.length; x++) {
+            if (tilesets[x].firstgid === gid) {
+                return tilesets[x].name;
+            }
+        }
+    }
+
 	function MapFile(_game) {
 		this.game = _game;
 		this.tile = new Tile(_game);
@@ -12,6 +44,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 	MapFile.prototype.load = function(_id, _name) {
 		var m = new Map(this.game);
 		m.load(_id, _name);
+        m._MoleculeType = _id;
 		this.maps.push(m);
 		return m;
 	};
@@ -46,31 +79,33 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 	};
 
     MapFile.prototype.sprite = function(i, j, _sprite, _path) {
+
+        var objectProperties =this.game.map.json.layers[i].objects[j].properties || {},
+            layerProperties = this.game.map.json.layers[i].properties || {};
+
         _sprite.name = this.game.map.json.layers[i].objects[j].name;
-        _sprite.image = this.game.imageFile.getImageDataByName(_path + _sprite.name);
+        _sprite._MoleculeType = p.getMoleculeType(this.game.map.json.layers[i].objects[j], this.game.map.json.tilesets);
+        _sprite.image = _sprite.image || this.game.imageFile.getImageDataByName(_path + _sprite.name);
         _sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
         _sprite.position.y = parseInt(this.game.map.json.layers[i].objects[j].y) - _sprite.frame.height;
         _sprite.visible = this.game.map.json.layers[i].objects[j].visible;
-        _sprite.anchor.x = parseInt(this.game.map.json.layers[i].objects[j].properties['anchor.x']) || _sprite.anchor.x;
-        _sprite.anchor.y = parseInt(this.game.map.json.layers[i].objects[j].properties['anchor.y']) || _sprite.anchor.y;
-        _sprite.flip.x = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.x']) || _sprite.flip.x;
-        _sprite.flip.y = parseInt(this.game.map.json.layers[i].objects[j].properties['flip.y']) || _sprite.flip.y;
-        _sprite.frame.width = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.width']) || _sprite.frame.width;
-        _sprite.frame.height = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.height']) || _sprite.frame.height;
-        _sprite.frame.offset.x = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.x']) || _sprite.frame.offset.x;
-        _sprite.frame.offset.y = parseInt(this.game.map.json.layers[i].objects[j].properties['frame.offset.y']) || _sprite.frame.offset.y;
-        _sprite.collides.sprite = this.game.map.json.layers[i].objects[j].properties['collides.sprite'] === 'false' ? false : true || _sprite.collides.sprite;
-        _sprite.collides.map = this.game.map.json.layers[i].objects[j].properties['collides.map'] === 'false' ? false : true || _sprite.collides.map;
-        _sprite.scrollable = this.game.map.json.layers[i].objects[j].properties['scrollable'] === 'false' ? false : true || _sprite.scrollable;
-        _sprite.collidable = this.game.map.json.layers[i].objects[j].properties['collidable'] === 'false' ? false : true || _sprite.collidable;
-        _sprite.speed.min.x = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.min.x']).toFixed(3) || _sprite.speed.min.x;
-        _sprite.speed.min.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.min.y']).toFixed(3) || _sprite.speed.min.y;
-        _sprite.speed.max.x = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.x']).toFixed(3) || _sprite.speed.max.x;
-        _sprite.speed.max.y = parseFloat(this.game.map.json.layers[i].objects[j].properties['speed.max.y']).toFixed(3) || _sprite.speed.max.y;
-        _sprite.affects.physics.gravity = this.game.map.json.layers[i].objects[j].properties['affects.physics.gravity'] === 'false' ? false : true || _sprite.affects.physics.gravity;
-        _sprite.affects.physics.friction = this.game.map.json.layers[i].objects[j].properties['affects.physics.friction'] === 'false' ? false : true || _sprite.affects.physics.friction;
-        _sprite.bounciness = this.game.map.json.layers[i].objects[j].properties['bounciness'] === 'true' ? true : false || _sprite.bounciness;
-        _sprite.overlap = this.game.map.json.layers[i].objects[j].properties['overlap'] === 'true' ? true : false || _sprite.overlap;
+        _sprite.anchor.x = p.getProperty('anchor.x', Number, objectProperties, layerProperties, _sprite.anchor.x);
+        _sprite.anchor.y = p.getProperty('anchor.y', Number, objectProperties, layerProperties, _sprite.anchor.y);
+        _sprite.flip.x = p.getProperty('flip.x', Number, objectProperties, layerProperties, _sprite.flip.x);
+        _sprite.flip.y = p.getProperty('flip.y', Number, objectProperties, layerProperties, _sprite.flip.y);
+        _sprite.collides.sprite =  p.getProperty('collides.sprite', p.Boolean, objectProperties, layerProperties, _sprite.collides.sprite);
+        _sprite.collides.map = p.getProperty('collides.map', p.Boolean, objectProperties, layerProperties, _sprite.collides.map);
+        _sprite.scrollable = p.getProperty('scrollable', p.Boolean, objectProperties, layerProperties, _sprite.scrollable);
+        _sprite.collidable = p.getProperty('collidable', p.Boolean, objectProperties, layerProperties, _sprite.collidable);
+        _sprite.speed.min.x = p.getProperty('speed.min.x', Number, objectProperties, layerProperties, _sprite.speed.min.x);
+        _sprite.speed.min.y = p.getProperty('speed.min.y', Number, objectProperties, layerProperties, _sprite.speed.min.y);
+        _sprite.speed.max.x = p.getProperty('speed.max.x', Number, objectProperties, layerProperties, _sprite.speed.max.x);
+        _sprite.speed.max.y = p.getProperty('speed.max.y', Number, objectProperties, layerProperties, _sprite.speed.max.y);
+        _sprite.affects.physics.gravity = p.getProperty('affects.physics.gravity', p.Boolean, objectProperties, layerProperties, _sprite.affects.physics.gravity);
+        _sprite.affects.physics.friction = p.getProperty('affects.physics.friction', p.Boolean, objectProperties, layerProperties, _sprite.affects.physics.friction);
+        _sprite.bounciness = p.getProperty('bounciness', p.Boolean, objectProperties, layerProperties, _sprite.bounciness);
+        _sprite.overlap = p.getProperty('overlap', p.Boolean, objectProperties, layerProperties, _sprite.overlap);
+
     };
 
     return MapFile;

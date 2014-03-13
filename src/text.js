@@ -1,17 +1,19 @@
 Molecule.module('Molecule.Text', function (require, p) {
 
-	function Text (_font, _x, _y, _title, _game) {
+    var utils = require('Molecule.utils');
+
+	function Text (options, _game) {
 		this.game = _game;
-		this.title = _title === undefined ? null : _title;
-		this.x = _x || 0;
-		this.y = _y || 0;
+		this.title = '';
+        this.position = options.position || {x:0,y:0};
 		this.align = 'left';
-		this.font = _font;
+		this.font = 'Arial 16px';
 		this.color = '#FFFFFF';
 		this.baseline = 'top';
 		this.alpha = 1;
 		this.visible = true;
-		this.stroke = {enable: false, color: '#000000'};
+		this.stroke = null;
+        utils.mergeSafely(options, this, ['game']);
 	};
 
 	Text.prototype.draw = function() {
@@ -23,10 +25,10 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.game.context.textAlign = this.align;
 		this.game.context.textBaseline = this.baseline;
 		this.game.context.fillStyle = this.color;
-		this.game.context.fillText(this.title, this.x, this.y);
-		if(this.stroke.enable) {
-			this.game.context.strokeStyle = this.stroke.color;
-			this.game.context.strokeText(this.title, this.x, this.y);
+		this.game.context.fillText(this.title, this.position.x, this.position.y);
+		if(this.stroke) {
+			this.game.context.strokeStyle = this.stroke;
+			this.game.context.strokeText(this.title, this.position.x, this.position.y);
 		}
 		this.game.context.restore();
 	};
@@ -36,7 +38,18 @@ Molecule.module('Molecule.Text', function (require, p) {
 	};
 
     Text.prototype.clone = function () {
-        var text = new Text(this.font, this.x, this.y, this.title, this.game);
+        var options = utils.deepClone(this, {}, [
+            'title',
+            'position',
+            'align',
+            'font',
+            'color',
+            'baseline',
+            'alpha',
+            'visible',
+            'stroke'
+        ]);
+        var text = new Text(options, this.game);
         return text;
     };
 
