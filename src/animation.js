@@ -43,6 +43,8 @@ Molecule.module('Molecule.Animation', function (require, p) {
 
         this.loop = typeof options.loop === 'undefined' ? true : options.loop;
         this.reverse = typeof options.reverse === 'undefined' ? false : options.reverse;
+        this.loop = _loop;
+        this.reverse = _reverse;
         this.halt = false;
         if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
             this.current.frame = -1;

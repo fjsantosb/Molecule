@@ -51,6 +51,21 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     };
 
+    p.registeredEvents = [];
+    p.createEventClosure = function (callback, context) {
+
+        var event = {
+            context: context,
+            callback: function (event) {
+                callback.apply(context, event.detail);
+            }
+        };
+        p.registeredEvents.push(event);
+
+        return event.callback;
+
+    };
+
     function MObject(options) {
 
         options = options || {};
@@ -74,10 +89,11 @@ Molecule.module('Molecule.MObject', function (require, p) {
             }
         }
 
-        for (var prop in this) {
-
-            if (this[prop] instanceof Text) {
-                this[prop] = this[prop].clone();
+        var text = this.text;
+        this.text = {};
+        for (var textProp in text) {
+            if (text.hasOwnProperty(textProp)) {
+                this.text[textProp] = text[textProp].clone();
             }
         }
 
@@ -93,6 +109,23 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     MObject.prototype.update = function () {
 
+    };
+
+    MObject.prototype.listenFor = function (type, callback) {
+
+        window.addEventListener(type, p.createEventClosure(callback, this));
+
+    };
+
+    MObject.prototype.removeListeners = function () {
+        var event;
+        for (var x = 0; x < p.registeredEvents.length; x++) {
+            event = p.registeredEvents[x];
+            if (event.context === this) {
+                p.registeredEvents.splice(x, 1);
+                x--;
+            }
+        }
     };
 
     // TODO: Create correct inheritance to check INSTANCEOF

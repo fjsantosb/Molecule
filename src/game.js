@@ -254,6 +254,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         return matches;
     };
 
+    p.timeouts = [];
+
     var Game = function (options) {
 
         // PROPERTIES
@@ -333,7 +335,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             return this.text.add(obj);
         }
 
-        if (typeof obj instanceof 'function') { // Constructor
+        if (typeof obj === 'function') { // Constructor
             return this.object.add(obj);
         }
 
@@ -497,6 +499,14 @@ Molecule.module('Molecule.Game', function (require, p) {
 
             this.scene.objects.push(obj);
 
+            if (obj.text) {
+                for (var text in obj.text) {
+                    if (obj.text.hasOwnProperty(text)) {
+                        this.scene.text.push(obj.text[text]);
+                    }
+                }
+            }
+
             if (obj.sprite) {
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
@@ -533,6 +543,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             var objectsToRemove = arguments[0] instanceof MObject ? [arguments[0]] : this.object.get.apply(this, arguments),
                 game = this;
             objectsToRemove.forEach(function (obj) {
+                obj.removeListeners();
                 game.scene.objects.splice(game.scene.objects.indexOf(obj), 1);
                 if (obj.sprite) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
@@ -667,6 +678,32 @@ Molecule.module('Molecule.Game', function (require, p) {
         },
         remove: function () {
             this.map = null;
+        }
+
+    };
+
+    Game.prototype.trigger = function () {
+
+        var type = arguments[0],
+            args = Array.prototype.slice.call(arguments, 0),
+            event;
+
+        args.splice(0, 1);
+
+        event = new CustomEvent(type, { detail: args });
+        window.dispatchEvent(event);
+
+    };
+
+    Game.prototype.timeout = function (func, ms, context) {
+
+        var funcString = func.toString();
+        if (p.timeouts.indexOf(funcString) === -1) {
+            setTimeout(function () {
+                p.timeouts.splice(p.timeouts.indexOf(funcString), 1);
+                func.call(context);
+            }, ms);
+            p.timeouts.push(funcString);
         }
 
     };
