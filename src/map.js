@@ -148,9 +148,11 @@ Molecule.module('Molecule.Map', function (require, p) {
 
                     sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
                     sprite.game = this.game;
-                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                    sprite.name = this.game.map.json.layers[i].objects[j].name;
+                    sprite.image = this.game.imageFile.getImageDataByName(this.path + sprite.name);
                     sprite.getAnimation();
-                     var object = this.game.object.add(this.json.layers[i].name, {
+                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                    var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     this.objects.push(object);
