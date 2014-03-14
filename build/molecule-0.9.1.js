@@ -1800,7 +1800,7 @@ Molecule.module('Molecule.Map', function (require, p) {
                     canvas.height = height;
 
 
-                    sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
+                    var sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.name = this.game.map.json.layers[i].objects[j].name;
                     sprite.image = this.game.imageFile.getImageDataByName(this.path + sprite.name);
