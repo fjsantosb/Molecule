@@ -1802,9 +1802,11 @@ Molecule.module('Molecule.Map', function (require, p) {
 
                     sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
                     sprite.game = this.game;
-                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                    sprite.name = this.game.map.json.layers[i].objects[j].name;
+                    sprite.image = this.game.imageFile.getImageDataByName(this.path + sprite.name);
                     sprite.getAnimation();
-                     var object = this.game.object.add(this.json.layers[i].name, {
+                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                    var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     this.objects.push(object);
@@ -2228,9 +2230,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         var objectProperties =this.game.map.json.layers[i].objects[j].properties || {},
             layerProperties = this.game.map.json.layers[i].properties || {};
 
-        _sprite.name = this.game.map.json.layers[i].objects[j].name;
         _sprite._MoleculeType = p.getMoleculeType(this.game.map.json.layers[i].objects[j], this.game.map.json.tilesets);
-        _sprite.image = _sprite.image || this.game.imageFile.getImageDataByName(_path + _sprite.name);
         _sprite.position.x = parseInt(this.game.map.json.layers[i].objects[j].x);
         _sprite.position.y = parseInt(this.game.map.json.layers[i].objects[j].y) - _sprite.frame.height;
         _sprite.visible = this.game.map.json.layers[i].objects[j].visible;
