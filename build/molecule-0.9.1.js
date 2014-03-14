@@ -1801,8 +1801,14 @@ Molecule.module('Molecule.Map', function (require, p) {
 
 
                     sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
-                    image = new Image();
-
+                    sprite.game = this.game;
+                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                    sprite.getAnimation();
+                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                     var object = this.game.object.add(this.json.layers[i].name, {
+                        sprite: sprite
+                    });
+                    this.objects.push(object);
 
                     ctx.save();
                     ctx.globalAlpha = this.json.layers[i].opacity;
@@ -1814,16 +1820,6 @@ Molecule.module('Molecule.Map', function (require, p) {
                         this.json.tilesets[tileset].imageheight
                     );
                     ctx.restore();
-
-                    sprite.game = this.game;
-                    sprite.image = image;
-                    sprite.image.src = canvas.toDataURL("image/png");
-                    this.game.mapFile.sprite(i, j, sprite, this.path);
-                     var object = this.game.object.add(this.json.layers[i].name, {
-                        sprite: sprite
-                    });
-
-                    this.objects.push(object);
 
                 }
 
