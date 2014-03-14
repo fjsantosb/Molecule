@@ -827,6 +827,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         return matches;
     };
 
+    p.timeouts = [];
+
     var Game = function (options) {
 
         // PROPERTIES
@@ -906,7 +908,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             return this.text.add(obj);
         }
 
-        if (typeof obj instanceof 'function') { // Constructor
+        if (typeof obj === 'function') { // Constructor
             return this.object.add(obj);
         }
 
@@ -1070,6 +1072,14 @@ Molecule.module('Molecule.Game', function (require, p) {
 
             this.scene.objects.push(obj);
 
+            if (obj.text) {
+                for (var text in obj.text) {
+                    if (obj.text.hasOwnProperty(text)) {
+                        this.scene.text.push(obj.text[text]);
+                    }
+                }
+            }
+
             if (obj.sprite) {
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
@@ -1106,6 +1116,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             var objectsToRemove = arguments[0] instanceof MObject ? [arguments[0]] : this.object.get.apply(this, arguments),
                 game = this;
             objectsToRemove.forEach(function (obj) {
+                obj.removeListeners();
                 game.scene.objects.splice(game.scene.objects.indexOf(obj), 1);
                 if (obj.sprite) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
@@ -1240,6 +1251,32 @@ Molecule.module('Molecule.Game', function (require, p) {
         },
         remove: function () {
             this.map = null;
+        }
+
+    };
+
+    Game.prototype.trigger = function () {
+
+        var type = arguments[0],
+            args = Array.prototype.slice.call(arguments, 0),
+            event;
+
+        args.splice(0, 1);
+
+        event = new CustomEvent(type, { detail: args });
+        window.dispatchEvent(event);
+
+    };
+
+    Game.prototype.timeout = function (func, ms, context) {
+
+        var funcString = func.toString();
+        if (p.timeouts.indexOf(funcString) === -1) {
+            setTimeout(function () {
+                p.timeouts.splice(p.timeouts.indexOf(funcString), 1);
+                func.call(context);
+            }, ms);
+            p.timeouts.push(funcString);
         }
 
     };
@@ -2314,6 +2351,21 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     };
 
+    p.registeredEvents = [];
+    p.createEventClosure = function (callback, context) {
+
+        var event = {
+            context: context,
+            callback: function (event) {
+                callback.apply(context, event.detail);
+            }
+        };
+        p.registeredEvents.push(event);
+
+        return event.callback;
+
+    };
+
     function MObject(options) {
 
         options = options || {};
@@ -2337,10 +2389,11 @@ Molecule.module('Molecule.MObject', function (require, p) {
             }
         }
 
-        for (var prop in this) {
-
-            if (this[prop] instanceof Text) {
-                this[prop] = this[prop].clone();
+        var text = this.text;
+        this.text = {};
+        for (var textProp in text) {
+            if (text.hasOwnProperty(textProp)) {
+                this.text[textProp] = text[textProp].clone();
             }
         }
 
@@ -2356,6 +2409,23 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     MObject.prototype.update = function () {
 
+    };
+
+    MObject.prototype.listenFor = function (type, callback) {
+
+        window.addEventListener(type, p.createEventClosure(callback, this));
+
+    };
+
+    MObject.prototype.removeListeners = function () {
+        var event;
+        for (var x = 0; x < p.registeredEvents.length; x++) {
+            event = p.registeredEvents[x];
+            if (event.context === this) {
+                p.registeredEvents.splice(x, 1);
+                x--;
+            }
+        }
     };
 
     // TODO: Create correct inheritance to check INSTANCEOF
