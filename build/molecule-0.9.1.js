@@ -1850,7 +1850,7 @@ Molecule.module('Molecule.Map', function (require, p) {
                         tileset = this.getTileset(data),
                         frameWidth = this.json.tilesets[tileset].tilewidth,
                         frameHeight = this.json.tilesets[tileset].tileheight,
-                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].image.substr(0, this.json.tilesets[tileset].image.length - 4), this.json.tilesets[tileset].image, frameWidth, frameHeight);
+                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
                     this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
