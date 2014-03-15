@@ -673,8 +673,14 @@ Molecule.module('Molecule.Game', function (require, p) {
     Game.prototype.tilemap = {
 
         set: function () {
-            var tilemap = this.tilemaps[arguments[0]] || arguments[0];
+            var tilemap = this.tilemaps[arguments[0]] || arguments[0],
+                self = this;
             if (tilemap && utils.isTilemap(tilemap)) {
+                if (this.map && this.map.objects.length) {
+                    this.map.objects.forEach(function (object) {
+                        self.remove(object)
+                    });
+                }
                 this.mapFile.set(tilemap);
             } else {
                 throw new Error('There is no tilemap with the name ' + _id + ' loaded');
@@ -684,6 +690,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             return this.map;
         },
         remove: function () {
+            var self = this;
+            if (this.map && this.map.objects.length) {
+                this.map.objects.forEach(function (object) {
+                    self.remove(object)
+                });
+            }
             this.map = null;
         }
 

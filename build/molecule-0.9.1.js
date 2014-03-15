@@ -350,8 +350,6 @@ Molecule.module('Molecule.Animation', function (require, p) {
 
         this.loop = typeof options.loop === 'undefined' ? true : options.loop;
         this.reverse = typeof options.reverse === 'undefined' ? false : options.reverse;
-        this.loop = _loop;
-        this.reverse = _reverse;
         this.halt = false;
         if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
             this.current.frame = -1;
@@ -1248,8 +1246,14 @@ Molecule.module('Molecule.Game', function (require, p) {
     Game.prototype.tilemap = {
 
         set: function () {
-            var tilemap = this.tilemaps[arguments[0]] || arguments[0];
+            var tilemap = this.tilemaps[arguments[0]] || arguments[0],
+                self = this;
             if (tilemap && utils.isTilemap(tilemap)) {
+                if (this.map && this.map.objects.length) {
+                    this.map.objects.forEach(function (object) {
+                        self.remove(object)
+                    });
+                }
                 this.mapFile.set(tilemap);
             } else {
                 throw new Error('There is no tilemap with the name ' + _id + ' loaded');
@@ -1259,6 +1263,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             return this.map;
         },
         remove: function () {
+            var self = this;
+            if (this.map && this.map.objects.length) {
+                this.map.objects.forEach(function (object) {
+                    self.remove(object)
+                });
+            }
             this.map = null;
         }
 
@@ -1350,6 +1360,11 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 	ImageFile.prototype.getImageDataByName = function(_imageName) {
 		return this.data[this.name.indexOf(_imageName)];
 	};
+
+    ImageFile.prototype.getImageDataBySrc = function(_imageSrc) {
+        _imageSrc = _imageSrc.substring(0, _imageSrc.length - 4);
+        return this.data[this.name.indexOf(_imageSrc)];
+    };
 
 	return ImageFile;
 
@@ -1833,40 +1848,17 @@ Molecule.module('Molecule.Map', function (require, p) {
 
                     var data = this.json.layers[i].objects[j].gid,
                         tileset = this.getTileset(data),
-                        width = this.json.tilesets[tileset].imagewidth,
-                        height = this.json.tilesets[tileset].imageheight,
                         frameWidth = this.json.tilesets[tileset].tilewidth,
                         frameHeight = this.json.tilesets[tileset].tileheight,
-                        canvas = document.createElement('canvas'),
-                        ctx = canvas.getContext('2d'),
-                        image = new Image(),
-                        sprite;
-
-                    canvas.width = width;
-                    canvas.height = height;
-
-                    ctx.save();
-                    ctx.globalAlpha = this.json.layers[i].opacity;
-                    ctx.drawImage(
-                        this.image[tileset],
-                        0,
-                        0,
-                        this.json.tilesets[tileset].imagewidth,
-                        this.json.tilesets[tileset].imageheight
-                    );
-                    ctx.restore();
-
-                    image.src = canvas.toDataURL();
-                    sprite = new Sprite(this.json.layers[i].name, this.json.layers[i].name, frameWidth, frameHeight);
+                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].image.substr(0, this.json.tilesets[tileset].image.length - 4), this.json.tilesets[tileset].image, frameWidth, frameHeight);
                     sprite.game = this.game;
-                    sprite.image = image;
-                    sprite.position.x = this.json.layers[i].objects[j].x;
-                    sprite.position.y = this.json.layers[i].objects[j].y - frameHeight; // y offset
+                    sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
+                    this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
+                    sprite.getAnimation();
                     var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     this.objects.push(object);
-
                 }
 
 
@@ -2210,7 +2202,6 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         }
 
         if (typeof layerProperties[property] !== 'undefined') {
-            console.log('returning ' + property, Type(layerProperties[property]));
             return Type(layerProperties[property]);
         }
 
@@ -2270,7 +2261,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         this.game.map.createContext();
 	};
 
-    MapFile.prototype.sprite = function(i, j, _sprite, _path) {
+    MapFile.prototype.copyMapProperties = function(i, j, _sprite, _path) {
 
         var objectProperties =this.game.map.json.layers[i].objects[j].properties || {},
             layerProperties = this.game.map.json.layers[i].properties || {};

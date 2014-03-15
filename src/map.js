@@ -133,40 +133,17 @@ Molecule.module('Molecule.Map', function (require, p) {
 
                     var data = this.json.layers[i].objects[j].gid,
                         tileset = this.getTileset(data),
-                        width = this.json.tilesets[tileset].imagewidth,
-                        height = this.json.tilesets[tileset].imageheight,
                         frameWidth = this.json.tilesets[tileset].tilewidth,
                         frameHeight = this.json.tilesets[tileset].tileheight,
-                        canvas = document.createElement('canvas'),
-                        ctx = canvas.getContext('2d'),
-                        image = new Image(),
-                        sprite;
-
-                    canvas.width = width;
-                    canvas.height = height;
-
-                    ctx.save();
-                    ctx.globalAlpha = this.json.layers[i].opacity;
-                    ctx.drawImage(
-                        this.image[tileset],
-                        0,
-                        0,
-                        this.json.tilesets[tileset].imagewidth,
-                        this.json.tilesets[tileset].imageheight
-                    );
-                    ctx.restore();
-
-                    image.src = canvas.toDataURL();
-                    sprite = new Sprite(this.json.layers[i].name, this.json.layers[i].name, frameWidth, frameHeight);
+                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].image.substr(0, this.json.tilesets[tileset].image.length - 4), this.json.tilesets[tileset].image, frameWidth, frameHeight);
                     sprite.game = this.game;
-                    sprite.image = image;
-                    sprite.position.x = this.json.layers[i].objects[j].x;
-                    sprite.position.y = this.json.layers[i].objects[j].y - frameHeight; // y offset
+                    sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
+                    this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
+                    sprite.getAnimation();
                     var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
                     this.objects.push(object);
-
                 }
 
 

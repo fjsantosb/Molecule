@@ -51,6 +51,11 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		return this.data[this.name.indexOf(_imageName)];
 	};
 
+    ImageFile.prototype.getImageDataBySrc = function(_imageSrc) {
+        _imageSrc = _imageSrc.substring(0, _imageSrc.length - 4);
+        return this.data[this.name.indexOf(_imageSrc)];
+    };
+
 	return ImageFile;
 
 });

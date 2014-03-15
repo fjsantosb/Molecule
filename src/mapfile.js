@@ -18,7 +18,6 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         }
 
         if (typeof layerProperties[property] !== 'undefined') {
-            console.log('returning ' + property, Type(layerProperties[property]));
             return Type(layerProperties[property]);
         }
 
@@ -78,7 +77,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         this.game.map.createContext();
 	};
 
-    MapFile.prototype.sprite = function(i, j, _sprite, _path) {
+    MapFile.prototype.copyMapProperties = function(i, j, _sprite, _path) {
 
         var objectProperties =this.game.map.json.layers[i].objects[j].properties || {},
             layerProperties = this.game.map.json.layers[i].properties || {};
