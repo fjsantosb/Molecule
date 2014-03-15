@@ -100,7 +100,6 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         _sprite.speed.max.y = p.getProperty('speed.max.y', Number, objectProperties, layerProperties, _sprite.speed.max.y);
         _sprite.affects.physics.gravity = p.getProperty('affects.physics.gravity', p.Boolean, objectProperties, layerProperties, _sprite.affects.physics.gravity);
         _sprite.affects.physics.friction = p.getProperty('affects.physics.friction', p.Boolean, objectProperties, layerProperties, _sprite.affects.physics.friction);
-        _sprite.bounciness = p.getProperty('bounciness', p.Boolean, objectProperties, layerProperties, _sprite.bounciness);
         _sprite.overlap = p.getProperty('overlap', p.Boolean, objectProperties, layerProperties, _sprite.overlap);
 
     };
