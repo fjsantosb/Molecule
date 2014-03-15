@@ -350,8 +350,6 @@ Molecule.module('Molecule.Animation', function (require, p) {
 
         this.loop = typeof options.loop === 'undefined' ? true : options.loop;
         this.reverse = typeof options.reverse === 'undefined' ? false : options.reverse;
-        this.loop = _loop;
-        this.reverse = _reverse;
         this.halt = false;
         if(this.current.animation === -1 || this.id[this.current.animation].name !== _name) {
             this.current.frame = -1;
@@ -829,8 +827,6 @@ Molecule.module('Molecule.Game', function (require, p) {
         return matches;
     };
 
-    p.timeouts = [];
-
     var Game = function (options) {
 
         // PROPERTIES
@@ -910,7 +906,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             return this.text.add(obj);
         }
 
-        if (typeof obj === 'function') { // Constructor
+        if (typeof obj instanceof 'function') { // Constructor
             return this.object.add(obj);
         }
 
@@ -1074,14 +1070,6 @@ Molecule.module('Molecule.Game', function (require, p) {
 
             this.scene.objects.push(obj);
 
-            if (obj.text) {
-                for (var text in obj.text) {
-                    if (obj.text.hasOwnProperty(text)) {
-                        this.scene.text.push(obj.text[text]);
-                    }
-                }
-            }
-
             if (obj.sprite) {
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
@@ -1118,7 +1106,6 @@ Molecule.module('Molecule.Game', function (require, p) {
             var objectsToRemove = arguments[0] instanceof MObject ? [arguments[0]] : this.object.get.apply(this, arguments),
                 game = this;
             objectsToRemove.forEach(function (obj) {
-                obj.removeListeners();
                 game.scene.objects.splice(game.scene.objects.indexOf(obj), 1);
                 if (obj.sprite) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
@@ -1126,13 +1113,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                     for (var sprite in obj.sprites) {
                         if (obj.sprites.hasOwnProperty(sprite)) {
                             game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprites[sprite]), 1);
-                        }
-                    }
-                }
-                if (obj.text) {
-                    for (var text in obj.text) {
-                        if (obj.text.hasOwnProperty(text)) {
-                            game.scene.text.splice(game.scene.text.indexOf(obj.text[text]), 1);
                         }
                     }
                 }
@@ -1260,32 +1240,6 @@ Molecule.module('Molecule.Game', function (require, p) {
         },
         remove: function () {
             this.map = null;
-        }
-
-    };
-
-    Game.prototype.trigger = function () {
-
-        var type = arguments[0],
-            args = Array.prototype.slice.call(arguments, 0),
-            event;
-
-        args.splice(0, 1);
-
-        event = new CustomEvent(type, { detail: args });
-        window.dispatchEvent(event);
-
-    };
-
-    Game.prototype.timeout = function (func, ms, context) {
-
-        var funcString = func.toString();
-        if (p.timeouts.indexOf(funcString) === -1) {
-            setTimeout(function () {
-                p.timeouts.splice(p.timeouts.indexOf(funcString), 1);
-                func.call(context);
-            }, ms);
-            p.timeouts.push(funcString);
         }
 
     };
@@ -1837,13 +1791,18 @@ Molecule.module('Molecule.Map', function (require, p) {
                         height = this.json.tilesets[tileset].imageheight,
                         frameWidth = this.json.tilesets[tileset].tilewidth,
                         frameHeight = this.json.tilesets[tileset].tileheight,
+                        sprite = new Sprite(this.json.layers[i].name, width, height),
                         canvas = document.createElement('canvas'),
                         ctx = canvas.getContext('2d'),
-                        image = new Image(),
-                        sprite;
+                        image = new Image();
 
                     canvas.width = width;
                     canvas.height = height;
+
+
+                    sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
+                    image = new Image();
+
 
                     ctx.save();
                     ctx.globalAlpha = this.json.layers[i].opacity;
@@ -1856,15 +1815,14 @@ Molecule.module('Molecule.Map', function (require, p) {
                     );
                     ctx.restore();
 
-                    image.src = canvas.toDataURL();
-                    sprite = new Sprite(this.json.layers[i].name, this.json.layers[i].name, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.image = image;
-                    sprite.position.x = this.json.layers[i].objects[j].x;
-                    sprite.position.y = this.json.layers[i].objects[j].y - frameHeight; // y offset
-                    var object = this.game.object.add(this.json.layers[i].name, {
+                    sprite.image.src = canvas.toDataURL("image/png");
+                    this.game.mapFile.sprite(i, j, sprite, this.path);
+                     var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
+
                     this.objects.push(object);
 
                 }
@@ -2356,21 +2314,6 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     };
 
-    p.registeredEvents = [];
-    p.createEventClosure = function (callback, context) {
-
-        var event = {
-            context: context,
-            callback: function (event) {
-                callback.apply(context, event.detail);
-            }
-        };
-        p.registeredEvents.push(event);
-
-        return event.callback;
-
-    };
-
     function MObject(options) {
 
         options = options || {};
@@ -2394,11 +2337,10 @@ Molecule.module('Molecule.MObject', function (require, p) {
             }
         }
 
-        var text = this.text;
-        this.text = {};
-        for (var textProp in text) {
-            if (text.hasOwnProperty(textProp)) {
-                this.text[textProp] = text[textProp].clone();
+        for (var prop in this) {
+
+            if (this[prop] instanceof Text) {
+                this[prop] = this[prop].clone();
             }
         }
 
@@ -2414,23 +2356,6 @@ Molecule.module('Molecule.MObject', function (require, p) {
 
     MObject.prototype.update = function () {
 
-    };
-
-    MObject.prototype.listenFor = function (type, callback) {
-
-        window.addEventListener(type, p.createEventClosure(callback, this));
-
-    };
-
-    MObject.prototype.removeListeners = function () {
-        var event;
-        for (var x = 0; x < p.registeredEvents.length; x++) {
-            event = p.registeredEvents[x];
-            if (event.context === this) {
-                p.registeredEvents.splice(x, 1);
-                x--;
-            }
-        }
     };
 
     // TODO: Create correct inheritance to check INSTANCEOF

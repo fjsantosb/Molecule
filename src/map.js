@@ -137,18 +137,13 @@ Molecule.module('Molecule.Map', function (require, p) {
                         height = this.json.tilesets[tileset].imageheight,
                         frameWidth = this.json.tilesets[tileset].tilewidth,
                         frameHeight = this.json.tilesets[tileset].tileheight,
-                        sprite = new Sprite(this.json.layers[i].name, width, height),
                         canvas = document.createElement('canvas'),
                         ctx = canvas.getContext('2d'),
-                        image = new Image();
+                        image = new Image(),
+                        sprite;
 
                     canvas.width = width;
                     canvas.height = height;
-
-
-                    sprite = new Sprite(this.json.layers[i].name, frameWidth, frameHeight);
-                    image = new Image();
-
 
                     ctx.save();
                     ctx.globalAlpha = this.json.layers[i].opacity;
@@ -161,14 +156,15 @@ Molecule.module('Molecule.Map', function (require, p) {
                     );
                     ctx.restore();
 
+                    image.src = canvas.toDataURL();
+                    sprite = new Sprite(this.json.layers[i].name, this.json.layers[i].name, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.image = image;
-                    sprite.image.src = canvas.toDataURL("image/png");
-                    this.game.mapFile.sprite(i, j, sprite, this.path);
-                     var object = this.game.object.add(this.json.layers[i].name, {
+                    sprite.position.x = this.json.layers[i].objects[j].x;
+                    sprite.position.y = this.json.layers[i].objects[j].y - frameHeight; // y offset
+                    var object = this.game.object.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
-
                     this.objects.push(object);
 
                 }

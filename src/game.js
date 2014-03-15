@@ -554,6 +554,13 @@ Molecule.module('Molecule.Game', function (require, p) {
                         }
                     }
                 }
+                if (obj.text) {
+                    for (var text in obj.text) {
+                        if (obj.text.hasOwnProperty(text)) {
+                            game.scene.text.splice(game.scene.text.indexOf(obj.text[text]), 1);
+                        }
+                    }
+                }
             });
         }
     };

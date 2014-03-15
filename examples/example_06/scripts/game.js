@@ -5,9 +5,10 @@ Molecule({
 .tilemap('map', 'assets/game.json')
 .init(function (game) {
 
-    var tilemap = game.tilemap('map');
-    
-    // Add tilemap to the game
-    game.add(tilemap);
+    // Remove tilemap
+    game.tilemap.remove();
+
+    // Activate tilemap
+    game.tilemap.set('map');
 
 });
