@@ -690,6 +690,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             p.resetCollisionState(game.scene.sprites);
             while (!exit) {
                 exit = move(game.scene.sprites);
+                p.checkBoundaries(game);
                 calculateMapCollisions(game);
                 calculateSpriteCollisions(game);
                 p.updateSpriteCollisionCheck(game.scene.sprites);
@@ -697,7 +698,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                     game.camera.update(game.scene.sprites);
                 }
                 p.update(exit, game);
-                p.checkBoundaries(game);
                 game.resetMove();
             }
         }
@@ -721,7 +721,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         for (var i = 0; i < game.scene.sprites.length; i++) {
             sprite = game.scene.sprites[i];
             if (game.boundaries.x !== null && sprite.collides.boundaries) {
-                if (sprite.position.x - sprite.anchor.x + sprite.frame.offset.x < game.boundaries.x) {
+                if (sprite.position.x - sprite.anchor.x + sprite.frame.offset.x + sprite.move.x < game.boundaries.x) {
                     sprite.position.x = game.boundaries.x + sprite.anchor.x - sprite.frame.offset.x;
                     sprite.collision.boundaries.left = true;
                     sprite.collision.boundaries.id = 0;
@@ -732,7 +732,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                         sprite.speed.gravity.x = 0;
                     }
                 }
-                if (sprite.position.x + sprite.frame.width - sprite.anchor.x - sprite.frame.offset.x > game.boundaries.x + game.boundaries.width) {
+                if (sprite.position.x + sprite.frame.width - sprite.anchor.x - sprite.frame.offset.x + sprite.move.x > game.boundaries.x + game.boundaries.width) {
                     sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x + sprite.frame.offset.x;
                     sprite.collision.boundaries.right = true;
                     sprite.collision.boundaries.id = 1;
@@ -745,7 +745,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
             }
             if (game.boundaries.y !== null && sprite.collides.boundaries) {
-                if (sprite.position.y - sprite.anchor.y + sprite.frame.offset.y < game.boundaries.y) {
+                if (sprite.position.y - sprite.anchor.y + sprite.frame.offset.y + sprite.move.y < game.boundaries.y) {
                     sprite.position.y = game.boundaries.y + sprite.anchor.y - sprite.frame.offset.y;
                     sprite.collision.boundaries.up = true;
                     sprite.collision.boundaries.id = 2;
@@ -756,7 +756,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                         sprite.speed.gravity.y = 0;
                     }
                 }
-                if (sprite.position.y + sprite.frame.height - sprite.anchor.y - sprite.frame.offset.y > game.boundaries.y + game.boundaries.height) {
+                if (sprite.position.y + sprite.frame.height - sprite.anchor.y - sprite.frame.offset.y + sprite.move.y > game.boundaries.y + game.boundaries.height) {
                     sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y + sprite.frame.offset.y;
                     sprite.collision.boundaries.down = true;
                     sprite.collision.boundaries.id = 3;
@@ -2764,9 +2764,15 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite prototype Method collidesWithSprite
     Sprite.prototype.collidesWithSprite = function (_object) {
+        var sp1 = {left: this.position.x - this.anchor.x + this.move.x + this.frame.offset.x, right: this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x, top: this.position.y - this.anchor.y + this.move.y + this.frame.offset.y, bottom: this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y};
+        var sp2 = {left: _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x, right: _object.position.x - _object.anchor.x + _object.frame.width - _object.frame.offset.x + _object.move.x, top: _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y, bottom: _object.position.y - _object.anchor.y + _object.frame.height - _object.frame.offset.y + _object.move.y}; 
+        return !(sp2.left >= sp1.right || sp2.right <= sp1.left || sp2.top >= sp1.bottom || sp2.bottom <= sp1.top);
+        
+        /*
         if (((this.position.x - this.anchor.x + this.move.x + this.frame.offset.x <= _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x > _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x) || (_object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x <= this.position.x - this.anchor.x + this.move.x + this.frame.offset.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.x > this.position.x - this.anchor.x + this.move.x + this.frame.offset.x)) && ((this.position.y - this.anchor.y + this.move.y + this.frame.offset.y <= _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y > _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y) || (_object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y <= this.position.y - this.anchor.y + this.move.y + this.frame.offset.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.y > this.position.y - this.anchor.y + this.move.y + this.frame.offset.y)))
             return true;
         return false;
+        */
     };
 
 	// Sprite prototype Method collidesWithTile
@@ -2956,7 +2962,8 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
                                 if (spriteI.move.x !== 0 || spriteI.move.y !== 0) {
                                     if (mc === 0 || mc === 2) {
                                         tx = spriteI.move.x;
-                                        spriteI.move.x = 0;
+                                        if (mc !== 2)
+                                            spriteI.move.x = 0;
                                         p.updateCollisionY(spriteI, spriteJ, i, j, physics);
                                         spriteI.move.x = tx;
                                     }

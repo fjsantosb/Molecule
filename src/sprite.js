@@ -113,9 +113,15 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
 	// Sprite prototype Method collidesWithSprite
     Sprite.prototype.collidesWithSprite = function (_object) {
+        var sp1 = {left: this.position.x - this.anchor.x + this.move.x + this.frame.offset.x, right: this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x, top: this.position.y - this.anchor.y + this.move.y + this.frame.offset.y, bottom: this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y};
+        var sp2 = {left: _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x, right: _object.position.x - _object.anchor.x + _object.frame.width - _object.frame.offset.x + _object.move.x, top: _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y, bottom: _object.position.y - _object.anchor.y + _object.frame.height - _object.frame.offset.y + _object.move.y}; 
+        return !(sp2.left >= sp1.right || sp2.right <= sp1.left || sp2.top >= sp1.bottom || sp2.bottom <= sp1.top);
+        
+        /*
         if (((this.position.x - this.anchor.x + this.move.x + this.frame.offset.x <= _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x > _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x) || (_object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x <= this.position.x - this.anchor.x + this.move.x + this.frame.offset.x && _object.position.x - _object.anchor.x + _object.move.x + _object.frame.width - _object.frame.offset.x > this.position.x - this.anchor.x + this.move.x + this.frame.offset.x)) && ((this.position.y - this.anchor.y + this.move.y + this.frame.offset.y <= _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y > _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y) || (_object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y <= this.position.y - this.anchor.y + this.move.y + this.frame.offset.y && _object.position.y - _object.anchor.y + _object.move.y + _object.frame.height - _object.frame.offset.y > this.position.y - this.anchor.y + this.move.y + this.frame.offset.y)))
             return true;
         return false;
+        */
     };
 
 	// Sprite prototype Method collidesWithTile

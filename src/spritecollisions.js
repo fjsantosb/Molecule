@@ -88,7 +88,8 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
                                 if (spriteI.move.x !== 0 || spriteI.move.y !== 0) {
                                     if (mc === 0 || mc === 2) {
                                         tx = spriteI.move.x;
-                                        spriteI.move.x = 0;
+                                        if (mc !== 2)
+                                            spriteI.move.x = 0;
                                         p.updateCollisionY(spriteI, spriteJ, i, j, physics);
                                         spriteI.move.x = tx;
                                     }
