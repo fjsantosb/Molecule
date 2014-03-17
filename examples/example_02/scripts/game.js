@@ -3,7 +3,7 @@ Molecule({
     height: 320
 })
 .sprite('flappy', 'assets/flappy.png', 34, 24)
-.init(function (game) {
+.ready(function (game) {
 
     // Create sprite and add directly to game
     var sprite = game.sprite.add('flappy');
