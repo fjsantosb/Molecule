@@ -1,307 +1,145 @@
-/*
-    MOLECULE @VERSION
+Molecule.module('Molecule.Molecule', function (require, p) {
 
-    HTML5 game development library by Francisco Santos Belmonte and Christian Alfoni Jørgensen
+    var Text = require('Molecule.Text');
 
- */
+    p.mergeObjects = function () {
+        var object = arguments[0],
+            args = Array.prototype.slice.call(arguments, 0),
+            x = 0,
+            passedObject,
+            prop;
 
-(function (window) {
+        args.splice(0, 1);
 
-    var definedModules = [];
-    var moleculeModules = [];
-    var initializedModules = [];
-    var onceCallbacks = [];
-    var isTest = false;
-    var timeoutLimit = 1000;
-    var game = null;
+        for (x; x < args.length; x++) {
+            passedObject = args[x];
+            for (prop in passedObject) {
+                if (passedObject.hasOwnProperty(prop)) {
+                    object[prop] = passedObject[prop]
 
-    var p = {
-        Module: function Module(name, func) {
-            this.name = name;
-            this.func = func;
-        },
-        isModule: function (module) {
-            return module instanceof p.Module;
-        },
-        'throw': function (message) {
-            throw Error('Molecule Error: ' + message);
-        },
-        getSinon: function () {
-            return window.sinon;
-        },
-        getModule: function (name, modules) {
-            var module;
-            for (var x = 0; x < modules.length; x++) {
-                if (modules[x].name === name) {
-                    module = modules[x];
-                    break;
-                }
-            }
-            if (!module) p.throw('Could not require module: "' + name + '". The name does not exist or loading it causes a loop.');
-            return module;
-        },
-        addModule: function (array, name, func) {
-            array.push(new p.Module(name, func));
-        },
-        registerModules: function (defined, initialized) {
-            var module,
-                context,
-                initializeModule = true,
-                startTime = new Date().getTime(),
-                depExceptions = [];
-            while (defined.length && !p.timeout(startTime)) {
-                initializeModule = true;
-                module = p.getLast(defined);
-                context = p.createContext(initialized);
-                try {
-                    context.exports = module.func.apply(context, p.contextToArray(context));
-                } catch (e) {
-                    // Dependency not ready
-                    if (e.message.match(/Molecule Error/)) {
-                        p.addDepException(depExceptions, e.message);
-                        p.moveLastToFirst(defined);
-                        initializeModule = false;
-                    } else {
-                        throw e;
-                    }
-                }
-                if (initializeModule && typeof context.exports === 'undefined') {
-                    p.throw('Module ' + module.name + ' is returning undefined, it has to return something');
-                }
-                if (initializeModule) {
-                    module.exports = context.exports;
-                    p.moveLastToTarget(defined, initialized);
-                }
-            }
-
-            if (p.timeout(startTime)) {
-                p.throw('Timeout, could not load modules. The following dependencies gave errors: ' +
-                    (depExceptions.length ? depExceptions.join(', ') : '') +
-                    '. They do not exist or has caused a loop.');
-            }
-        },
-        contextToArray: function (context) {
-            if (game) {
-                return [game, context.require, context.privates];
-            } else {
-                return [context.require, context.privates];
-            }
-
-        },
-        registerTestModule: function (name, defined) {
-            var module,
-                context,
-                testModule,
-                startTime = new Date().getTime(),
-                depExceptions = [];
-            while (!testModule && !p.timeout(startTime)) {
-                module = p.getLast(defined);
-                context = p.createTestContext(defined);
-                if (module.name === name) {
-                    try {
-                        context.exports = module.func.apply(context, p.contextToArray(context));
-                    } catch (e) {
-                        if (e.message.match(/Molecule Error/)) {
-                            p.addDepException(depExceptions, e.message);
-                            p.moveLastToFirst(defined);
-                        } else {
-                            throw e;
-                        }
-                    }
-                    testModule = module;
-                } else {
-                    p.moveLastToFirst(defined);
-                }
-            }
-            if (p.timeout(startTime)) {
-                p.throw('Timeout, could not load modules. The following dependencies gave errors: ' +
-                    (depExceptions.length ? depExceptions.join(', ') : name) +
-                    '. They do not exist or has caused a loop.');
-            }
-
-            if (!context.exports && !depExceptions.length) {
-                p.throw('Module ' + testModule.name + ' is returning undefined, it has to return something');
-            } else if (depExceptions.length) {
-                p.throw('The following dependencies gave errors: ' + depExceptions.join(', ') +
-                    '. They do not exist or has caused a loop.');
-            }
-
-            return context;
-
-        },
-        timeout: function (startTime) {
-            return new Date().getTime() - startTime >= timeoutLimit;
-        },
-        addDepException: function (array, message) {
-            message = message.match(/\"(.*)\"/)[1];
-            if (array.indexOf(message) === -1) {
-                array.push(message);
-            }
-        },
-        createGame: function (options) {
-            var Game = p.getModule('Molecule.Game', initializedModules).exports;
-            game = new Game(options);
-            game.once = Molecule.once;
-        },
-        createContext: function (modules) {
-            var context = {
-                privates: {},
-                require: function (name) {
-                    var module = p.getModule(name, modules);
-                    return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
-                },
-                game: game
-            }
-            return context;
-        },
-        createTestContext: function (modules) {
-            var context = {
-                privates: {},
-                deps: {}
-            };
-            context.require = p.createTestRequireMethod(context, modules);
-
-            return context;
-        },
-        createTestRequireMethod: function (context, modules) {
-            return function (name) {
-                var depExceptions = [];
-                var depModule = p.getModule(name, modules),
-                    depContext = {
-                        privates: {},
-                        require: function (name) { // TODO: Make this more general with registerModule
-
-                            var module = p.getModule(name, modules);
-
-                            try {
-                                module = module.func.apply(context, p.contextToArray(context));
-                            } catch (e) {
-                                if (e.message.match(/Molecule Error/)) {
-                                    p.addDepException(depExceptions, e.message);
-                                } else {
-                                    throw e;
-                                }
-                            }
-
-                            return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
-
-                        }
-                    };
-
-                depContext.exports = p.isModule(depModule) ? depModule.func.apply(depContext, p.contextToArray(depContext)) : depModule;
-
-                // Adds the dependency exports to the main context
-                // which lets you edit the stubs in the test
-                depModule.exports = p.stubDepExports(depContext.exports);
-                context.deps[name] = depModule.exports;
-
-                return depModule.exports;
-            }
-        },
-        stubDepExports: function (exports) {
-            var sinon = p.getSinon();
-            if (sinon) {
-                var stubbedMethods = {};
-
-                if (typeof exports === 'function') {
-                    return sinon.spy();
-                } else {
-                    for (var depMethod in exports) {
-                        if (typeof exports[depMethod] === 'function') {
-                            stubbedMethods[depMethod] = exports[depMethod];
-                            sinon.stub(stubbedMethods, depMethod);
-                        }
-                    }
                 }
 
-                return stubbedMethods;
-            }
-            return exports;
-        },
-        getLast: function (modules) {
-            return modules[modules.length - 1];
-        },
-        moveLastToFirst: function (modules) {
-            modules.unshift(modules.pop());
-        },
-        moveLastToTarget: function (sourceArray, targetArray) {
-            targetArray.push(sourceArray.pop());
-        },
-        extractBrowserArgs: function (args) {
-            return {
-                name: args[0],
-                func: args[1]
             }
         }
+
+        return object;
     };
 
+    p.extend = function (options) {
 
-    var Molecule = function (options) {
-        p.registerModules(moleculeModules, initializedModules);
-        p.createGame(options);
-        return Molecule;
-    };
+        var parent = this;
+        var MoleculeObject;
 
-    Molecule.module = function () {
-        var args = p.extractBrowserArgs(arguments);
-        if (!args.name || typeof args.name !== 'string' || !args.func || typeof args.func !== 'function') {
-            p.throw('Invalid arguments for module creation, you have to pass a string and a function');
-        }
-        if (args.name.match(/Molecule/)) {
-            p.addModule(moleculeModules, args.name, args.func);
-        } else {
-            p.addModule(definedModules, args.name, args.func);
-        }
 
-        return this;
-
-    };
-
-    Molecule.init = function (callback) {
-        var initializeModules = function () {
-            p.registerModules(definedModules, initializedModules);
+        MoleculeObject = function () {
+            return parent.apply(this, arguments);
         };
-        game.init(initializeModules, callback);
-        game.start();
-        return this;
+
+        p.mergeObjects(MoleculeObject, parent, options);
+
+        var Surrogate = function () {
+            this.constructor = MoleculeObject;
+        };
+        Surrogate.prototype = parent.prototype;
+        MoleculeObject.prototype = new Surrogate;
+
+        if (options) p.mergeObjects(MoleculeObject.prototype, options);
+
+        MoleculeObject.__super__ = parent.prototype;
+
+        return MoleculeObject;
 
     };
 
-    Molecule.update = function (callback) {
-        game.update(callback);
-        return this;
+    p.registeredEvents = [];
+    p.createEventClosure = function (callback, context) {
+
+        var event = {
+            context: context,
+            callback: function (event) {
+                callback.apply(context, event.detail);
+            }
+        };
+        p.registeredEvents.push(event);
+
+        return event.callback;
+
     };
 
-    Molecule.sprite = function (id, spriteSrc, frameWidth, frameHeight) {
-        game.imageFile.load(id, spriteSrc, frameWidth, frameHeight);
-        return this;
+    function MObject(options) {
+
+        options = options || {};
+
+        for (var prop in options) {
+            if (options.hasOwnProperty(prop)) {
+                this[prop] = options[prop];
+            }
+        }
+
+        // Clone sprites
+        if (this.sprite) {
+            this.sprite = this.sprite.clone();
+        }
+
+        var sprites = this.sprites;
+        this.sprites = {};
+        for (var sprite in sprites) {
+            if (sprites.hasOwnProperty(sprite)) {
+                this.sprites[sprite] = sprites[sprite].clone();
+            }
+        }
+
+        var text = this.text;
+        this.text = {};
+        for (var textProp in text) {
+            if (text.hasOwnProperty(textProp)) {
+                this.text[textProp] = text[textProp].clone();
+            }
+        }
+
+        var audio = this.audio;
+        this.audio = {};
+        for (var sound in audio) {
+            if (audio.hasOwnProperty(sound)) {
+                this.audio[sound] = audio[sound].clone();
+            }
+        }
+
+        this.init()
+    }
+
+    MObject.prototype.sprite = null;
+    MObject.prototype.sprites = {};
+
+    MObject.prototype.init = function () {
+
     };
 
-    Molecule.audio = function (id, soundSrc) {
-        game.audioFile.load(id, soundSrc);
-        return this;
+    MObject.prototype.update = function () {
+
     };
 
-    Molecule.tilemap = function (id, mapSrc) {
-        game.mapFile.load(id, mapSrc);
-        return this;
+    MObject.prototype.listenTo = function (type, callback) {
+
+        window.addEventListener(type, p.createEventClosure(callback, this));
+
     };
 
-    Molecule.test = function (name, callback) {
-        isTest = true;
-        var context = p.registerTestModule(name, definedModules);
-        callback.apply(context, [context.exports, context.privates, context.deps]);
-    };
-
-    Molecule.once = function (func, context) {
-        var funcString = func.toString();
-        if (onceCallbacks.indexOf(funcString) === -1) {
-            func.call(context);
-            onceCallbacks.push(funcString);
+    MObject.prototype.removeListeners = function () {
+        var event;
+        for (var x = 0; x < p.registeredEvents.length; x++) {
+            event = p.registeredEvents[x];
+            if (event.context === this) {
+                p.registeredEvents.splice(x, 1);
+                x--;
+            }
         }
     };
 
+    // TODO: Create correct inheritance to check INSTANCEOF
+    MObject.extend = p.extend;
 
-    window.Molecule = Molecule;
 
-}(window));
+    return MObject;
+
+});

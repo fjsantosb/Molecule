@@ -70,7 +70,7 @@ Molecule.module('Molecule.MapFile', function (require, p) {
 
 	MapFile.prototype.set = function(_map, _reset) {
 		_reset = _reset || false;
-		this.game.camera.detach();
+		this.game.camera.unfollow();
 		if(_reset)
 			_map.reset();
 		this.game.map = _map;

@@ -69,10 +69,14 @@ Molecule.module('Molecule.utils', function (require, p) {
             }
 
         },
-        isMObject: function (obj) {
+        isMolecule: function (obj) {
+
+            if (!obj) {
+                return false;
+            }
 
             // Can not use instanceof here
-            return 'init' in obj && 'update' in obj;
+            return this.isObject(obj) && 'init' in obj && 'update' in obj;
 
         },
         isSprite: function (sprite) {
@@ -90,7 +94,13 @@ Molecule.module('Molecule.utils', function (require, p) {
             return tilemap instanceof Map;
         },
         isObject: function (obj) {
+            if (!obj) {
+                return false;
+            }
             return typeof obj === 'object' && !(obj instanceof Array) && obj !== null;
+        },
+        isString: function (string) {
+            return typeof string === 'string';
         },
         find: function (array) {
             var returnArray = [];

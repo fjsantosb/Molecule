@@ -9,7 +9,7 @@ Molecule.module('Molecule.Map', function (require, p) {
         this.name = null;
         this.visible = true;
         this.sprites = [];
-        this.objects = [];
+        this.molecules = [];
         this.image = [];
         this.path = '';
         this.response = null;
@@ -140,10 +140,10 @@ Molecule.module('Molecule.Map', function (require, p) {
                     sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
                     this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
                     sprite.getAnimation();
-                    var object = this.game.object.add(this.json.layers[i].name, {
+                    var object = this.game.molecule.add(this.json.layers[i].name, {
                         sprite: sprite
                     });
-                    this.objects.push(object);
+                    this.molecules.push(object);
                 }
 
 

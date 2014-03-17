@@ -7,27 +7,35 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.scroll = {x: false, y: false};
         this.type = 0;
         this.offset = {x: 0, y: 0};
+        this.isSet = false; // Wait until sprite is in scene
     };
 
-    Camera.prototype.attach = function (_sprite) {
+    Camera.prototype.follow = function (_sprite) {
         this.sprite = _sprite;
         this.type = 1;
+        if (this.game.scene.sprites.indexOf(this.sprite) === -1) {
+            this.isSet = false;
+            return;
+        }
         this.set();
     };
 
-    Camera.prototype.detach = function () {
+    Camera.prototype.unfollow = function () {
         this.sprite = null;
         this.type = 0;
     };
 
     Camera.prototype.set = function () {
         if (this.type === 1) {
+
+            this.isSet = true;
             this.layer = this.game.map.getMainLayer();
             this.game.map.resetPosition();
             _x = this.sprite.position.x;
             this.sprite.position.x = 0;
             _y = this.sprite.position.y;
             this.sprite.position.y = 0;
+
             for (var i = 0; i < _x; i++) {
                 this.sprite.move.x = 1;
                 this.update(this.game.scene.sprites);
@@ -41,15 +49,21 @@ Molecule.module('Molecule.Camera', function (require, p) {
                 this.game.cameraUpdate();
                 this.game.resetMove();
             }
+
         }
     };
 
-    Camera.prototype.update = function (_sprite) {
+    Camera.prototype.update = function (_sprites) {
+        if (!this.isSet && _sprites.indexOf(this.sprite) >= 0) {
+            this.set();
+        }
+
         if (this.game.map !== null && this.layer !== -1) {
             this.makeScroll();
             this.makeMapScroll();
         }
-        this.makeSpriteScroll(_sprite, this.sprite.move.x, this.sprite.move.y);
+
+        this.makeSpriteScroll(_sprites, this.sprite.move.x, this.sprite.move.y);
     };
 
     Camera.prototype.makeScroll = function () {

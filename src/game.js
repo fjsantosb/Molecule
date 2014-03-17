@@ -13,14 +13,14 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions'),
         Sprite = require('Molecule.Sprite'),
-        MObject = require('Molecule.MObject'),
+        Molecule = require('Molecule.Molecule'),
         utils = require('Molecule.utils');
 
     p.init = null;
 
     // Objects defined inline
     // game.object.define('Something', {});
-    p.inlineObjects = {
+    p.inlineMolecules = {
 
     };
 
@@ -96,11 +96,11 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
     };
 
-    p.updateObjects = function (game) {
-        var object;
-        for (var i = 0; i < game.scene.objects.length; i++) {
-            object = game.scene.objects[i];
-            if (object.update) object.update();
+    p.updateMolecules = function (game) {
+        var molecule;
+        for (var i = 0; i < game.scene.molecules.length; i++) {
+            molecule = game.scene.molecules[i];
+            if (molecule.update) molecule.update();
         }
     }
 
@@ -129,7 +129,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             }
         }
         p.draw(game);
-        p.updateObjects(game);
+        p.updateMolecules(game);
         p.updateGame();
     };
 
@@ -301,19 +301,24 @@ Molecule.module('Molecule.Game', function (require, p) {
 
 
         // BINDERS
-        utils.bindMethods(this.object, this);
+        utils.bindMethods(this.molecule, this);
         utils.bindMethods(this.sprite, this);
         utils.bindMethods(this.text, this);
         utils.bindMethods(this.tilemap, this);
+        utils.bindMethods(this.audio, this);
 
         this.node ? document.getElementById(this.node).appendChild(this.canvas) : document.body.appendChild(this.canvas);
 
     };
 
-    Game.prototype.audio = function (_id) {
-
-        return this.sounds[_id];
-
+    Game.prototype.audio = {
+        create: function (_id) {
+            if (utils.isString(_id) && this.sounds[_id]) {
+                return this.sounds[_id].clone();
+            } else {
+                throw new Error('No audio loaded with the name ' + _id);
+            }
+        }
     };
 
     // TODO: Should not be able to add objects more than once
@@ -323,8 +328,8 @@ Molecule.module('Molecule.Game', function (require, p) {
             throw new Error('You can only add a single sprite, Molecule Object or text, use respective game.sprite.add, game.object.add and game.text.add');
         }
 
-        if (obj instanceof MObject) {
-            return this.object.add(obj);
+        if (obj instanceof Molecule) {
+            return this.molecule.add(obj);
         }
 
         if (obj instanceof Sprite) {
@@ -336,7 +341,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         }
 
         if (typeof obj === 'function') { // Constructor
-            return this.object.add(obj);
+
+            return this.molecule.add(obj);
         }
 
         throw new Error('You did not pass sprite, Molecule Object or text');
@@ -347,7 +353,7 @@ Molecule.module('Molecule.Game', function (require, p) {
 
         return {
             sprites: this.scene.sprites,
-            objects: this.scene.objects,
+            molecules: this.scene.molecules,
             text: this.scene.text
         }
 
@@ -359,8 +365,8 @@ Molecule.module('Molecule.Game', function (require, p) {
             throw new Error('You can only remove a single sprite, Molecule Object or text');
         }
 
-        if (obj instanceof MObject) {
-            return this.object.remove(obj);
+        if (obj instanceof Molecule) {
+            return this.molecule.remove(obj);
         }
 
         if (obj instanceof Sprite) {
@@ -429,10 +435,24 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     Game.prototype.init = function (initializeModules, callback) {
-        var self = this;
+        var self = this,
+            object;
         p.init = function () {
             initializeModules();
-            callback.call(self.globals, self, require);
+
+            // If callback is a string, require a module
+            if (utils.isString(callback)) {
+                object = require(callback);
+            } else {
+
+                // Callback might return an object (using ready method)
+                object = callback.call(self.globals, self, require);
+            }
+
+            // If we have a Molecule Object constructor, add it to the game
+            if (typeof object === 'function') {
+                self.add(object);
+            }
         }
     };
 
@@ -441,11 +461,11 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     // All methods are bound to game object
-    Game.prototype.object = {
+    Game.prototype.molecule = {
         define: function () {
             var name = arguments.length > 1 ? arguments[0] : null,
                 options = arguments.length === 1 ? arguments[0] : arguments[1],
-                Obj = MObject.extend.call(MObject, options);
+                Obj = Molecule.extend.call(Molecule, options);
 
 
             // No name means it is coming from a module
@@ -453,8 +473,8 @@ Molecule.module('Molecule.Game', function (require, p) {
                 return Obj;
             }
 
-            if (!p.inlineObjects[name]) {
-                p.inlineObjects[name] = Obj;
+            if (!p.inlineMolecules[name]) {
+                p.inlineMolecules[name] = Obj;
             } else {
                 throw new Error(name + ' already exists as an object');
             }
@@ -468,13 +488,14 @@ Molecule.module('Molecule.Game', function (require, p) {
                 Obj,
                 obj;
 
+
             // If passing a constructor
             if (typeof arguments[0] === 'function') {
                 return new arguments[0](arguments[1]);
             }
 
-            if (p.inlineObjects[name]) {
-                Obj = p.inlineObjects[name];
+            if (p.inlineMolecules[name]) {
+                Obj = p.inlineMolecules[name];
             } else {
                 Obj = require(name);
             }
@@ -488,16 +509,17 @@ Molecule.module('Molecule.Game', function (require, p) {
             var obj;
 
             if (typeof arguments[0] === 'string') {
-                obj = this.object.create(arguments[0], arguments[1]);
-            } else if (utils.isMObject(arguments[0])) {
+                obj = this.molecule.create(arguments[0], arguments[1]);
+            } else if (utils.isMolecule(arguments[0])) {
                 obj = arguments[0];
             } else if (typeof arguments[0] === 'function') { // constructor
-                obj = new arguments[0](arguments[1]);
+
+                obj = this.molecule.create(arguments[0], arguments[1]);
             } else {
                 throw new Error('Wrong parameters, need a string or Molecule Object');
             }
 
-            this.scene.objects.push(obj);
+            this.scene.molecules.push(obj);
 
             if (obj.text) {
                 for (var text in obj.text) {
@@ -524,7 +546,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             var options;
 
             if (!arguments.length) {
-                return this.scene.objects;
+                return this.scene.molecules;
             }
 
             if (typeof arguments[0] === 'string') {
@@ -532,19 +554,19 @@ Molecule.module('Molecule.Game', function (require, p) {
                 options = arguments[1] || {};
                 options._MoleculeType = arguments[0]
 
-                return utils.find(this.scene.objects, options);
+                return utils.find(this.scene.molecules, options);
 
             } else {
-                return utils.find(this.scene.objects, arguments[0]);
+                return utils.find(this.scene.molecules, arguments[0]);
             }
 
         },
         remove: function () {
-            var objectsToRemove = arguments[0] instanceof MObject ? [arguments[0]] : this.object.get.apply(this, arguments),
+            var moleculesToRemove = arguments[0] instanceof Molecule ? [arguments[0]] : this.molecule.get.apply(this, arguments),
                 game = this;
-            objectsToRemove.forEach(function (obj) {
+            moleculesToRemove.forEach(function (obj) {
                 obj.removeListeners();
-                game.scene.objects.splice(game.scene.objects.indexOf(obj), 1);
+                game.scene.molecules.splice(game.scene.molecules.indexOf(obj), 1);
                 if (obj.sprite) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
                 } else if (obj.sprites) {
@@ -558,6 +580,13 @@ Molecule.module('Molecule.Game', function (require, p) {
                     for (var text in obj.text) {
                         if (obj.text.hasOwnProperty(text)) {
                             game.scene.text.splice(game.scene.text.indexOf(obj.text[text]), 1);
+                        }
+                    }
+                }
+                if (obj.audio) {
+                    for (var audio in obj.audio) {
+                        if (obj.audio.hasOwnProperty(audio)) {
+                            obj.audio[audio].stop();
                         }
                     }
                 }
@@ -676,8 +705,8 @@ Molecule.module('Molecule.Game', function (require, p) {
             var tilemap = this.tilemaps[arguments[0]] || arguments[0],
                 self = this;
             if (tilemap && utils.isTilemap(tilemap)) {
-                if (this.map && this.map.objects.length) {
-                    this.map.objects.forEach(function (object) {
+                if (this.map && this.map.molecules.length) {
+                    this.map.molecules.forEach(function (object) {
                         self.remove(object)
                     });
                 }
@@ -691,8 +720,8 @@ Molecule.module('Molecule.Game', function (require, p) {
         },
         remove: function () {
             var self = this;
-            if (this.map && this.map.objects.length) {
-                this.map.objects.forEach(function (object) {
+            if (this.map && this.map.molecules.length) {
+                this.map.molecules.forEach(function (object) {
                     self.remove(object)
                 });
             }

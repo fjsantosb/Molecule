@@ -1,6 +1,6 @@
 Molecule.module('Molecule.AudioFile', function (require, p) {
 
-    var Sound = require('Molecule.Sound');
+    var MAudio = require('Molecule.MAudio');
 
 	function AudioFile(_game) {
 		this.game = _game;
@@ -24,7 +24,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 			this.data.push(_audio);
 		}
 
-		var s = new Sound();
+		var s = new MAudio();
         s.id = _id;
 		s.sound = this.getAudioDataByName(_audioSrc);
 		this.game.sounds[_id] = s;

@@ -1,7 +1,7 @@
 /*global module:false*/
 module.exports = function(grunt) {
     var sourceFiles = [
-        'src/molecule.js',
+        'src/main.js',
         'src/animation.js',
         'src/audiofile.js',
         'src/camera.js',
@@ -11,11 +11,11 @@ module.exports = function(grunt) {
         'src/map.js',
         'src/mapcollisions.js',
         'src/mapfile.js',
-        'src/mobject.js',
+        'src/molecule.js',
         'src/move.js',
         'src/physics.js',
         'src/scene.js',
-        'src/sound.js',
+        'src/maudio.js',
         'src/sprite.js',
         'src/spritecollisions.js',
         'src/text.js',

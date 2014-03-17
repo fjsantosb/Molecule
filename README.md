@@ -7,6 +7,15 @@ documentation, features and examples can be seen on the official website:
 
 ### CHANGE LOG
 
+##### 0.9.2
+- Optimized collisions and fixed bugs
+- Changed the concept of object to "molecule". Check tutorials for more information
+- Added game.log method, which can be used as console.log, only it will only log ones
+- Added Molecule().ready() which encourages to use a "molecule" as starting point of your game
+- Added events listening, read tutorials for more info
+- Added game.timeout, read tutorials for more info
+- Fixed general bugs
+
 ##### 0.9.1
 - Changed API of creating, adding and removing sprites, Molecule Objects and text. It is now more consistent. Check out the tutorials
 - Added a powerful "get" API to let you easily fetch entities in your game
