@@ -105,10 +105,6 @@ Molecule.module('Molecule.Game', function (require, p) {
     }
 
     p.loop = function (game) {
-
-        p.requestAnimFrame(function () {
-            p.loop(game);
-        });
         p.removeSprites(game.scene.sprites);
         p.update(null, game);
         if (game.status == 1) {
@@ -131,6 +127,10 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.draw(game);
         p.updateMolecules(game);
         p.updateGame();
+
+        p.requestAnimFrame(function () {
+            p.loop(game);
+        });
     };
 
     p.updateSpriteCollisionCheck = function (sprites) {
@@ -533,7 +533,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
                 for (var sprite in obj.sprites) {
-                    if (obj.sprites.hasOwnProperty(sprite)) {
+                    if (obj.sprites.hasOwnProperty(sprite) && obj.sprites[sprite]) {
                         this.scene.sprites.push(obj.sprites[sprite]);
                     }
                 }
@@ -571,7 +571,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
                 } else if (obj.sprites) {
                     for (var sprite in obj.sprites) {
-                        if (obj.sprites.hasOwnProperty(sprite)) {
+                        if (obj.sprites.hasOwnProperty(sprite) && obj.sprites[sprite]) {
                             game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprites[sprite]), 1);
                         }
                     }

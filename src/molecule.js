@@ -52,9 +52,10 @@ Molecule.module('Molecule.Molecule', function (require, p) {
     };
 
     p.registeredEvents = [];
-    p.createEventClosure = function (callback, context) {
+    p.createEventClosure = function (type, callback, context) {
 
         var event = {
+            type: type,
             context: context,
             callback: function (event) {
                 callback.apply(context, event.detail);
@@ -66,7 +67,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
 
     };
 
-    function MObject(options) {
+    function Molecule(options) {
 
         options = options || {};
 
@@ -84,7 +85,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         var sprites = this.sprites;
         this.sprites = {};
         for (var sprite in sprites) {
-            if (sprites.hasOwnProperty(sprite)) {
+            if (sprites.hasOwnProperty(sprite) && sprites[sprite]) {
                 this.sprites[sprite] = sprites[sprite].clone();
             }
         }
@@ -108,38 +109,38 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         this.init()
     }
 
-    MObject.prototype.sprite = null;
-    MObject.prototype.sprites = {};
+    Molecule.prototype.sprite = null;
+    Molecule.prototype.sprites = {};
 
-    MObject.prototype.init = function () {
-
-    };
-
-    MObject.prototype.update = function () {
+    Molecule.prototype.init = function () {
 
     };
 
-    MObject.prototype.listenTo = function (type, callback) {
-
-        window.addEventListener(type, p.createEventClosure(callback, this));
+    Molecule.prototype.update = function () {
 
     };
 
-    MObject.prototype.removeListeners = function () {
+    Molecule.prototype.listenTo = function (type, callback) {
+
+        window.addEventListener(type, p.createEventClosure(type, callback, this));
+
+    };
+
+    Molecule.prototype.removeListeners = function () {
         var event;
         for (var x = 0; x < p.registeredEvents.length; x++) {
             event = p.registeredEvents[x];
             if (event.context === this) {
+                window.removeEventListener(event.type, event.callback)
                 p.registeredEvents.splice(x, 1);
                 x--;
             }
         }
     };
 
-    // TODO: Create correct inheritance to check INSTANCEOF
-    MObject.extend = p.extend;
+    Molecule.extend = p.extend;
 
 
-    return MObject;
+    return Molecule;
 
 });

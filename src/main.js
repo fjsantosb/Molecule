@@ -280,7 +280,7 @@
         };
         game.init(initializeModules, callback);
         game.start();
-        return this;
+        return game;
     };
 
     Molecule.sprite = function (id, spriteSrc, frameWidth, frameHeight) {
