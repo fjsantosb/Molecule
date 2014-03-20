@@ -3,11 +3,10 @@ Molecule({
     height: 320
 })
 
-// Load sprite setting sprite frame width and height
+// Load sprite setting its name and the path
 .sprite('flappy', 'assets/flappy.png')
-.init(function (game) {
+.ready(function (game) {
 
-    // Create Sprite
     var sprite = game.sprite.create('flappy');
 
     // Change sprite position
@@ -24,7 +23,7 @@ Molecule({
     sprite.anchor.x = sprite.width / 2;
     sprite.anchor.y = sprite.height / 2;
 
-    // Not Hide sprite
+    // Hide sprite or not
     sprite.visible = true;
 
     // Flip sprite

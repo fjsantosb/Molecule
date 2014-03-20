@@ -3,17 +3,34 @@ Molecule({
     height: 320
 })
 .audio('castle', 'assets/castle.mp3')
-.init(function (game) {
+.ready(function (game) {
 
-    var audio = game.audio('castle');
+    var myAudio = game.audio.create('castle');
 
-    // Pause audio
-    audio.pause();
+    // Play audio. Passing true
+    // will loop the audio
+    myAudio.play();
 
-    // Stop audio
-    audio.stop();
+    setTimeout(function () {
 
-    // Play audio with parameter: loop
-    audio.play(false);
+        // Pause audio
+        myAudio.pause();
+
+    }, 1000);
+
+    setTimeout(function () {
+
+        // Play again
+        myAudio.play();
+
+    }, 2000);
+
+    setTimeout(function () {
+
+        // Stop audio
+        myAudio.stop();
+
+    }, 3000);
+
 
 });

@@ -2,13 +2,17 @@ Molecule({
     width: 320,
     height: 320
 })
-.tilemap('map', 'assets/game.json')
-.init(function (game) {
-
-    // Remove tilemap
-    game.tilemap.remove();
+.tilemap('myMap', 'assets/game.json')
+.ready(function (game) {
 
     // Activate tilemap
-    game.tilemap.set('map');
+    game.tilemap.set('myMap');
+
+    setTimeout(function () {
+
+        // Remove tilemap
+        game.tilemap.remove();
+
+    }, 2000);
 
 });
