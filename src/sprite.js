@@ -209,9 +209,6 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         ]);
 
         sprite.getAnimation();
-        if (this.frame.width && this.frame.height) {
-            sprite.animation.add('idle');
-        }
 
         return sprite;
     }
