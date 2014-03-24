@@ -199,7 +199,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.draw = function (game) {
-        game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+        game.context.clearRect(0, 0, game.width, game.height);
         if (game.map && game.map.visible) {
             game.map.draw(false);
         }
@@ -271,18 +271,38 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.node = options.node;
 
         // OPTIONS
+        this.smooth = options.smooth || false;
         this.scale = options.scale || 1;
         this.width = options.width;
         this.height = options.height;
 
-        // CANVAS
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'canvas');
-        this.canvas.width = options.width;
-        this.canvas.height = options.height;
-        this.canvas.style.width = options.width * this.scale + "px";
-        this.canvas.style.height = options.height * this.scale + "px";
         this.context = this.canvas.getContext('2d');
+
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        var backingStoreRatio = this.context.webkitBackingStorePixelRatio ||
+                            this.context.mozBackingStorePixelRatio ||
+                            this.context.msBackingStorePixelRatio ||
+                            this.context.oBackingStorePixelRatio ||
+                            this.context.backingStorePixelRatio || 1;
+        var ratio = devicePixelRatio / backingStoreRatio;
+
+        // CANVAS
+
+        this.canvas.width = options.width * ratio;
+        this.canvas.height = options.height * ratio;
+        
+        this.canvas.style.width = options.width + "px";
+        this.canvas.style.height = options.height + "px";
+        
+        this.context.scale(ratio * this.scale, ratio * this.scale);
+        
+        this.context.imageSmoothingEnabled = this.smooth;
+        this.context.mozImageSmoothingEnabled = this.smooth;
+        this.context.oImageSmoothingEnabled = this.smooth;
+        this.context.webkitImageSmoothingEnabled = this.smooth;
+        this.context.msImageSmoothingEnabled = this.smooth;
 
         // GAME COMPONENTS
         this.camera = new Camera(this);

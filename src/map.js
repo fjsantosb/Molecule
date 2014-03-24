@@ -298,8 +298,8 @@ Molecule.module('Molecule.Map', function (require, p) {
     Map.prototype.draw = function (_overlap) {
         for (var i = 0; i < this.canvas.length; i++) {
             if (this.json.layers[i].type === 'tilelayer' && this.json.layers[i].visible && this.json.layers[i].properties.overlap === _overlap) {
-                var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
-                var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
+                var w = this.game.width > this.canvas[i].width ? this.canvas[i].width : this.game.width;
+                var h = this.game.height > this.canvas[i].height ? this.canvas[i].height : this.game.height;
                 var w1x = 0;
                 var w1y = 0;
                 if (this.json.layers[i].properties.scroll.infinite.x && Math.floor(-this.json.layers[i].x) + w > this.canvas[i].width) {
