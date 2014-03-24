@@ -280,7 +280,7 @@
         };
         game.init(initializeModules, callback);
         game.start();
-        return this;
+        return game;
     };
 
     Molecule.sprite = function (id, spriteSrc, frameWidth, frameHeight) {
@@ -550,16 +550,16 @@ Molecule.module('Molecule.Camera', function (require, p) {
         var wx = this.game.map.canvas[this.layer].width;
         var wy = this.game.map.canvas[this.layer].height;
         if (this.game.map.json.layers[this.layer].properties.scroll.infinite.x) {
-            wx = -this.game.map.json.layers[this.layer].x + this.game.canvas.width + 1;
+            wx = -this.game.map.json.layers[this.layer].x + this.game.width + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scroll.infinite.y) {
-            wy = -this.game.map.json.layers[this.layer].y + this.game.canvas.height + 1;
+            wy = -this.game.map.json.layers[this.layer].y + this.game.height + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scrollable) {
-            if ((-this.game.map.json.layers[this.layer].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+            if ((-this.game.map.json.layers[this.layer].x + this.game.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.width / 2)) {
                 this.scroll.x = true;
             }
-            if ((-this.game.map.json.layers[this.layer].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+            if ((-this.game.map.json.layers[this.layer].y + this.game.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.height / 2)) {
                 this.scroll.y = true;
             }
         }
@@ -571,12 +571,12 @@ Molecule.module('Molecule.Camera', function (require, p) {
                 var wx = this.game.map.canvas[i].width;
                 var wy = this.game.map.canvas[i].height;
                 if (this.game.map.json.layers[i].properties.scroll.infinite.x) {
-                    wx = -this.game.map.json.layers[i].x + this.game.canvas.width + 1;
+                    wx = -this.game.map.json.layers[i].x + this.game.width + 1;
                 }
                 if (this.game.map.json.layers[i].properties.scroll.infinite.y) {
-                    wy = -this.game.map.json.layers[i].y + this.game.canvas.height + 1;
+                    wy = -this.game.map.json.layers[i].y + this.game.height + 1;
                 }
-                if ((-this.game.map.json.layers[i].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+                if ((-this.game.map.json.layers[i].x + this.game.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.width / 2)) {
                     if (this.scroll.x) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.x = this.sprite.move.x * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -586,7 +586,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
 
                     }
                 }
-                if ((-this.game.map.json.layers[i].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+                if ((-this.game.map.json.layers[i].y + this.game.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.height / 2)) {
                     if (this.scroll.y) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.y = this.sprite.move.y * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -722,10 +722,6 @@ Molecule.module('Molecule.Game', function (require, p) {
     }
 
     p.loop = function (game) {
-
-        p.requestAnimFrame(function () {
-            p.loop(game);
-        });
         p.removeSprites(game.scene.sprites);
         p.update(null, game);
         if (game.status == 1) {
@@ -748,6 +744,10 @@ Molecule.module('Molecule.Game', function (require, p) {
         p.draw(game);
         p.updateMolecules(game);
         p.updateGame();
+
+        p.requestAnimFrame(function () {
+            p.loop(game);
+        });
     };
 
     p.updateSpriteCollisionCheck = function (sprites) {
@@ -816,7 +816,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.draw = function (game) {
-        game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+        game.context.clearRect(0, 0, game.width, game.height);
         if (game.map && game.map.visible) {
             game.map.draw(false);
         }
@@ -888,18 +888,38 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.node = options.node;
 
         // OPTIONS
+        this.smooth = options.smooth || false;
         this.scale = options.scale || 1;
         this.width = options.width;
         this.height = options.height;
 
-        // CANVAS
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'canvas');
-        this.canvas.width = options.width;
-        this.canvas.height = options.height;
-        this.canvas.style.width = options.width * this.scale + "px";
-        this.canvas.style.height = options.height * this.scale + "px";
         this.context = this.canvas.getContext('2d');
+
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        var backingStoreRatio = this.context.webkitBackingStorePixelRatio ||
+                            this.context.mozBackingStorePixelRatio ||
+                            this.context.msBackingStorePixelRatio ||
+                            this.context.oBackingStorePixelRatio ||
+                            this.context.backingStorePixelRatio || 1;
+        var ratio = devicePixelRatio / backingStoreRatio;
+
+        // CANVAS
+
+        this.canvas.width = options.width * ratio;
+        this.canvas.height = options.height * ratio;
+        
+        this.canvas.style.width = options.width + "px";
+        this.canvas.style.height = options.height + "px";
+        
+        this.context.scale(ratio * this.scale, ratio * this.scale);
+        
+        this.context.imageSmoothingEnabled = this.smooth;
+        this.context.mozImageSmoothingEnabled = this.smooth;
+        this.context.oImageSmoothingEnabled = this.smooth;
+        this.context.webkitImageSmoothingEnabled = this.smooth;
+        this.context.msImageSmoothingEnabled = this.smooth;
 
         // GAME COMPONENTS
         this.camera = new Camera(this);
@@ -1150,7 +1170,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 this.scene.sprites.push(obj.sprite);
             } else if (obj.sprites) {
                 for (var sprite in obj.sprites) {
-                    if (obj.sprites.hasOwnProperty(sprite)) {
+                    if (obj.sprites.hasOwnProperty(sprite) && obj.sprites[sprite]) {
                         this.scene.sprites.push(obj.sprites[sprite]);
                     }
                 }
@@ -1188,7 +1208,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
                 } else if (obj.sprites) {
                     for (var sprite in obj.sprites) {
-                        if (obj.sprites.hasOwnProperty(sprite)) {
+                        if (obj.sprites.hasOwnProperty(sprite) && obj.sprites[sprite]) {
                             game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprites[sprite]), 1);
                         }
                     }
@@ -1741,8 +1761,8 @@ Molecule.module('Molecule.Input', function (require, p) {
 	};
 	
 	Input.prototype.mousePosition = function(_e) {
-		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft) / this.game.scale;
-		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop) / this.game.scale;
+		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft);
+		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop);
 	}
 	
 	// Method 'ontouchstart' for 'touch' type
@@ -1774,11 +1794,11 @@ Molecule.module('Molecule.Input', function (require, p) {
 		this.touch = [];
 		if(_e.touches) {
 			for(var i = 0; i < _e.touches.length; i++) {
-				this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
+				this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft), y: (_e.touches[i].pageY - this.game.canvas.offsetTop)});
 			}
 		} else {
 			if(_e !== undefined) {
-				this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
+				this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft), y: (_e.pageY - this.game.canvas.offsetTop)});
 			}
 		}
 	};
@@ -2086,8 +2106,8 @@ Molecule.module('Molecule.Map', function (require, p) {
     Map.prototype.draw = function (_overlap) {
         for (var i = 0; i < this.canvas.length; i++) {
             if (this.json.layers[i].type === 'tilelayer' && this.json.layers[i].visible && this.json.layers[i].properties.overlap === _overlap) {
-                var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
-                var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
+                var w = this.game.width > this.canvas[i].width ? this.canvas[i].width : this.game.width;
+                var h = this.game.height > this.canvas[i].height ? this.canvas[i].height : this.game.height;
                 var w1x = 0;
                 var w1y = 0;
                 if (this.json.layers[i].properties.scroll.infinite.x && Math.floor(-this.json.layers[i].x) + w > this.canvas[i].width) {
@@ -2418,9 +2438,10 @@ Molecule.module('Molecule.Molecule', function (require, p) {
     };
 
     p.registeredEvents = [];
-    p.createEventClosure = function (callback, context) {
+    p.createEventClosure = function (type, callback, context) {
 
         var event = {
+            type: type,
             context: context,
             callback: function (event) {
                 callback.apply(context, event.detail);
@@ -2432,7 +2453,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
 
     };
 
-    function MObject(options) {
+    function Molecule(options) {
 
         options = options || {};
 
@@ -2450,7 +2471,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         var sprites = this.sprites;
         this.sprites = {};
         for (var sprite in sprites) {
-            if (sprites.hasOwnProperty(sprite)) {
+            if (sprites.hasOwnProperty(sprite) && sprites[sprite]) {
                 this.sprites[sprite] = sprites[sprite].clone();
             }
         }
@@ -2474,39 +2495,39 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         this.init()
     }
 
-    MObject.prototype.sprite = null;
-    MObject.prototype.sprites = {};
+    Molecule.prototype.sprite = null;
+    Molecule.prototype.sprites = {};
 
-    MObject.prototype.init = function () {
-
-    };
-
-    MObject.prototype.update = function () {
+    Molecule.prototype.init = function () {
 
     };
 
-    MObject.prototype.listenTo = function (type, callback) {
-
-        window.addEventListener(type, p.createEventClosure(callback, this));
+    Molecule.prototype.update = function () {
 
     };
 
-    MObject.prototype.removeListeners = function () {
+    Molecule.prototype.listenTo = function (type, callback) {
+
+        window.addEventListener(type, p.createEventClosure(type, callback, this));
+
+    };
+
+    Molecule.prototype.removeListeners = function () {
         var event;
         for (var x = 0; x < p.registeredEvents.length; x++) {
             event = p.registeredEvents[x];
             if (event.context === this) {
+                window.removeEventListener(event.type, event.callback)
                 p.registeredEvents.splice(x, 1);
                 x--;
             }
         }
     };
 
-    // TODO: Create correct inheritance to check INSTANCEOF
-    MObject.extend = p.extend;
+    Molecule.extend = p.extend;
 
 
-    return MObject;
+    return Molecule;
 
 });
 Molecule.module('Molecule.Move', function (require, p) {
@@ -2952,9 +2973,6 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         ]);
 
         sprite.getAnimation();
-        if (this.frame.width && this.frame.height) {
-            sprite.animation.add('idle');
-        }
 
         return sprite;
     }
