@@ -13,6 +13,7 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.alpha = 1;
 		this.visible = true;
 		this.stroke = null;
+		this.lineWidth = 1;
         utils.mergeSafely(options, this, ['game']);
 	};
 
@@ -27,6 +28,7 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.game.context.fillStyle = this.color;
 		this.game.context.fillText(this.title, this.position.x, this.position.y);
 		if(this.stroke) {
+		    this.game.context.lineWidth = this.lineWidth;
 			this.game.context.strokeStyle = this.stroke;
 			this.game.context.strokeText(this.title, this.position.x, this.position.y);
 		}
@@ -47,7 +49,8 @@ Molecule.module('Molecule.Text', function (require, p) {
             'baseline',
             'alpha',
             'visible',
-            'stroke'
+            'stroke',
+            'lineWidth'
         ]);
         var text = new Text(options, this.game);
         return text;
