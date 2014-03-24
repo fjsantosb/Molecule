@@ -297,8 +297,8 @@ Molecule.module('Molecule.Input', function (require, p) {
 	};
 	
 	Input.prototype.mousePosition = function(_e) {
-		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft) / this.game.scale;
-		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop) / this.game.scale;
+		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft);
+		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop);
 	}
 	
 	// Method 'ontouchstart' for 'touch' type
@@ -330,11 +330,11 @@ Molecule.module('Molecule.Input', function (require, p) {
 		this.touch = [];
 		if(_e.touches) {
 			for(var i = 0; i < _e.touches.length; i++) {
-				this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
+				this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft), y: (_e.touches[i].pageY - this.game.canvas.offsetTop)});
 			}
 		} else {
 			if(_e !== undefined) {
-				this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
+				this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft), y: (_e.pageY - this.game.canvas.offsetTop)});
 			}
 		}
 	};
