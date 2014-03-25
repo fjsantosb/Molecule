@@ -2790,7 +2790,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.acceleration = {x: 0, y: 0};
         this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y: 0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
         this.affects = {physics: {gravity: true, friction: true}};
-        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: false}, check: {map: {up: true, down: true, left: true, right: true}}};
+        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
         this.overlap = false;
         this.kill = false;
         this.game = null;
@@ -3110,7 +3110,7 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.alpha = 1;
 		this.visible = true;
 		this.stroke = null;
-		this.lineWidth = 4;
+		this.lineWidth = 1;
         utils.mergeSafely(options, this, ['game']);
 	};
 
@@ -3146,7 +3146,8 @@ Molecule.module('Molecule.Text', function (require, p) {
             'baseline',
             'alpha',
             'visible',
-            'stroke'
+            'stroke',
+            'lineWidth'
         ]);
         var text = new Text(options, this.game);
         return text;
