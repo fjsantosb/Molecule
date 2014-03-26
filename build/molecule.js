@@ -1465,8 +1465,6 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 Molecule.module('Molecule.Input', function (require, p) {
 
 	function Input(_game) {
-	    var self = this;
-	    
 		this.game = _game
 		this.key = {SPACE: 0, LEFT_ARROW: 0, UP_ARROW: 0, RIGHT_ARROW: 0, DOWN_ARROW: 0, A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0, K: 0, L: 0, M: 0, N: 0, O: 0, P: 0, Q: 0, R: 0, S: 0, T: 0, U: 0, V: 0, W: 0, X: 0, Y: 0, Z: 0};
 		this.mouse = {x: 0, y: 0, BUTTON_LEFT: 0, BUTTON_MIDDLE: 0, BUTTON_RIGHT: 0};
@@ -1487,51 +1485,53 @@ Molecule.module('Molecule.Input', function (require, p) {
 
 	// Method to init 'keyboard', 'mouse' or 'touch' depending of type
 	Input.prototype.enable = function(_type) {
+		var self = this;
 
 		if(_type === 'keyboard') {
-			document.addEventListener('keydown', this.keydown, true);
-			document.addEventListener('keyup', this.keyup, true);
+			document.addEventListener('keydown', self.keydown, true);
+			document.addEventListener('keyup', self.keyup, true);
 		}
 		if(_type === 'mouse') {
-			this.game.canvas.addEventListener('mousedown', this.mousedown, true);
-			this.game.canvas.addEventListener('mousemove', this.mousemove, true);
-			this.game.canvas.addEventListener('mouseup', this.mouseup, true);
+			this.game.canvas.addEventListener('mousedown', self.mousedown, true);
+			this.game.canvas.addEventListener('mousemove', self.mousemove, true);
+			this.game.canvas.addEventListener('mouseup', self.mouseup, true);
 		}
 		if(_type === 'touch') {
-			this.game.canvas.addEventListener('MSPointerDown', this.touchstart, true);
-			this.game.canvas.addEventListener('MSPointerMove', this.touchmove, true);
-			this.game.canvas.addEventListener('MSPointerUp', this.touchend, true);
-			this.game.canvas.addEventListener('MSPointerCancel', this.touchcancel, true);
+			this.game.canvas.addEventListener('MSPointerDown', self.touchstart, true);
+			this.game.canvas.addEventListener('MSPointerMove', self.touchmove, true);
+			this.game.canvas.addEventListener('MSPointerUp', self.touchend, true);
+			this.game.canvas.addEventListener('MSPointerCancel', self.touchcancel, true);
 
-			this.game.canvas.addEventListener('touchstart', this.touchstart, true);
-			this.game.canvas.addEventListener('touchmove', this.touchmove, true);
-			this.game.canvas.addEventListener('touchend', this.touchend, true);
-			this.game.canvas.addEventListener('touchcancel', this.touchcancel, true);
+			this.game.canvas.addEventListener('touchstart', self.touchstart, true);
+			this.game.canvas.addEventListener('touchmove', self.touchmove, true);
+			this.game.canvas.addEventListener('touchend', self.touchend, true);
+			this.game.canvas.addEventListener('touchcancel', self.touchcancel, true);
 		}
 	};
 
 	// Method to remove 'keyboard', 'mouse' or 'touch' depending of type
 	Input.prototype.disable = function(_type) {
+		var self = this;
 
 		if(_type === 'keyboard') {
-			document.removeEventListener('keydown', this.keydown, true);
-			document.removeEventListener('keyup', this.keyup, true);
+			document.removeEventListener('keydown', self.keydown, true);
+			document.removeEventListener('keyup', self.keyup, true);
 		}
 		if(_type === 'mouse') {
-			this.game.canvas.removeEventListener('mousedown', this.mousedown, true);
-			this.game.canvas.removeEventListener('mousemove', this.mousemove, true);
-			this.game.canvas.removeEventListener('mouseup', this.mouseup, true);
+			this.game.canvas.removeEventListener('mousedown', self.mousedown, true);
+			this.game.canvas.removeEventListener('mousemove', self.mousemove, true);
+			this.game.canvas.removeEventListener('mouseup', self.mouseup, true);
 		}
 		if(_type === 'touch') {
-			this.game.canvas.removeEventListener('MSPointerDown', this.touchstart, true);
-			this.game.canvas.removeEventListener('MSPointerMove', this.touchmove, true);
-			this.game.canvas.removeEventListener('MSPointerUp', this.touchend, true);
-			this.game.canvas.removeEventListener('MSPointerCancel', this.touchcancel, true);
+			this.game.canvas.removeEventListener('MSPointerDown', self.touchstart, true);
+			this.game.canvas.removeEventListener('MSPointerMove', self.touchmove, true);
+			this.game.canvas.removeEventListener('MSPointerUp', self.touchend, true);
+			this.game.canvas.removeEventListener('MSPointerCancel', self.touchcancel, true);
 
-			this.game.canvas.removeEventListener('touchstart', this.touchstart, true);
-			this.game.canvas.removeEventListener('touchmove', this.touchmove, true);
-			this.game.canvas.removeEventListener('touchend', this.touchend, true);
-			this.game.canvas.removeEventListener('touchcancel', this.touchcancel, true);
+			this.game.canvas.removeEventListener('touchstart', self.touchstart, true);
+			this.game.canvas.removeEventListener('touchmove', self.touchmove, true);
+			this.game.canvas.removeEventListener('touchend', self.touchend, true);
+			this.game.canvas.removeEventListener('touchcancel', self.touchcancel, true);
 		}
 	};
 
