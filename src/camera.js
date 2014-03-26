@@ -8,7 +8,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.type = 0;
         this.offset = {x: 0, y: 0};
         this.isSet = false; // Wait until sprite is in scene
-    };
+    }
 
     Camera.prototype.follow = function (_sprite) {
         this.sprite = _sprite;
@@ -31,19 +31,22 @@ Molecule.module('Molecule.Camera', function (require, p) {
             this.isSet = true;
             this.layer = this.game.map.getMainLayer();
             this.game.map.resetPosition();
-            _x = this.sprite.position.x;
+
+            var _x = this.sprite.position.x,
+                _y = this.sprite.position.y,
+                i;
+
             this.sprite.position.x = 0;
-            _y = this.sprite.position.y;
             this.sprite.position.y = 0;
 
-            for (var i = 0; i < _x; i++) {
+            for (i = 0; i < _x; i++) {
                 this.sprite.move.x = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
                 this.game.resetMove();
             }
 
-            for (var i = 0; i < _y; i++) {
+            for (i = 0; i < _y; i++) {
                 this.sprite.move.y = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();

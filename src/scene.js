@@ -5,7 +5,7 @@ Molecule.module('Molecule.Scene', function (require, p) {
         this.sprites = [];
 		this.text = [];
         this.tilemaps = [];
-	};
+	}
 
     return Scene;
 

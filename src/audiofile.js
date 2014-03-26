@@ -7,7 +7,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 		this.name = [];
 		this.data = [];
 		this.counter = 0;
-	};
+	}
 
 	AudioFile.prototype.load = function(_id, _audioSrc) {
 		if(!this.getAudioDataByName(_audioSrc)) {
@@ -33,10 +33,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 	};
 
 	AudioFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
+		return (this.counter === this.data.length);
 	};
 
 	AudioFile.prototype.getAudioDataByName = function(_audioName) {

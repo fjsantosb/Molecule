@@ -131,7 +131,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         for (var x = 0; x < p.registeredEvents.length; x++) {
             event = p.registeredEvents[x];
             if (event.context === this) {
-                window.removeEventListener(event.type, event.callback)
+                window.removeEventListener(event.type, event.callback);
                 p.registeredEvents.splice(x, 1);
                 x--;
             }

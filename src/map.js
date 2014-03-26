@@ -15,7 +15,7 @@ Molecule.module('Molecule.Map', function (require, p) {
         this.response = null;
         this.json = null;
         this.loaded = false;
-    };
+    }
 
     Map.prototype.load = function (_id, _name) {
         this.id = _id;
@@ -85,33 +85,40 @@ Molecule.module('Molecule.Map', function (require, p) {
         for (var i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 if (this.json.layers[i].properties !== undefined) {
-                    var main = this.json.layers[i].properties['main'] === 'true' ? true : false || false;
-                    var scrollable = this.json.layers[i].properties['scrollable'] === 'false' ? false : true || true;
-                    var collidable = this.json.layers[i].properties['collidable'] === 'true' ? true : false || false;
-                    var overlap = this.json.layers[i].properties['overlap'] === 'true' ? true : false || false;
+                    var main = (this.json.layers[i].properties['main'] === 'true') || false;
+                    var scrollable = !(this.json.layers[i].properties['scrollable'] === 'false') || true;
+                    var collidable = (this.json.layers[i].properties['collidable'] === 'true') || false;
+                    var overlap = (this.json.layers[i].properties['overlap'] === 'true') || false;
                     var speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
-                    var infiniteX = this.json.layers[i].properties['scroll.infinite.x'] === 'true' ? true : false || false;
-                    var infiniteY = this.json.layers[i].properties['scroll.infinite.y'] === 'true' ? true : false || false;
+                    var infiniteX = (this.json.layers[i].properties['scroll.infinite.x'] === 'true') || false;
+                    var infiniteY = (this.json.layers[i].properties['scroll.infinite.y'] === 'true') || false;
                     this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed, infinite: {x: infiniteX, y: infiniteY}}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap, infinite: {x: infiniteX, y: infiniteY}};
                 } else {
-                    this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
+                    this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
                 }
             }
         }
     };
 
     Map.prototype.createContext = function () {
+        var frameWidth,
+            frameHeight,
+            tileset,
+            sprite,
+            data,
+            i,
+            j;
 
-        for (var i = 0; i < this.json.layers.length; i++) {
+        for (i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 this.canvas.push(document.createElement('canvas'));
                 this.context.push(this.canvas[i].getContext('2d'));
                 this.canvas[i].width = (this.json.layers[i].width * this.json.tilewidth);
                 this.canvas[i].height = (this.json.layers[i].height * this.json.tileheight);
                 for (j = 0; j < this.json.layers[i].data.length; j++) {
-                    var data = this.json.layers[i].data[j];
+                    data = this.json.layers[i].data[j];
                     if (data > 0) {
-                        var tileset = this.getTileset(data);
+                        tileset = this.getTileset(data);
                         this.context[i].save();
                         this.context[i].globalAlpha = this.json.layers[i].opacity;
                         this.context[i].drawImage(
@@ -130,12 +137,11 @@ Molecule.module('Molecule.Map', function (require, p) {
             } else if (this.json.layers[i].type === 'objectgroup') {
 
                 for (j = 0; j < this.json.layers[i].objects.length; j++) {
-
-                    var data = this.json.layers[i].objects[j].gid,
-                        tileset = this.getTileset(data),
-                        frameWidth = this.json.tilesets[tileset].tilewidth,
-                        frameHeight = this.json.tilesets[tileset].tileheight,
-                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
+                    data = this.json.layers[i].objects[j].gid;
+                    tileset = this.getTileset(data);
+                    frameWidth = this.json.tilesets[tileset].tilewidth;
+                    frameHeight = this.json.tilesets[tileset].tileheight;
+                    sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
                     this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
@@ -145,7 +151,6 @@ Molecule.module('Molecule.Map', function (require, p) {
                     });
                     this.molecules.push(object);
                 }
-
 
             }
         }

@@ -4,12 +4,8 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         Map = require('Molecule.Map');
 
     p.Boolean = function (bool) {
-        if (bool === 'true') {
-            return true;
-        } else {
-            return false;
-        }
-    }
+        return (bool === 'true');
+    };
 
     p.getProperty = function (property, Type, objectProperties, layerProperties, fallbackProperty) {
 
@@ -32,13 +28,13 @@ Molecule.module('Molecule.MapFile', function (require, p) {
                 return tilesets[x].name;
             }
         }
-    }
+    };
 
 	function MapFile(_game) {
 		this.game = _game;
 		this.tile = new Tile(_game);
 		this.maps = [];
-	};
+	}
 
 	MapFile.prototype.load = function(_id, _name) {
 		var m = new Map(this.game);

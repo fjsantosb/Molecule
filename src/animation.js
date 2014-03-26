@@ -8,7 +8,7 @@ Molecule.module('Molecule.Animation', function (require, p) {
         this.loop = true;
         this.reverse = false;
         this.halt = false;
-    };
+    }
 
     Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
         this.frame = [];

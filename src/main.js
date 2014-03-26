@@ -134,7 +134,7 @@
             return new Date().getTime() - startTime >= timeoutLimit;
         },
         addDepException: function (array, message) {
-            message = message.match(/\"(.*)\"/)[1];
+            message = message.match(/"(.*)"/)[1];
             if (array.indexOf(message) === -1) {
                 array.push(message);
             }
@@ -153,7 +153,7 @@
                     return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
                 },
                 game: game
-            }
+            };
             return context;
         },
         createTestContext: function (modules) {
@@ -209,6 +209,9 @@
                     return sinon.spy();
                 } else {
                     for (var depMethod in exports) {
+                        if (!exports.hasOwnProperty(depMethod)) {
+                            continue;
+                        }
                         if (typeof exports[depMethod] === 'function') {
                             stubbedMethods[depMethod] = exports[depMethod];
                             sinon.stub(stubbedMethods, depMethod);

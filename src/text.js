@@ -15,7 +15,7 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.stroke = null;
 		this.lineWidth = 1;
         utils.mergeSafely(options, this, ['game']);
-	};
+	}
 
 	Text.prototype.draw = function() {
 		this.game.context.save();
