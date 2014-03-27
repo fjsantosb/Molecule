@@ -52,7 +52,7 @@ module.exports = function(grunt) {
                         dest: 'build/'
                     }
                 ]
-            },
+            }
 
         },
 
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
             dist: [
                 'build/<%= pkg.name %>.js',
                 'build/<%= pkg.name %>.min.js'
-            ],
+            ]
         },
         tdd: {
             molecule: {

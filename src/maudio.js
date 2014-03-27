@@ -2,7 +2,7 @@ Molecule.module('Molecule.MAudio', function (require, p) {
 
 	function MAudio() {
 		this.sound = null;
-	};
+	}
 
     MAudio.prototype.play = function(_loop) {
 		_loop = typeof _loop === 'undefined' ? false : _loop;

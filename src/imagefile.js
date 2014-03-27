@@ -7,7 +7,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		this.name = [];
 		this.data = [];
 		this.counter = 0;
-	};
+	}
 
 	ImageFile.prototype.preload = function(_imageSrc) {
 		var _name = _imageSrc.substring(0, _imageSrc.length - 4);
@@ -41,10 +41,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 	};
 	
 	ImageFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
+		return (this.counter === this.data.length);
 	};
 
 	ImageFile.prototype.getImageDataByName = function(_imageName) {

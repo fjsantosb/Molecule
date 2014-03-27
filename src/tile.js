@@ -2,7 +2,7 @@ Molecule.module('Molecule.Tile', function (require, p) {
 
 	function Tile(_game) {
 		this.game = _game;
-	};
+	}
 
 	Tile.prototype.get = function(_name, _x, _y) {
 		var t = this.game.map.getTileData(_name, _x, _y);

@@ -8,13 +8,15 @@ Molecule.module('Molecule.Animation', function (require, p) {
         this.loop = true;
         this.reverse = false;
         this.halt = false;
-    };
+    }
 
     Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
         this.frame = [];
         this.id = [];
-        for(var i = 0; i < _imageHeight - 1; i += _frameHeight) {
-            for(var j = 0; j < _imageWidth - 1; j += _frameWidth) {
+
+        var i, j;
+        for(i = 0; i < _imageHeight - 1; i += _frameHeight) {
+            for(j = 0; j < _imageWidth - 1; j += _frameWidth) {
                 this.frame.push({x:j, y:i});
             }
         }

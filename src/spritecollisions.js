@@ -57,6 +57,7 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
             physics = game.physics,
             i,
             j,
+            k,
             mc,
             tx,
             ty,
