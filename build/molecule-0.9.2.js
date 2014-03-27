@@ -134,7 +134,7 @@
             return new Date().getTime() - startTime >= timeoutLimit;
         },
         addDepException: function (array, message) {
-            message = message.match(/\"(.*)\"/)[1];
+            message = message.match(/"(.*)"/)[1];
             if (array.indexOf(message) === -1) {
                 array.push(message);
             }
@@ -153,7 +153,7 @@
                     return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
                 },
                 game: game
-            }
+            };
             return context;
         },
         createTestContext: function (modules) {
@@ -198,7 +198,7 @@
                 context.deps[name] = depModule.exports;
 
                 return depModule.exports;
-            }
+            };
         },
         stubDepExports: function (exports) {
             var sinon = p.getSinon();
@@ -209,6 +209,9 @@
                     return sinon.spy();
                 } else {
                     for (var depMethod in exports) {
+                        if (!exports.hasOwnProperty(depMethod)) {
+                            continue;
+                        }
                         if (typeof exports[depMethod] === 'function') {
                             stubbedMethods[depMethod] = exports[depMethod];
                             sinon.stub(stubbedMethods, depMethod);
@@ -233,7 +236,7 @@
             return {
                 name: args[0],
                 func: args[1]
-            }
+            };
         }
     };
 
@@ -345,13 +348,15 @@ Molecule.module('Molecule.Animation', function (require, p) {
         this.loop = true;
         this.reverse = false;
         this.halt = false;
-    };
+    }
 
     Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
         this.frame = [];
         this.id = [];
-        for(var i = 0; i < _imageHeight - 1; i += _frameHeight) {
-            for(var j = 0; j < _imageWidth - 1; j += _frameWidth) {
+
+        var i, j;
+        for(i = 0; i < _imageHeight - 1; i += _frameHeight) {
+            for(j = 0; j < _imageWidth - 1; j += _frameWidth) {
                 this.frame.push({x:j, y:i});
             }
         }
@@ -437,7 +442,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 		this.name = [];
 		this.data = [];
 		this.counter = 0;
-	};
+	}
 
 	AudioFile.prototype.load = function(_id, _audioSrc) {
 		if(!this.getAudioDataByName(_audioSrc)) {
@@ -463,10 +468,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 	};
 
 	AudioFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
+		return (this.counter === this.data.length);
 	};
 
 	AudioFile.prototype.getAudioDataByName = function(_audioName) {
@@ -486,7 +488,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.type = 0;
         this.offset = {x: 0, y: 0};
         this.isSet = false; // Wait until sprite is in scene
-    };
+    }
 
     Camera.prototype.follow = function (_sprite) {
         this.sprite = _sprite;
@@ -509,19 +511,22 @@ Molecule.module('Molecule.Camera', function (require, p) {
             this.isSet = true;
             this.layer = this.game.map.getMainLayer();
             this.game.map.resetPosition();
-            _x = this.sprite.position.x;
+
+            var _x = this.sprite.position.x,
+                _y = this.sprite.position.y,
+                i;
+
             this.sprite.position.x = 0;
-            _y = this.sprite.position.y;
             this.sprite.position.y = 0;
 
-            for (var i = 0; i < _x; i++) {
+            for (i = 0; i < _x; i++) {
                 this.sprite.move.x = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
                 this.game.resetMove();
             }
 
-            for (var i = 0; i < _y; i++) {
+            for (i = 0; i < _y; i++) {
                 this.sprite.move.y = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
@@ -719,7 +724,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             molecule = game.scene.molecules[i];
             if (molecule.update) molecule.update();
         }
-    }
+    };
 
     p.loop = function (game) {
         p.removeSprites(game.scene.sprites);
@@ -816,16 +821,18 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.draw = function (game) {
+        var i;
+
         game.context.clearRect(0, 0, game.width, game.height);
         if (game.map && game.map.visible) {
             game.map.draw(false);
         }
-        for (var i = 0; i < game.scene.sprites.length; i++) {
+        for (i = 0; i < game.scene.sprites.length; i++) {
             if (game.scene.sprites[i].visible) {
                 game.scene.sprites[i].draw(false);
             }
         }
-        for (var i = 0; i < game.scene.sprites.length; i++) {
+        for (i = 0; i < game.scene.sprites.length; i++) {
             if (game.scene.sprites[i].visible) {
                 game.scene.sprites[i].draw(true);
             }
@@ -833,7 +840,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         if (game.map && game.map.visible) {
             game.map.draw(true);
         }
-        for (var i = 0; i < game.scene.text.length; i++) {
+        for (i = 0; i < game.scene.text.length; i++) {
             if (game.scene.text[i].visible) {
                 game.scene.text[i].draw();
             }
@@ -992,7 +999,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprites: this.scene.sprites,
             molecules: this.scene.molecules,
             text: this.scene.text
-        }
+        };
 
     };
 
@@ -1189,7 +1196,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             if (typeof arguments[0] === 'string') {
 
                 options = arguments[1] || {};
-                options._MoleculeType = arguments[0]
+                options._MoleculeType = arguments[0];
 
                 return utils.find(this.scene.molecules, options);
 
@@ -1349,7 +1356,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
                 this.mapFile.set(tilemap);
             } else {
-                throw new Error('There is no tilemap with the name ' + _id + ' loaded');
+                throw new Error('There is no tilemap with the name ' + arguments[0] + ' loaded');
             }
         },
         get: function () {
@@ -1410,7 +1417,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		this.name = [];
 		this.data = [];
 		this.counter = 0;
-	};
+	}
 
 	ImageFile.prototype.preload = function(_imageSrc) {
 		var _name = _imageSrc.substring(0, _imageSrc.length - 4);
@@ -1444,10 +1451,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 	};
 	
 	ImageFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
+		return (this.counter === this.data.length);
 	};
 
 	ImageFile.prototype.getImageDataByName = function(_imageName) {
@@ -1467,10 +1471,10 @@ Molecule.module('Molecule.Input', function (require, p) {
 	function Input(_game) {
 	    var self = this;
 	    
-		this.game = _game
+		this.game = _game;
 		this.key = {SPACE: 0, LEFT_ARROW: 0, UP_ARROW: 0, RIGHT_ARROW: 0, DOWN_ARROW: 0, A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0, K: 0, L: 0, M: 0, N: 0, O: 0, P: 0, Q: 0, R: 0, S: 0, T: 0, U: 0, V: 0, W: 0, X: 0, Y: 0, Z: 0};
 		this.mouse = {x: 0, y: 0, BUTTON_LEFT: 0, BUTTON_MIDDLE: 0, BUTTON_RIGHT: 0};
-		this.touch = new Array();
+		this.touch = [];
 		
 		this.keydown = function(_e){self.onkeydown(_e)};
 		this.keyup = function(_e){self.onkeyup(_e)};
@@ -1483,7 +1487,7 @@ Molecule.module('Molecule.Input', function (require, p) {
 		this.touchmove = function(_e){self.ontouchmove(_e)};
 		this.touchend = function(_e){self.ontouchend(_e)};
 		this.touchcancel = function(_e){self.ontouchcancel(_e)};
-	};
+	}
 
 	// Method to init 'keyboard', 'mouse' or 'touch' depending of type
 	Input.prototype.enable = function(_type) {
@@ -1775,7 +1779,7 @@ Molecule.module('Molecule.Input', function (require, p) {
 	Input.prototype.mousePosition = function(_e) {
 		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft);
 		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop);
-	}
+	};
 
 	// Method 'ontouchstart' for 'touch' type
 	Input.prototype.ontouchstart = function(_e) {
@@ -1835,7 +1839,7 @@ Molecule.module('Molecule.Map', function (require, p) {
         this.response = null;
         this.json = null;
         this.loaded = false;
-    };
+    }
 
     Map.prototype.load = function (_id, _name) {
         this.id = _id;
@@ -1902,36 +1906,52 @@ Molecule.module('Molecule.Map', function (require, p) {
     };
 
     Map.prototype.addProperties = function () {
-        for (var i = 0; i < this.json.layers.length; i++) {
+        var scrollable,
+            collidable,
+            infiniteX,
+            infiniteY,
+            overlap,
+            speed,
+            main,
+            i;
+
+        for (i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 if (this.json.layers[i].properties !== undefined) {
-                    var main = this.json.layers[i].properties['main'] === 'true' ? true : false || false;
-                    var scrollable = this.json.layers[i].properties['scrollable'] === 'false' ? false : true || true;
-                    var collidable = this.json.layers[i].properties['collidable'] === 'true' ? true : false || false;
-                    var overlap = this.json.layers[i].properties['overlap'] === 'true' ? true : false || false;
-                    var speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
-                    var infiniteX = this.json.layers[i].properties['scroll.infinite.x'] === 'true' ? true : false || false;
-                    var infiniteY = this.json.layers[i].properties['scroll.infinite.y'] === 'true' ? true : false || false;
+                    main = (this.json.layers[i].properties['main'] === 'true') || false;
+                    scrollable = !(this.json.layers[i].properties['scrollable'] === 'false') || true;
+                    collidable = (this.json.layers[i].properties['collidable'] === 'true') || false;
+                    overlap = (this.json.layers[i].properties['overlap'] === 'true') || false;
+                    speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
+                    infiniteX = (this.json.layers[i].properties['scroll.infinite.x'] === 'true') || false;
+                    infiniteY = (this.json.layers[i].properties['scroll.infinite.y'] === 'true') || false;
                     this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed, infinite: {x: infiniteX, y: infiniteY}}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap, infinite: {x: infiniteX, y: infiniteY}};
                 } else {
-                    this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
+                    this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
                 }
             }
         }
     };
 
     Map.prototype.createContext = function () {
+        var frameWidth,
+            frameHeight,
+            tileset,
+            sprite,
+            data,
+            i,
+            j;
 
-        for (var i = 0; i < this.json.layers.length; i++) {
+        for (i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 this.canvas.push(document.createElement('canvas'));
                 this.context.push(this.canvas[i].getContext('2d'));
                 this.canvas[i].width = (this.json.layers[i].width * this.json.tilewidth);
                 this.canvas[i].height = (this.json.layers[i].height * this.json.tileheight);
                 for (j = 0; j < this.json.layers[i].data.length; j++) {
-                    var data = this.json.layers[i].data[j];
+                    data = this.json.layers[i].data[j];
                     if (data > 0) {
-                        var tileset = this.getTileset(data);
+                        tileset = this.getTileset(data);
                         this.context[i].save();
                         this.context[i].globalAlpha = this.json.layers[i].opacity;
                         this.context[i].drawImage(
@@ -1950,12 +1970,11 @@ Molecule.module('Molecule.Map', function (require, p) {
             } else if (this.json.layers[i].type === 'objectgroup') {
 
                 for (j = 0; j < this.json.layers[i].objects.length; j++) {
-
-                    var data = this.json.layers[i].objects[j].gid,
-                        tileset = this.getTileset(data),
-                        frameWidth = this.json.tilesets[tileset].tilewidth,
-                        frameHeight = this.json.tilesets[tileset].tileheight,
-                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
+                    data = this.json.layers[i].objects[j].gid;
+                    tileset = this.getTileset(data);
+                    frameWidth = this.json.tilesets[tileset].tilewidth;
+                    frameHeight = this.json.tilesets[tileset].tileheight;
+                    sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
                     this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
@@ -1965,7 +1984,6 @@ Molecule.module('Molecule.Map', function (require, p) {
                     });
                     this.molecules.push(object);
                 }
-
 
             }
         }
@@ -2307,12 +2325,8 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         Map = require('Molecule.Map');
 
     p.Boolean = function (bool) {
-        if (bool === 'true') {
-            return true;
-        } else {
-            return false;
-        }
-    }
+        return (bool === 'true');
+    };
 
     p.getProperty = function (property, Type, objectProperties, layerProperties, fallbackProperty) {
 
@@ -2335,13 +2349,13 @@ Molecule.module('Molecule.MapFile', function (require, p) {
                 return tilesets[x].name;
             }
         }
-    }
+    };
 
 	function MapFile(_game) {
 		this.game = _game;
 		this.tile = new Tile(_game);
 		this.maps = [];
-	};
+	}
 
 	MapFile.prototype.load = function(_id, _name) {
 		var m = new Map(this.game);
@@ -2543,7 +2557,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         for (var x = 0; x < p.registeredEvents.length; x++) {
             event = p.registeredEvents[x];
             if (event.context === this) {
-                window.removeEventListener(event.type, event.callback)
+                window.removeEventListener(event.type, event.callback);
                 p.registeredEvents.splice(x, 1);
                 x--;
             }
@@ -2744,7 +2758,7 @@ Molecule.module('Molecule.Scene', function (require, p) {
         this.sprites = [];
 		this.text = [];
         this.tilemaps = [];
-	};
+	}
 
     return Scene;
 
@@ -2753,7 +2767,7 @@ Molecule.module('Molecule.MAudio', function (require, p) {
 
 	function MAudio() {
 		this.sound = null;
-	};
+	}
 
     MAudio.prototype.play = function(_loop) {
 		_loop = typeof _loop === 'undefined' ? false : _loop;
@@ -2824,7 +2838,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.height = 0;
 
         return this;
-    };
+    }
 
     Sprite.prototype.getAnimation = function () {
         this.size = {width: this.image.width, height: this.image.height};
@@ -2895,9 +2909,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 	// Sprite prototype Method is_clicked
     Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
-        if (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button)
-            return true;
-        return false;
+        return (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button);
     };
 
 	// Sprite prototype Method collidesWithSprite
@@ -2919,7 +2931,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         var _lpx = Math.abs(_layer.x);
         var _lpy = Math.abs(_layer.y);
 
-        _object = {position: {
+        var _object = {position: {
             x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth,
             y: Math.floor(_tile / _layer.width) * this.game.map.json.tileheight},
             width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth,
@@ -2963,9 +2975,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             }
         }
 
-        if (((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)))
-            return true;
-        return false;
+        return (((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)));
     };
 
     Sprite.prototype.clone = function () {
@@ -3001,7 +3011,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         sprite.getAnimation();
 
         return sprite;
-    }
+    };
 
     return Sprite;
 
@@ -3065,6 +3075,7 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
             physics = game.physics,
             i,
             j,
+            k,
             mc,
             tx,
             ty,
@@ -3138,7 +3149,7 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.stroke = null;
 		this.lineWidth = 1;
         utils.mergeSafely(options, this, ['game']);
-	};
+	}
 
 	Text.prototype.draw = function() {
 		this.game.context.save();
@@ -3187,7 +3198,7 @@ Molecule.module('Molecule.Tile', function (require, p) {
 
 	function Tile(_game) {
 		this.game = _game;
-	};
+	}
 
 	Tile.prototype.get = function(_name, _x, _y) {
 		var t = this.game.map.getTileData(_name, _x, _y);
