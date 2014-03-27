@@ -1922,7 +1922,8 @@ Molecule.module('Molecule.Map', function (require, p) {
                     scrollable = !(this.json.layers[i].properties['scrollable'] === 'false') || true;
                     collidable = (this.json.layers[i].properties['collidable'] === 'true') || false;
                     overlap = (this.json.layers[i].properties['overlap'] === 'true') || false;
-                    speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
+                    speed = this.json.layers[i].properties['scroll.speed'] || 1;
+                    speed = parseFloat(speed).toFixed(3);
                     infiniteX = (this.json.layers[i].properties['scroll.infinite.x'] === 'true') || false;
                     infiniteY = (this.json.layers[i].properties['scroll.infinite.y'] === 'true') || false;
                     this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed, infinite: {x: infiniteX, y: infiniteY}}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap, infinite: {x: infiniteX, y: infiniteY}};
