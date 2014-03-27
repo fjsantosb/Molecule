@@ -198,7 +198,7 @@
                 context.deps[name] = depModule.exports;
 
                 return depModule.exports;
-            }
+            };
         },
         stubDepExports: function (exports) {
             var sinon = p.getSinon();
@@ -236,7 +236,7 @@
             return {
                 name: args[0],
                 func: args[1]
-            }
+            };
         }
     };
 

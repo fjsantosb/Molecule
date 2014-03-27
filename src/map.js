@@ -82,16 +82,25 @@ Molecule.module('Molecule.Map', function (require, p) {
     };
 
     Map.prototype.addProperties = function () {
-        for (var i = 0; i < this.json.layers.length; i++) {
+        var scrollable,
+            collidable,
+            infiniteX,
+            infiniteY,
+            overlap,
+            speed,
+            main,
+            i;
+
+        for (i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 if (this.json.layers[i].properties !== undefined) {
-                    var main = (this.json.layers[i].properties['main'] === 'true') || false;
-                    var scrollable = !(this.json.layers[i].properties['scrollable'] === 'false') || true;
-                    var collidable = (this.json.layers[i].properties['collidable'] === 'true') || false;
-                    var overlap = (this.json.layers[i].properties['overlap'] === 'true') || false;
-                    var speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
-                    var infiniteX = (this.json.layers[i].properties['scroll.infinite.x'] === 'true') || false;
-                    var infiniteY = (this.json.layers[i].properties['scroll.infinite.y'] === 'true') || false;
+                    main = (this.json.layers[i].properties['main'] === 'true') || false;
+                    scrollable = !(this.json.layers[i].properties['scrollable'] === 'false') || true;
+                    collidable = (this.json.layers[i].properties['collidable'] === 'true') || false;
+                    overlap = (this.json.layers[i].properties['overlap'] === 'true') || false;
+                    speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
+                    infiniteX = (this.json.layers[i].properties['scroll.infinite.x'] === 'true') || false;
+                    infiniteY = (this.json.layers[i].properties['scroll.infinite.y'] === 'true') || false;
                     this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed, infinite: {x: infiniteX, y: infiniteY}}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap, infinite: {x: infiniteX, y: infiniteY}};
                 } else {
                     this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};

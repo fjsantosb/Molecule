@@ -377,7 +377,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprites: this.scene.sprites,
             molecules: this.scene.molecules,
             text: this.scene.text
-        }
+        };
 
     };
 
