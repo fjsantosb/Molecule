@@ -332,10 +332,24 @@ Molecule.module('Molecule.Map', function (require, p) {
                         this.game.context.restore();
                     }
                 }
+                if (this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].properties.scroll.infinite.y) {
+                    if (w1x > 0 && w1y > 0) {
+                        this.game.context.save();
+                        this.game.context.drawImage(this.canvas[i], 0, Math.floor(-this.json.layers[i].y), w1x, h - w1y, w - w1x, 0, w1x, h - w1y);
+                        this.game.context.restore();
+                    }
+                }
                 if (this.json.layers[i].properties.scroll.infinite.y) {
                     if (w1y > 0) {
                         this.game.context.save();
                         this.game.context.drawImage(this.canvas[i], 0, 0, w, w1y, 0, h - w1y, w, w1y);
+                        this.game.context.restore();
+                    }
+                }
+                if (this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].properties.scroll.infinite.x) {
+                    if (w1y > 0 && w1x > 0) {
+                        this.game.context.save();
+                        this.game.context.drawImage(this.canvas[i], Math.floor(-this.json.layers[i].x), 0, w - w1x, w1y, 0, h - w1y, w - w1x, w1y);
                         this.game.context.restore();
                     }
                 }
