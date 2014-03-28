@@ -26,7 +26,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.acceleration = {x: 0, y: 0};
         this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y: 0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
         this.affects = {physics: {gravity: true, friction: true}};
-        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: false}, check: {map: {up: true, down: true, left: true, right: true}}};
+        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
         this.overlap = false;
         this.kill = false;
         this.game = null;
@@ -34,7 +34,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.height = 0;
 
         return this;
-    };
+    }
 
     Sprite.prototype.getAnimation = function () {
         this.size = {width: this.image.width, height: this.image.height};
@@ -105,9 +105,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 	// Sprite prototype Method is_clicked
     Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
-        if (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button)
-            return true;
-        return false;
+        return (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button);
     };
 
 	// Sprite prototype Method collidesWithSprite
@@ -129,7 +127,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         var _lpx = Math.abs(_layer.x);
         var _lpy = Math.abs(_layer.y);
 
-        _object = {position: {
+        var _object = {position: {
             x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth,
             y: Math.floor(_tile / _layer.width) * this.game.map.json.tileheight},
             width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth,
@@ -173,9 +171,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             }
         }
 
-        if (((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)))
-            return true;
-        return false;
+        return (((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)));
     };
 
     Sprite.prototype.clone = function () {
@@ -209,12 +205,9 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         ]);
 
         sprite.getAnimation();
-        if (this.frame.width && this.frame.height) {
-            sprite.animation.add('idle');
-        }
 
         return sprite;
-    }
+    };
 
     return Sprite;
 

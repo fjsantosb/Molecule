@@ -8,7 +8,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.type = 0;
         this.offset = {x: 0, y: 0};
         this.isSet = false; // Wait until sprite is in scene
-    };
+    }
 
     Camera.prototype.follow = function (_sprite) {
         this.sprite = _sprite;
@@ -31,19 +31,22 @@ Molecule.module('Molecule.Camera', function (require, p) {
             this.isSet = true;
             this.layer = this.game.map.getMainLayer();
             this.game.map.resetPosition();
-            _x = this.sprite.position.x;
+
+            var _x = this.sprite.position.x,
+                _y = this.sprite.position.y,
+                i;
+
             this.sprite.position.x = 0;
-            _y = this.sprite.position.y;
             this.sprite.position.y = 0;
 
-            for (var i = 0; i < _x; i++) {
+            for (i = 0; i < _x; i++) {
                 this.sprite.move.x = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
                 this.game.resetMove();
             }
 
-            for (var i = 0; i < _y; i++) {
+            for (i = 0; i < _y; i++) {
                 this.sprite.move.y = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
@@ -72,16 +75,16 @@ Molecule.module('Molecule.Camera', function (require, p) {
         var wx = this.game.map.canvas[this.layer].width;
         var wy = this.game.map.canvas[this.layer].height;
         if (this.game.map.json.layers[this.layer].properties.scroll.infinite.x) {
-            wx = -this.game.map.json.layers[this.layer].x + this.game.canvas.width + 1;
+            wx = -this.game.map.json.layers[this.layer].x + this.game.width + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scroll.infinite.y) {
-            wy = -this.game.map.json.layers[this.layer].y + this.game.canvas.height + 1;
+            wy = -this.game.map.json.layers[this.layer].y + this.game.height + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scrollable) {
-            if ((-this.game.map.json.layers[this.layer].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+            if ((-this.game.map.json.layers[this.layer].x + this.game.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.width / 2)) {
                 this.scroll.x = true;
             }
-            if ((-this.game.map.json.layers[this.layer].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+            if ((-this.game.map.json.layers[this.layer].y + this.game.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.height / 2)) {
                 this.scroll.y = true;
             }
         }
@@ -93,12 +96,12 @@ Molecule.module('Molecule.Camera', function (require, p) {
                 var wx = this.game.map.canvas[i].width;
                 var wy = this.game.map.canvas[i].height;
                 if (this.game.map.json.layers[i].properties.scroll.infinite.x) {
-                    wx = -this.game.map.json.layers[i].x + this.game.canvas.width + 1;
+                    wx = -this.game.map.json.layers[i].x + this.game.width + 1;
                 }
                 if (this.game.map.json.layers[i].properties.scroll.infinite.y) {
-                    wy = -this.game.map.json.layers[i].y + this.game.canvas.height + 1;
+                    wy = -this.game.map.json.layers[i].y + this.game.height + 1;
                 }
-                if ((-this.game.map.json.layers[i].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+                if ((-this.game.map.json.layers[i].x + this.game.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.width / 2)) {
                     if (this.scroll.x) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.x = this.sprite.move.x * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -108,7 +111,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
 
                     }
                 }
-                if ((-this.game.map.json.layers[i].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+                if ((-this.game.map.json.layers[i].y + this.game.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.height / 2)) {
                     if (this.scroll.y) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.y = this.sprite.move.y * -this.game.map.json.layers[i].properties.scroll.speed;

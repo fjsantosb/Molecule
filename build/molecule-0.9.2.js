@@ -134,7 +134,7 @@
             return new Date().getTime() - startTime >= timeoutLimit;
         },
         addDepException: function (array, message) {
-            message = message.match(/\"(.*)\"/)[1];
+            message = message.match(/"(.*)"/)[1];
             if (array.indexOf(message) === -1) {
                 array.push(message);
             }
@@ -153,7 +153,7 @@
                     return p.isModule(module) ? module.exports : module; // Return exports only if it is a module-loader module
                 },
                 game: game
-            }
+            };
             return context;
         },
         createTestContext: function (modules) {
@@ -198,7 +198,7 @@
                 context.deps[name] = depModule.exports;
 
                 return depModule.exports;
-            }
+            };
         },
         stubDepExports: function (exports) {
             var sinon = p.getSinon();
@@ -209,6 +209,9 @@
                     return sinon.spy();
                 } else {
                     for (var depMethod in exports) {
+                        if (!exports.hasOwnProperty(depMethod)) {
+                            continue;
+                        }
                         if (typeof exports[depMethod] === 'function') {
                             stubbedMethods[depMethod] = exports[depMethod];
                             sinon.stub(stubbedMethods, depMethod);
@@ -233,7 +236,7 @@
             return {
                 name: args[0],
                 func: args[1]
-            }
+            };
         }
     };
 
@@ -345,13 +348,15 @@ Molecule.module('Molecule.Animation', function (require, p) {
         this.loop = true;
         this.reverse = false;
         this.halt = false;
-    };
+    }
 
     Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
         this.frame = [];
         this.id = [];
-        for(var i = 0; i < _imageHeight - 1; i += _frameHeight) {
-            for(var j = 0; j < _imageWidth - 1; j += _frameWidth) {
+
+        var i, j;
+        for(i = 0; i < _imageHeight - 1; i += _frameHeight) {
+            for(j = 0; j < _imageWidth - 1; j += _frameWidth) {
                 this.frame.push({x:j, y:i});
             }
         }
@@ -437,7 +442,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 		this.name = [];
 		this.data = [];
 		this.counter = 0;
-	};
+	}
 
 	AudioFile.prototype.load = function(_id, _audioSrc) {
 		if(!this.getAudioDataByName(_audioSrc)) {
@@ -463,10 +468,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 	};
 
 	AudioFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
+		return (this.counter === this.data.length);
 	};
 
 	AudioFile.prototype.getAudioDataByName = function(_audioName) {
@@ -486,7 +488,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
         this.type = 0;
         this.offset = {x: 0, y: 0};
         this.isSet = false; // Wait until sprite is in scene
-    };
+    }
 
     Camera.prototype.follow = function (_sprite) {
         this.sprite = _sprite;
@@ -509,19 +511,22 @@ Molecule.module('Molecule.Camera', function (require, p) {
             this.isSet = true;
             this.layer = this.game.map.getMainLayer();
             this.game.map.resetPosition();
-            _x = this.sprite.position.x;
+
+            var _x = this.sprite.position.x,
+                _y = this.sprite.position.y,
+                i;
+
             this.sprite.position.x = 0;
-            _y = this.sprite.position.y;
             this.sprite.position.y = 0;
 
-            for (var i = 0; i < _x; i++) {
+            for (i = 0; i < _x; i++) {
                 this.sprite.move.x = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
                 this.game.resetMove();
             }
 
-            for (var i = 0; i < _y; i++) {
+            for (i = 0; i < _y; i++) {
                 this.sprite.move.y = 1;
                 this.update(this.game.scene.sprites);
                 this.game.cameraUpdate();
@@ -550,16 +555,16 @@ Molecule.module('Molecule.Camera', function (require, p) {
         var wx = this.game.map.canvas[this.layer].width;
         var wy = this.game.map.canvas[this.layer].height;
         if (this.game.map.json.layers[this.layer].properties.scroll.infinite.x) {
-            wx = -this.game.map.json.layers[this.layer].x + this.game.canvas.width + 1;
+            wx = -this.game.map.json.layers[this.layer].x + this.game.width + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scroll.infinite.y) {
-            wy = -this.game.map.json.layers[this.layer].y + this.game.canvas.height + 1;
+            wy = -this.game.map.json.layers[this.layer].y + this.game.height + 1;
         }
         if (this.game.map.json.layers[this.layer].properties.scrollable) {
-            if ((-this.game.map.json.layers[this.layer].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+            if ((-this.game.map.json.layers[this.layer].x + this.game.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.width / 2) || (-this.game.map.json.layers[this.layer].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.width / 2)) {
                 this.scroll.x = true;
             }
-            if ((-this.game.map.json.layers[this.layer].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+            if ((-this.game.map.json.layers[this.layer].y + this.game.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.height / 2) || (-this.game.map.json.layers[this.layer].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.height / 2)) {
                 this.scroll.y = true;
             }
         }
@@ -571,12 +576,12 @@ Molecule.module('Molecule.Camera', function (require, p) {
                 var wx = this.game.map.canvas[i].width;
                 var wy = this.game.map.canvas[i].height;
                 if (this.game.map.json.layers[i].properties.scroll.infinite.x) {
-                    wx = -this.game.map.json.layers[i].x + this.game.canvas.width + 1;
+                    wx = -this.game.map.json.layers[i].x + this.game.width + 1;
                 }
                 if (this.game.map.json.layers[i].properties.scroll.infinite.y) {
-                    wy = -this.game.map.json.layers[i].y + this.game.canvas.height + 1;
+                    wy = -this.game.map.json.layers[i].y + this.game.height + 1;
                 }
-                if ((-this.game.map.json.layers[i].x + this.game.canvas.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.canvas.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.canvas.width / 2)) {
+                if ((-this.game.map.json.layers[i].x + this.game.width < wx && this.sprite.move.x > 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 >= this.game.width / 2) || (-this.game.map.json.layers[i].x > 0 && this.sprite.move.x < 0 && this.sprite.position.x - this.sprite.anchor.x + this.offset.x + this.sprite.frame.width / 2 <= this.game.width / 2)) {
                     if (this.scroll.x) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.x = this.sprite.move.x * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -586,7 +591,7 @@ Molecule.module('Molecule.Camera', function (require, p) {
 
                     }
                 }
-                if ((-this.game.map.json.layers[i].y + this.game.canvas.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.canvas.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.canvas.height / 2)) {
+                if ((-this.game.map.json.layers[i].y + this.game.height < wy && this.sprite.move.y > 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 >= this.game.height / 2) || (-this.game.map.json.layers[i].y > 0 && this.sprite.move.y < 0 && this.sprite.position.y - this.sprite.anchor.y + this.offset.y + this.sprite.frame.height / 2 <= this.game.height / 2)) {
                     if (this.scroll.y) {
                         if (i !== this.layer) {
                             this.game.map.json.layers[i].properties.scroll.y = this.sprite.move.y * -this.game.map.json.layers[i].properties.scroll.speed;
@@ -719,7 +724,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             molecule = game.scene.molecules[i];
             if (molecule.update) molecule.update();
         }
-    }
+    };
 
     p.loop = function (game) {
         p.removeSprites(game.scene.sprites);
@@ -816,16 +821,18 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.draw = function (game) {
-        game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+        var i;
+
+        game.context.clearRect(0, 0, game.width, game.height);
         if (game.map && game.map.visible) {
             game.map.draw(false);
         }
-        for (var i = 0; i < game.scene.sprites.length; i++) {
+        for (i = 0; i < game.scene.sprites.length; i++) {
             if (game.scene.sprites[i].visible) {
                 game.scene.sprites[i].draw(false);
             }
         }
-        for (var i = 0; i < game.scene.sprites.length; i++) {
+        for (i = 0; i < game.scene.sprites.length; i++) {
             if (game.scene.sprites[i].visible) {
                 game.scene.sprites[i].draw(true);
             }
@@ -833,7 +840,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         if (game.map && game.map.visible) {
             game.map.draw(true);
         }
-        for (var i = 0; i < game.scene.text.length; i++) {
+        for (i = 0; i < game.scene.text.length; i++) {
             if (game.scene.text[i].visible) {
                 game.scene.text[i].draw();
             }
@@ -888,18 +895,38 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.node = options.node;
 
         // OPTIONS
+        this.smooth = options.smooth || false;
         this.scale = options.scale || 1;
         this.width = options.width;
         this.height = options.height;
 
-        // CANVAS
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'canvas');
-        this.canvas.width = options.width;
-        this.canvas.height = options.height;
-        this.canvas.style.width = options.width * this.scale + "px";
-        this.canvas.style.height = options.height * this.scale + "px";
         this.context = this.canvas.getContext('2d');
+
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        var backingStoreRatio = this.context.webkitBackingStorePixelRatio ||
+                            this.context.mozBackingStorePixelRatio ||
+                            this.context.msBackingStorePixelRatio ||
+                            this.context.oBackingStorePixelRatio ||
+                            this.context.backingStorePixelRatio || 1;
+        var ratio = devicePixelRatio / backingStoreRatio;
+
+        // CANVAS
+
+        this.canvas.width = options.width * ratio;
+        this.canvas.height = options.height * ratio;
+        
+        this.canvas.style.width = options.width + "px";
+        this.canvas.style.height = options.height + "px";
+        
+        this.context.scale(ratio * this.scale, ratio * this.scale);
+        
+        this.context.imageSmoothingEnabled = this.smooth;
+        this.context.mozImageSmoothingEnabled = this.smooth;
+        this.context.oImageSmoothingEnabled = this.smooth;
+        this.context.webkitImageSmoothingEnabled = this.smooth;
+        this.context.msImageSmoothingEnabled = this.smooth;
 
         // GAME COMPONENTS
         this.camera = new Camera(this);
@@ -972,7 +999,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprites: this.scene.sprites,
             molecules: this.scene.molecules,
             text: this.scene.text
-        }
+        };
 
     };
 
@@ -1169,7 +1196,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             if (typeof arguments[0] === 'string') {
 
                 options = arguments[1] || {};
-                options._MoleculeType = arguments[0]
+                options._MoleculeType = arguments[0];
 
                 return utils.find(this.scene.molecules, options);
 
@@ -1329,7 +1356,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
                 this.mapFile.set(tilemap);
             } else {
-                throw new Error('There is no tilemap with the name ' + _id + ' loaded');
+                throw new Error('There is no tilemap with the name ' + arguments[0] + ' loaded');
             }
         },
         get: function () {
@@ -1397,7 +1424,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		this.name = [];
 		this.data = [];
 		this.counter = 0;
-	};
+	}
 
 	ImageFile.prototype.preload = function(_imageSrc) {
 		var _name = _imageSrc.substring(0, _imageSrc.length - 4);
@@ -1431,10 +1458,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 	};
 	
 	ImageFile.prototype.isLoaded = function() {
-		if(this.counter === this.data.length) {
-			return true;
-		}
-		return false;
+		return (this.counter === this.data.length);
 	};
 
 	ImageFile.prototype.getImageDataByName = function(_imageName) {
@@ -1452,64 +1476,76 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 Molecule.module('Molecule.Input', function (require, p) {
 
 	function Input(_game) {
-		this.game = _game
+	    var self = this;
+	    
+		this.game = _game;
 		this.key = {SPACE: 0, LEFT_ARROW: 0, UP_ARROW: 0, RIGHT_ARROW: 0, DOWN_ARROW: 0, A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0, K: 0, L: 0, M: 0, N: 0, O: 0, P: 0, Q: 0, R: 0, S: 0, T: 0, U: 0, V: 0, W: 0, X: 0, Y: 0, Z: 0};
 		this.mouse = {x: 0, y: 0, BUTTON_LEFT: 0, BUTTON_MIDDLE: 0, BUTTON_RIGHT: 0};
-		this.touch = new Array();
-	};
+		this.touch = [];
+		
+		this.keydown = function(_e){self.onkeydown(_e)};
+		this.keyup = function(_e){self.onkeyup(_e)};
+		
+		this.mousedown = function(_e){self.onmousedown(_e)};
+		this.mousemove = function(_e){self.onmousemove(_e)};
+		this.mouseup = function(_e){self.onmouseup(_e)};
+		
+		this.touchstart = function(_e){self.ontouchstart(_e)};
+		this.touchmove = function(_e){self.ontouchmove(_e)};
+		this.touchend = function(_e){self.ontouchend(_e)};
+		this.touchcancel = function(_e){self.ontouchcancel(_e)};
+	}
 
 	// Method to init 'keyboard', 'mouse' or 'touch' depending of type
 	Input.prototype.enable = function(_type) {
-		var self = this;
-		
+
 		if(_type === 'keyboard') {
-			document.addEventListener('keydown', function(_e){self.onkeydown(_e)}, true);
-			document.addEventListener('keyup', function(_e){self.onkeyup(_e)}, true);
+			document.addEventListener('keydown', this.keydown, true);
+			document.addEventListener('keyup', this.keyup, true);
 		}
 		if(_type === 'mouse') {
-			this.game.canvas.addEventListener('mousedown', function(_e){self.onmousedown(_e)}, true);
-			this.game.canvas.addEventListener('mousemove', function(_e){self.onmousemove(_e)}, true);
-			this.game.canvas.addEventListener('mouseup', function(_e){self.onmouseup(_e)}, true);
+			this.game.canvas.addEventListener('mousedown', this.mousedown, true);
+			this.game.canvas.addEventListener('mousemove', this.mousemove, true);
+			this.game.canvas.addEventListener('mouseup', this.mouseup, true);
 		}
 		if(_type === 'touch') {
-			this.game.canvas.addEventListener('MSPointerDown', function(_e){self.ontouchstart(_e)}, true);
-			this.game.canvas.addEventListener('MSPointerMove', function(_e){self.ontouchmove(_e)}, true);
-			this.game.canvas.addEventListener('MSPointerUp', function(_e){self.ontouchend(_e)}, true);
-			this.game.canvas.addEventListener('MSPointerCancel', function(_e){self.ontouchcancel(_e)}, true);
-	
-			this.game.canvas.addEventListener('touchstart', function(_e){self.ontouchstart(_e)}, true);
-			this.game.canvas.addEventListener('touchmove', function(_e){self.ontouchmove(_e)}, true);
-			this.game.canvas.addEventListener('touchend', function(_e){self.ontouchend(_e)}, true);
-			this.game.canvas.addEventListener('touchcancel', function(_e){self.ontouchcancel(_e)}, true);
+			this.game.canvas.addEventListener('MSPointerDown', this.touchstart, true);
+			this.game.canvas.addEventListener('MSPointerMove', this.touchmove, true);
+			this.game.canvas.addEventListener('MSPointerUp', this.touchend, true);
+			this.game.canvas.addEventListener('MSPointerCancel', this.touchcancel, true);
+
+			this.game.canvas.addEventListener('touchstart', this.touchstart, true);
+			this.game.canvas.addEventListener('touchmove', this.touchmove, true);
+			this.game.canvas.addEventListener('touchend', this.touchend, true);
+			this.game.canvas.addEventListener('touchcancel', this.touchcancel, true);
 		}
 	};
-	
+
 	// Method to remove 'keyboard', 'mouse' or 'touch' depending of type
 	Input.prototype.disable = function(_type) {
-		var self = this;
-	
+
 		if(_type === 'keyboard') {
-			document.removeEventListener('keydown', function(_e){self.onkeydown(_e)}, true);
-			document.removeEventListener('keyup', function(_e){self.onkeyup(_e)}, true);
+			document.removeEventListener('keydown', this.keydown, true);
+			document.removeEventListener('keyup', this.keyup, true);
 		}
 		if(_type === 'mouse') {
-			this.game.canvas.removeEventListener('mousedown', function(_e){self.onmousedown(_e)}, true);
-			this.game.canvas.removeEventListener('mousemove', function(_e){self.onmousemove(_e)}, true);
-			this.game.canvas.removeEventListener('mouseup', function(_e){self.onmouseup(_e)}, true);
+			this.game.canvas.removeEventListener('mousedown', this.mousedown, true);
+			this.game.canvas.removeEventListener('mousemove', this.mousemove, true);
+			this.game.canvas.removeEventListener('mouseup', this.mouseup, true);
 		}
 		if(_type === 'touch') {
-			this.game.canvas.removeEventListener('MSPointerDown', function(_e){self.ontouchstart(_e)}, true);
-			this.game.canvas.removeEventListener('MSPointerMove', function(_e){self.ontouchmove(_e)}, true);
-			this.game.canvas.removeEventListener('MSPointerUp', function(_e){self.ontouchend(_e)}, true);
-			this.game.canvas.removeEventListener('MSPointerCancel', function(_e){self.ontouchcancel(_e)}, true);
-			
-			this.game.canvas.removeEventListener('touchstart', function(_e){self.ontouchstart(_e)}, true);
-			this.game.canvas.removeEventListener('touchmove', function(_e){self.ontouchmove(_e)}, true);
-			this.game.canvas.removeEventListener('touchend', function(_e){self.ontouchend(_e)}, true);
-			this.game.canvas.removeEventListener('touchcancel', function(_e){self.ontouchcancel(_e)}, true);
+			this.game.canvas.removeEventListener('MSPointerDown', this.touchstart, true);
+			this.game.canvas.removeEventListener('MSPointerMove', this.touchmove, true);
+			this.game.canvas.removeEventListener('MSPointerUp', this.touchend, true);
+			this.game.canvas.removeEventListener('MSPointerCancel', this.touchcancel, true);
+
+			this.game.canvas.removeEventListener('touchstart', this.touchstart, true);
+			this.game.canvas.removeEventListener('touchmove', this.touchmove, true);
+			this.game.canvas.removeEventListener('touchend', this.touchend, true);
+			this.game.canvas.removeEventListener('touchcancel', this.touchcancel, true);
 		}
 	};
-	
+
 	// Method 'onkeydown' for 'keyboard' type
 	Input.prototype.onkeydown = function(_e) {
 		_e.preventDefault();
@@ -1609,7 +1645,7 @@ Molecule.module('Molecule.Input', function (require, p) {
 			break;
 		}
 	};
-	
+
 	// Method 'onkeyup' for 'keyboard' type
 	Input.prototype.onkeyup = function(_e) {
 		_e.preventDefault();
@@ -1709,7 +1745,7 @@ Molecule.module('Molecule.Input', function (require, p) {
 			break;
 		}
 	};
-	
+
 	// Method 'onmousedown' for 'mouse' type
 	Input.prototype.onmousedown = function(_e) {
 		switch(_e.button) {
@@ -1725,12 +1761,12 @@ Molecule.module('Molecule.Input', function (require, p) {
 		}
 		this.mousePosition(_e);
 	};
-	
+
 	// Method 'onmousemove' for 'mouse' type
 	Input.prototype.onmousemove = function(_e) {
 		this.mousePosition(_e);
 	};
-	
+
 	// Method 'onmouseup' for 'mouse' type
 	Input.prototype.onmouseup = function(_e) {
 		switch(_e.button) {
@@ -1746,50 +1782,50 @@ Molecule.module('Molecule.Input', function (require, p) {
 		}
 		this.mousePosition(_e);
 	};
-	
+
 	Input.prototype.mousePosition = function(_e) {
-		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft) / this.game.scale;
-		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop) / this.game.scale;
-	}
-	
+		this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft);
+		this.mouse.y = (_e.pageY - this.game.canvas.offsetTop);
+	};
+
 	// Method 'ontouchstart' for 'touch' type
 	Input.prototype.ontouchstart = function(_e) {
 		_e.preventDefault();
 		this.normalizeTouches(_e);
 	};
-	
+
 	// Method 'ontouchmove' for 'touch' type
 	Input.prototype.ontouchmove = function(_e) {
 		_e.preventDefault();
 		this.normalizeTouches(_e);
 	};
-	
+
 	// Method 'ontouchend' for 'touch' type
 	Input.prototype.ontouchend = function(_e) {
 		_e.preventDefault();
 		this.normalizeTouches(_e);
 	};
-	
+
 	// Method 'ontouchcancel' for 'touch' type
 	Input.prototype.ontouchcancel = function(_e) {
 		_e.preventDefault();
 		this.touch = [];
 	};
-	
+
 	// Method to normalize touches depending of canvas size and position
 	Input.prototype.normalizeTouches = function(_e) {
 		this.touch = [];
 		if(_e.touches) {
 			for(var i = 0; i < _e.touches.length; i++) {
-				this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
+				this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft), y: (_e.touches[i].pageY - this.game.canvas.offsetTop)});
 			}
 		} else {
 			if(_e !== undefined) {
-				this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
+				this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft), y: (_e.pageY - this.game.canvas.offsetTop)});
 			}
 		}
 	};
-	
+
 	return Input;
 
 });
@@ -1810,7 +1846,7 @@ Molecule.module('Molecule.Map', function (require, p) {
         this.response = null;
         this.json = null;
         this.loaded = false;
-    };
+    }
 
     Map.prototype.load = function (_id, _name) {
         this.id = _id;
@@ -1877,36 +1913,53 @@ Molecule.module('Molecule.Map', function (require, p) {
     };
 
     Map.prototype.addProperties = function () {
-        for (var i = 0; i < this.json.layers.length; i++) {
+        var scrollable,
+            collidable,
+            infiniteX,
+            infiniteY,
+            overlap,
+            speed,
+            main,
+            i;
+
+        for (i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 if (this.json.layers[i].properties !== undefined) {
-                    var main = this.json.layers[i].properties['main'] === 'true' ? true : false || false;
-                    var scrollable = this.json.layers[i].properties['scrollable'] === 'false' ? false : true || true;
-                    var collidable = this.json.layers[i].properties['collidable'] === 'true' ? true : false || false;
-                    var overlap = this.json.layers[i].properties['overlap'] === 'true' ? true : false || false;
-                    var speed = parseFloat(this.json.layers[i].properties['scroll.speed']).toFixed(3) || 1;
-                    var infiniteX = this.json.layers[i].properties['scroll.infinite.x'] === 'true' ? true : false || false;
-                    var infiniteY = this.json.layers[i].properties['scroll.infinite.y'] === 'true' ? true : false || false;
+                    main = (this.json.layers[i].properties['main'] === 'true') || false;
+                    scrollable = !(this.json.layers[i].properties['scrollable'] === 'false') || true;
+                    collidable = (this.json.layers[i].properties['collidable'] === 'true') || false;
+                    overlap = (this.json.layers[i].properties['overlap'] === 'true') || false;
+                    speed = this.json.layers[i].properties['scroll.speed'] || 1;
+                    speed = parseFloat(speed).toFixed(3);
+                    infiniteX = (this.json.layers[i].properties['scroll.infinite.x'] === 'true') || false;
+                    infiniteY = (this.json.layers[i].properties['scroll.infinite.y'] === 'true') || false;
                     this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: speed, infinite: {x: infiniteX, y: infiniteY}}, main: main, scrollable: scrollable, collidable: collidable, overlap: overlap, infinite: {x: infiniteX, y: infiniteY}};
                 } else {
-                    this.json.layers[i]['properties'] = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
+                    this.json.layers[i].properties = {scroll: {x: 0, y: 0, speed: 1, infinite: {x: false, y: false}}, main: false, scrollable: true, collidable: false, overlap: false, infinite: {x: false, y: false}};
                 }
             }
         }
     };
 
     Map.prototype.createContext = function () {
+        var frameWidth,
+            frameHeight,
+            tileset,
+            sprite,
+            data,
+            i,
+            j;
 
-        for (var i = 0; i < this.json.layers.length; i++) {
+        for (i = 0; i < this.json.layers.length; i++) {
             if (this.json.layers[i].type === 'tilelayer') {
                 this.canvas.push(document.createElement('canvas'));
                 this.context.push(this.canvas[i].getContext('2d'));
                 this.canvas[i].width = (this.json.layers[i].width * this.json.tilewidth);
                 this.canvas[i].height = (this.json.layers[i].height * this.json.tileheight);
                 for (j = 0; j < this.json.layers[i].data.length; j++) {
-                    var data = this.json.layers[i].data[j];
+                    data = this.json.layers[i].data[j];
                     if (data > 0) {
-                        var tileset = this.getTileset(data);
+                        tileset = this.getTileset(data);
                         this.context[i].save();
                         this.context[i].globalAlpha = this.json.layers[i].opacity;
                         this.context[i].drawImage(
@@ -1925,12 +1978,11 @@ Molecule.module('Molecule.Map', function (require, p) {
             } else if (this.json.layers[i].type === 'objectgroup') {
 
                 for (j = 0; j < this.json.layers[i].objects.length; j++) {
-
-                    var data = this.json.layers[i].objects[j].gid,
-                        tileset = this.getTileset(data),
-                        frameWidth = this.json.tilesets[tileset].tilewidth,
-                        frameHeight = this.json.tilesets[tileset].tileheight,
-                        sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
+                    data = this.json.layers[i].objects[j].gid;
+                    tileset = this.getTileset(data);
+                    frameWidth = this.json.tilesets[tileset].tilewidth;
+                    frameHeight = this.json.tilesets[tileset].tileheight;
+                    sprite = new Sprite(this.json.layers[i].objects[j].name || this.json.tilesets[tileset].name, this.json.tilesets[tileset].image, frameWidth, frameHeight);
                     sprite.game = this.game;
                     sprite.image = this.game.imageFile.getImageDataBySrc(this.path + this.json.tilesets[tileset].image);
                     this.game.mapFile.copyMapProperties(i, j, sprite, this.path);
@@ -1940,7 +1992,6 @@ Molecule.module('Molecule.Map', function (require, p) {
                     });
                     this.molecules.push(object);
                 }
-
 
             }
         }
@@ -2093,8 +2144,8 @@ Molecule.module('Molecule.Map', function (require, p) {
     Map.prototype.draw = function (_overlap) {
         for (var i = 0; i < this.canvas.length; i++) {
             if (this.json.layers[i].type === 'tilelayer' && this.json.layers[i].visible && this.json.layers[i].properties.overlap === _overlap) {
-                var w = this.game.canvas.width > this.canvas[i].width ? this.canvas[i].width : this.game.canvas.width;
-                var h = this.game.canvas.height > this.canvas[i].height ? this.canvas[i].height : this.game.canvas.height;
+                var w = this.game.width > this.canvas[i].width ? this.canvas[i].width : this.game.width;
+                var h = this.game.height > this.canvas[i].height ? this.canvas[i].height : this.game.height;
                 var w1x = 0;
                 var w1y = 0;
                 if (this.json.layers[i].properties.scroll.infinite.x && Math.floor(-this.json.layers[i].x) + w > this.canvas[i].width) {
@@ -2113,10 +2164,24 @@ Molecule.module('Molecule.Map', function (require, p) {
                         this.game.context.restore();
                     }
                 }
+                if (this.json.layers[i].properties.scroll.infinite.x && this.json.layers[i].properties.scroll.infinite.y) {
+                    if (w1x > 0 && w1y > 0) {
+                        this.game.context.save();
+                        this.game.context.drawImage(this.canvas[i], 0, Math.floor(-this.json.layers[i].y), w1x, h - w1y, w - w1x, 0, w1x, h - w1y);
+                        this.game.context.restore();
+                    }
+                }
                 if (this.json.layers[i].properties.scroll.infinite.y) {
                     if (w1y > 0) {
                         this.game.context.save();
                         this.game.context.drawImage(this.canvas[i], 0, 0, w, w1y, 0, h - w1y, w, w1y);
+                        this.game.context.restore();
+                    }
+                }
+                if (this.json.layers[i].properties.scroll.infinite.y && this.json.layers[i].properties.scroll.infinite.x) {
+                    if (w1y > 0 && w1x > 0) {
+                        this.game.context.save();
+                        this.game.context.drawImage(this.canvas[i], Math.floor(-this.json.layers[i].x), 0, w - w1x, w1y, 0, h - w1y, w - w1x, w1y);
                         this.game.context.restore();
                     }
                 }
@@ -2268,12 +2333,8 @@ Molecule.module('Molecule.MapFile', function (require, p) {
         Map = require('Molecule.Map');
 
     p.Boolean = function (bool) {
-        if (bool === 'true') {
-            return true;
-        } else {
-            return false;
-        }
-    }
+        return (bool === 'true');
+    };
 
     p.getProperty = function (property, Type, objectProperties, layerProperties, fallbackProperty) {
 
@@ -2296,13 +2357,13 @@ Molecule.module('Molecule.MapFile', function (require, p) {
                 return tilesets[x].name;
             }
         }
-    }
+    };
 
 	function MapFile(_game) {
 		this.game = _game;
 		this.tile = new Tile(_game);
 		this.maps = [];
-	};
+	}
 
 	MapFile.prototype.load = function(_id, _name) {
 		var m = new Map(this.game);
@@ -2504,7 +2565,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         for (var x = 0; x < p.registeredEvents.length; x++) {
             event = p.registeredEvents[x];
             if (event.context === this) {
-                window.removeEventListener(event.type, event.callback)
+                window.removeEventListener(event.type, event.callback);
                 p.registeredEvents.splice(x, 1);
                 x--;
             }
@@ -2705,7 +2766,7 @@ Molecule.module('Molecule.Scene', function (require, p) {
         this.sprites = [];
 		this.text = [];
         this.tilemaps = [];
-	};
+	}
 
     return Scene;
 
@@ -2714,7 +2775,7 @@ Molecule.module('Molecule.MAudio', function (require, p) {
 
 	function MAudio() {
 		this.sound = null;
-	};
+	}
 
     MAudio.prototype.play = function(_loop) {
 		_loop = typeof _loop === 'undefined' ? false : _loop;
@@ -2777,7 +2838,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.acceleration = {x: 0, y: 0};
         this.speed = {x: 0, y: 0, t: {x: 0, y: 0}, max: {x: 100, y: 100}, min: {x: 0, y: 0}, check: {x: false, y: false}, gravity: {x: 0, y: 0}};
         this.affects = {physics: {gravity: true, friction: true}};
-        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: false}, check: {map: {up: true, down: true, left: true, right: true}}};
+        this.collision = {map: {up: false, down: false, left: false, right: false, tile: null}, sprite: {up: false, down: false, left: false, right: false, id: null}, boundaries: {up: false, down: false, left: false, right: false, id: null}, check: {map: {up: true, down: true, left: true, right: true}}};
         this.overlap = false;
         this.kill = false;
         this.game = null;
@@ -2785,7 +2846,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.height = 0;
 
         return this;
-    };
+    }
 
     Sprite.prototype.getAnimation = function () {
         this.size = {width: this.image.width, height: this.image.height};
@@ -2856,9 +2917,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 	// Sprite prototype Method is_clicked
     Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
-        if (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button)
-            return true;
-        return false;
+        return (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button);
     };
 
 	// Sprite prototype Method collidesWithSprite
@@ -2880,7 +2939,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         var _lpx = Math.abs(_layer.x);
         var _lpy = Math.abs(_layer.y);
 
-        _object = {position: {
+        var _object = {position: {
             x: Math.floor(_tile % _layer.width) * this.game.map.json.tilewidth,
             y: Math.floor(_tile / _layer.width) * this.game.map.json.tileheight},
             width: this.game.map.json.tilesets[this.game.map.getTileset(_layer.data[_tile])].tilewidth,
@@ -2924,9 +2983,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
             }
         }
 
-        if (((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)))
-            return true;
-        return false;
+        return (((px1 <= _object.position.x && px2 > _object.position.x) || (_object.position.x <= px3 && _object.position.x + _object.width > px4)) && ((py1 <= _object.position.y && py2 > _object.position.y) || (_object.position.y <= py3 && _object.position.y + _object.height > py4)));
     };
 
     Sprite.prototype.clone = function () {
@@ -2960,12 +3017,9 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         ]);
 
         sprite.getAnimation();
-        if (this.frame.width && this.frame.height) {
-            sprite.animation.add('idle');
-        }
 
         return sprite;
-    }
+    };
 
     return Sprite;
 
@@ -3029,6 +3083,7 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
             physics = game.physics,
             i,
             j,
+            k,
             mc,
             tx,
             ty,
@@ -3100,8 +3155,9 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.alpha = 1;
 		this.visible = true;
 		this.stroke = null;
+		this.lineWidth = 1;
         utils.mergeSafely(options, this, ['game']);
-	};
+	}
 
 	Text.prototype.draw = function() {
 		this.game.context.save();
@@ -3114,6 +3170,7 @@ Molecule.module('Molecule.Text', function (require, p) {
 		this.game.context.fillStyle = this.color;
 		this.game.context.fillText(this.title, this.position.x, this.position.y);
 		if(this.stroke) {
+		    this.game.context.lineWidth = this.lineWidth;
 			this.game.context.strokeStyle = this.stroke;
 			this.game.context.strokeText(this.title, this.position.x, this.position.y);
 		}
@@ -3134,7 +3191,8 @@ Molecule.module('Molecule.Text', function (require, p) {
             'baseline',
             'alpha',
             'visible',
-            'stroke'
+            'stroke',
+            'lineWidth'
         ]);
         var text = new Text(options, this.game);
         return text;
@@ -3148,7 +3206,7 @@ Molecule.module('Molecule.Tile', function (require, p) {
 
 	function Tile(_game) {
 		this.game = _game;
-	};
+	}
 
 	Tile.prototype.get = function(_name, _x, _y) {
 		var t = this.game.map.getTileData(_name, _x, _y);

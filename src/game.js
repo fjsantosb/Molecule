@@ -102,7 +102,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             molecule = game.scene.molecules[i];
             if (molecule.update) molecule.update();
         }
-    }
+    };
 
     p.loop = function (game) {
         p.removeSprites(game.scene.sprites);
@@ -199,16 +199,18 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.draw = function (game) {
-        game.context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+        var i;
+
+        game.context.clearRect(0, 0, game.width, game.height);
         if (game.map && game.map.visible) {
             game.map.draw(false);
         }
-        for (var i = 0; i < game.scene.sprites.length; i++) {
+        for (i = 0; i < game.scene.sprites.length; i++) {
             if (game.scene.sprites[i].visible) {
                 game.scene.sprites[i].draw(false);
             }
         }
-        for (var i = 0; i < game.scene.sprites.length; i++) {
+        for (i = 0; i < game.scene.sprites.length; i++) {
             if (game.scene.sprites[i].visible) {
                 game.scene.sprites[i].draw(true);
             }
@@ -216,7 +218,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         if (game.map && game.map.visible) {
             game.map.draw(true);
         }
-        for (var i = 0; i < game.scene.text.length; i++) {
+        for (i = 0; i < game.scene.text.length; i++) {
             if (game.scene.text[i].visible) {
                 game.scene.text[i].draw();
             }
@@ -271,18 +273,38 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.node = options.node;
 
         // OPTIONS
+        this.smooth = options.smooth || false;
         this.scale = options.scale || 1;
         this.width = options.width;
         this.height = options.height;
 
-        // CANVAS
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'canvas');
-        this.canvas.width = options.width;
-        this.canvas.height = options.height;
-        this.canvas.style.width = options.width * this.scale + "px";
-        this.canvas.style.height = options.height * this.scale + "px";
         this.context = this.canvas.getContext('2d');
+
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        var backingStoreRatio = this.context.webkitBackingStorePixelRatio ||
+                            this.context.mozBackingStorePixelRatio ||
+                            this.context.msBackingStorePixelRatio ||
+                            this.context.oBackingStorePixelRatio ||
+                            this.context.backingStorePixelRatio || 1;
+        var ratio = devicePixelRatio / backingStoreRatio;
+
+        // CANVAS
+
+        this.canvas.width = options.width * ratio;
+        this.canvas.height = options.height * ratio;
+        
+        this.canvas.style.width = options.width + "px";
+        this.canvas.style.height = options.height + "px";
+        
+        this.context.scale(ratio * this.scale, ratio * this.scale);
+        
+        this.context.imageSmoothingEnabled = this.smooth;
+        this.context.mozImageSmoothingEnabled = this.smooth;
+        this.context.oImageSmoothingEnabled = this.smooth;
+        this.context.webkitImageSmoothingEnabled = this.smooth;
+        this.context.msImageSmoothingEnabled = this.smooth;
 
         // GAME COMPONENTS
         this.camera = new Camera(this);
@@ -355,7 +377,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprites: this.scene.sprites,
             molecules: this.scene.molecules,
             text: this.scene.text
-        }
+        };
 
     };
 
@@ -552,7 +574,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             if (typeof arguments[0] === 'string') {
 
                 options = arguments[1] || {};
-                options._MoleculeType = arguments[0]
+                options._MoleculeType = arguments[0];
 
                 return utils.find(this.scene.molecules, options);
 
@@ -712,7 +734,7 @@ Molecule.module('Molecule.Game', function (require, p) {
                 }
                 this.mapFile.set(tilemap);
             } else {
-                throw new Error('There is no tilemap with the name ' + _id + ' loaded');
+                throw new Error('There is no tilemap with the name ' + arguments[0] + ' loaded');
             }
         },
         get: function () {
