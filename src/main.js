@@ -328,6 +328,11 @@
 
         if (!logArgs[id] || logArgs[id] !== argsString) {
             args.unshift(id.toUpperCase() + ': ');
+            args.forEach(function (arg, index) {
+                if (arg instanceof Array || (typeof arg === 'object' && arg !== null)) {
+                    args[index] = JSON.stringify(arg, null, 4);
+                }
+            });
             console.log.apply(console, args);
             logArgs[id] = argsString;
         }
