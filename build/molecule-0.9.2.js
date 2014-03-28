@@ -1355,8 +1355,15 @@ Molecule.module('Molecule.Game', function (require, p) {
 
         args.splice(0, 1);
 
-        event = new CustomEvent(type, { detail: args });
+        if (!document.createEvent) {
+            event = new CustomEvent(type, { detail: args });
+        } else {
+            event = document.createEvent('CustomEvent');
+            event.initCustomEvent(type, true, true, args);
+        }
+
         window.dispatchEvent(event);
+
 
     };
 
