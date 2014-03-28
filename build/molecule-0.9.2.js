@@ -510,11 +510,22 @@ Molecule.module('Molecule.Camera', function (require, p) {
 
             this.isSet = true;
             this.layer = this.game.map.getMainLayer();
-            this.game.map.resetPosition();
-
-            var _x = this.sprite.position.x,
-                _y = this.sprite.position.y,
+            
+            var _x,
+                _y,
                 i;
+            
+            for(i = 0; i < this.game.scene.sprites.length; i++) {
+                if(this.game.scene.sprites[i].scrollable) {
+                    this.game.scene.sprites[i].position.x += -this.game.map.json.layers[this.layer].x;
+                    this.game.scene.sprites[i].position.y += -this.game.map.json.layers[this.layer].y;
+                }
+            }
+            
+            this.game.map.resetPosition();
+            
+            _x = this.sprite.position.x;
+            _y = this.sprite.position.y;
 
             this.sprite.position.x = 0;
             this.sprite.position.y = 0;
