@@ -105,6 +105,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loop = function (game) {
+        game.input.checkGamepad();
         p.removeSprites(game.scene.sprites);
         p.update(null, game);
         if (game.status == 1) {
