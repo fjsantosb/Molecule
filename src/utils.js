@@ -38,7 +38,7 @@ Molecule.module('Molecule.utils', function (require, p) {
                     if (source[prop] instanceof Array) {
                         target[prop] = source[prop].slice(0);
                     } else if (typeof source[prop] === 'object' && source[prop] !== null) {
-                        target[prop] = this.deepClone(source[prop], {});
+                        //target[prop] = this.deepClone(source[prop], {});
                     } else {
                         target[prop] = source[prop];
                     }

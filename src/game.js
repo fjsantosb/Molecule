@@ -13,6 +13,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions'),
         Sprite = require('Molecule.Sprite'),
+        SpriteSheet = require('Molecule.SpriteSheet'),
         Molecule = require('Molecule.Molecule'),
         utils = require('Molecule.utils');
 
@@ -317,6 +318,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.imageFile = new ImageFile(this);
         this.audioFile = new AudioFile(this);
         this.mapFile = new MapFile(this);
+        this.spriteSheet = new SpriteSheet(this);
 
         // GAME SETTINGS
         this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};

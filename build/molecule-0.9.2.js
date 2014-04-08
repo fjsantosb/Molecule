@@ -300,6 +300,11 @@
         game.mapFile.load(id, mapSrc);
         return this;
     };
+    
+    Molecule.spritesheet = function (id, sprites) {
+        game.spriteSheet.load(id, sprites);
+        return this;
+    };
 
     Molecule.test = function (name, callback) {
         isTest = true;
@@ -651,6 +656,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions'),
         Sprite = require('Molecule.Sprite'),
+        SpriteSheet = require('Molecule.SpriteSheet'),
         Molecule = require('Molecule.Molecule'),
         utils = require('Molecule.utils');
 
@@ -955,6 +961,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.imageFile = new ImageFile(this);
         this.audioFile = new AudioFile(this);
         this.mapFile = new MapFile(this);
+        this.spriteSheet = new SpriteSheet(this);
 
         // GAME SETTINGS
         this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
@@ -1467,6 +1474,19 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 		if(this.isLoaded())
 			s.getAnimation();
         this.game.sprites[_id] = s;
+		return s;
+	};
+	
+	ImageFile.prototype.loadSpriteSheet = function(_id, _imageSrc, _width, _height) {
+		this.name.push(_id);
+		this.data.push(_imageSrc);
+		var s = new Sprite(_id, _imageSrc, _width, _height);
+		s.game = this.game;
+        s._MoleculeType = _id;
+		s.image = _imageSrc;
+		s.getAnimation();
+        this.game.sprites[_id] = s;
+        this.counter++;
 		return s;
 	};
 
@@ -2809,6 +2829,90 @@ Molecule.module('Molecule.Scene', function (require, p) {
     return Scene;
 
 });
+Molecule.module('Molecule.SpriteSheet', function (require, p) {
+
+    var sprite = require('Molecule.Sprite');
+
+    function SpriteSheet(_game) {
+        this.game = _game;
+        this.sprites = null;
+        this.image = null;
+        this.response = null;
+        this.json = null;
+        this.path = '';
+    }
+    
+    SpriteSheet.prototype.load = function(_file, _sprites) {
+        var self = this;
+        var ajaxReq = new XMLHttpRequest();
+        var t = _file.split('/');
+        var i;
+        
+        this.sprites = _sprites;
+                
+        for (i = 0; i < t.length - 1; i++) {
+            this.path += t[i] + '/';
+        }
+        ajaxReq.open("GET", _file, true);
+        ajaxReq.setRequestHeader("Content-type", "application/json");
+        ajaxReq.addEventListener('readystatechange', function () {
+            self.jsonLoaded(ajaxReq)
+        });
+        ajaxReq.send();
+    };
+    
+    SpriteSheet.prototype.jsonLoaded = function (_ajaxReq) {
+        if (_ajaxReq.readyState == 4 && _ajaxReq.status == 200) {
+            this.response = _ajaxReq.responseText;
+            this.json = JSON.parse(this.response);
+            this.loadImage();
+
+        }
+    };
+    
+    SpriteSheet.prototype.loadImage = function() {
+        var self = this;
+        this.image = this.game.imageFile.preload(this.path + this.json.meta.image);
+        var interval = setInterval(function () {
+            self.loadSprites(interval)
+        }, 100);
+    };
+    
+    SpriteSheet.prototype.loadSprites = function(_interval) {
+        var i;
+        var j;
+        var f;
+        if (this.game.imageFile.isLoaded()) {
+            clearInterval(_interval);
+            for (p in this.sprites) {
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                var image = new Image();
+                var sizeW = 0;
+                var sizeH = 0;
+                f = false;
+                for(i = 0; i < this.sprites[p].length; i++) {
+                    for(j = 0; j < this.json.frames.length; j++) {
+                        if(this.sprites[p][i] === this.json.frames[j].name) {
+                            if(!f) {
+                                sizeW = this.json.frames[j].size.w;
+                                sizeH = this.json.frames[j].size.h;
+                                canvas.width = this.json.frames[j].size.w * this.sprites[p].length;
+                                canvas.height = this.json.frames[j].size.h;
+                                f = true;
+                            }
+                            context.drawImage(this.image, this.json.frames[j].position.x, this.json.frames[j].position.y, this.json.frames[j].size.w, this.json.frames[j].size.h, this.json.frames[j].size.w * i, 0, this.json.frames[j].size.w, this.json.frames[j].size.h);
+                        }
+                    }
+                }
+                image.src = canvas.toDataURL("image/png");
+                var s = this.game.imageFile.loadSpriteSheet(p, image, sizeW, sizeH);
+            }
+        }
+    };
+    
+    return SpriteSheet;
+});
 Molecule.module('Molecule.MAudio', function (require, p) {
 
 	function MAudio() {
@@ -3304,7 +3408,7 @@ Molecule.module('Molecule.utils', function (require, p) {
                     if (source[prop] instanceof Array) {
                         target[prop] = source[prop].slice(0);
                     } else if (typeof source[prop] === 'object' && source[prop] !== null) {
-                        target[prop] = this.deepClone(source[prop], {});
+                        //target[prop] = this.deepClone(source[prop], {});
                     } else {
                         target[prop] = source[prop];
                     }

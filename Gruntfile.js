@@ -15,6 +15,7 @@ module.exports = function(grunt) {
         'src/move.js',
         'src/physics.js',
         'src/scene.js',
+        'src/spritesheet.js',
         'src/maudio.js',
         'src/sprite.js',
         'src/spritecollisions.js',

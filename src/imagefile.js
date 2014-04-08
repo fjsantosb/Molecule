@@ -35,6 +35,19 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
         this.game.sprites[_id] = s;
 		return s;
 	};
+	
+	ImageFile.prototype.loadSpriteSheet = function(_id, _imageSrc, _width, _height) {
+		this.name.push(_id);
+		this.data.push(_imageSrc);
+		var s = new Sprite(_id, _imageSrc, _width, _height);
+		s.game = this.game;
+        s._MoleculeType = _id;
+		s.image = _imageSrc;
+		s.getAnimation();
+        this.game.sprites[_id] = s;
+        this.counter++;
+		return s;
+	};
 
 	ImageFile.prototype.reset = function() {
 		this.game.scene.sprites = [];

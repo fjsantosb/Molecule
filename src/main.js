@@ -300,6 +300,11 @@
         game.mapFile.load(id, mapSrc);
         return this;
     };
+    
+    Molecule.spritesheet = function (id, sprites) {
+        game.spriteSheet.load(id, sprites);
+        return this;
+    };
 
     Molecule.test = function (name, callback) {
         isTest = true;
