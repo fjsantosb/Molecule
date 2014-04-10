@@ -302,7 +302,7 @@
     };
     
     Molecule.spritesheet = function (id, sprites) {
-        game.spriteSheet.load(id, sprites);
+        game.spriteSheetFile.load(id, sprites);
         return this;
     };
 

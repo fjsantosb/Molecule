@@ -13,7 +13,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions'),
         Sprite = require('Molecule.Sprite'),
-        SpriteSheet = require('Molecule.SpriteSheet'),
+        SpriteSheetFile = require('Molecule.SpriteSheetFile'),
         Molecule = require('Molecule.Molecule'),
         utils = require('Molecule.utils');
 
@@ -47,9 +47,9 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length;
-        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter;
-        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded()) {
+        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length + game.spriteSheetFile.data.length;
+        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter + game.spriteSheetFile.getCounter();
+        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded() && game.spriteSheetFile.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();
@@ -318,7 +318,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.imageFile = new ImageFile(this);
         this.audioFile = new AudioFile(this);
         this.mapFile = new MapFile(this);
-        this.spriteSheet = new SpriteSheet(this);
+        this.spriteSheetFile = new SpriteSheetFile(this);
 
         // GAME SETTINGS
         this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};

@@ -9,6 +9,7 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
         this.response = null;
         this.json = null;
         this.path = '';
+        this.loaded = false;
     }
     
     SpriteSheet.prototype.load = function(_file, _sprites) {
@@ -25,7 +26,7 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
         ajaxReq.open("GET", _file, true);
         ajaxReq.setRequestHeader("Content-type", "application/json");
         ajaxReq.addEventListener('readystatechange', function () {
-            self.jsonLoaded(ajaxReq)
+            self.jsonLoaded(ajaxReq);
         });
         ajaxReq.send();
     };
@@ -35,7 +36,6 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
             this.response = _ajaxReq.responseText;
             this.json = JSON.parse(this.response);
             this.loadImage();
-
         }
     };
     
@@ -78,6 +78,7 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
                 var s = this.game.imageFile.loadSpriteSheet(p, image, sizeW, sizeH);
             }
         }
+        this.loaded = true;
     };
     
     return SpriteSheet;
