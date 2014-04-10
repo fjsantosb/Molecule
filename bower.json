@@ -3,7 +3,8 @@
   "version": "0.9",
   "homepage": "http://www.moleculejs.net",
   "authors": [
-    "Francisco Santos Belmonte <fjsantosb@gmail.com>"
+    "Francisco Santos Belmonte <fjsantosb@moleculejs.net>"
+    "Christian Alfoni Jørgensen <christianalfoni@moleculejs.net>"
   ],
   "description": "A fast, lightweight, simple yet powerful HTML5 Game Framework to build cross-platform games on an easy and efficient way.",
   "main": "build/molecule.min.js",

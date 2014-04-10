@@ -302,7 +302,7 @@
     };
     
     Molecule.spritesheet = function (id, sprites) {
-        game.spriteSheet.load(id, sprites);
+        game.spriteSheetFile.load(id, sprites);
         return this;
     };
 
@@ -656,7 +656,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         calculateSpriteCollisions = require('Molecule.SpriteCollisions'),
         calculateMapCollisions = require('Molecule.MapCollisions'),
         Sprite = require('Molecule.Sprite'),
-        SpriteSheet = require('Molecule.SpriteSheet'),
+        SpriteSheetFile = require('Molecule.SpriteSheetFile'),
         Molecule = require('Molecule.Molecule'),
         utils = require('Molecule.utils');
 
@@ -690,9 +690,9 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length;
-        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter;
-        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded()) {
+        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length + game.spriteSheetFile.data.length;
+        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter + game.spriteSheetFile.getCounter();
+        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded() && game.spriteSheetFile.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();
@@ -961,7 +961,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         this.imageFile = new ImageFile(this);
         this.audioFile = new AudioFile(this);
         this.mapFile = new MapFile(this);
-        this.spriteSheet = new SpriteSheet(this);
+        this.spriteSheetFile = new SpriteSheetFile(this);
 
         // GAME SETTINGS
         this.physics = {gravity: {x: 0, y: 0}, friction: {x: 0, y: 0}};
@@ -1480,7 +1480,7 @@ Molecule.module('Molecule.ImageFile', function (require, p) {
 	ImageFile.prototype.loadSpriteSheet = function(_id, _imageSrc, _width, _height) {
 		this.name.push(_id);
 		this.data.push(_imageSrc);
-		var s = new Sprite(_id, _imageSrc, _width, _height);
+		var s = new Sprite(_id, '', _width, _height);
 		s.game = this.game;
         s._MoleculeType = _id;
 		s.image = _imageSrc;
@@ -2840,6 +2840,7 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
         this.response = null;
         this.json = null;
         this.path = '';
+        this.loaded = false;
     }
     
     SpriteSheet.prototype.load = function(_file, _sprites) {
@@ -2856,7 +2857,7 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
         ajaxReq.open("GET", _file, true);
         ajaxReq.setRequestHeader("Content-type", "application/json");
         ajaxReq.addEventListener('readystatechange', function () {
-            self.jsonLoaded(ajaxReq)
+            self.jsonLoaded(ajaxReq);
         });
         ajaxReq.send();
     };
@@ -2866,7 +2867,6 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
             this.response = _ajaxReq.responseText;
             this.json = JSON.parse(this.response);
             this.loadImage();
-
         }
     };
     
@@ -2909,9 +2909,49 @@ Molecule.module('Molecule.SpriteSheet', function (require, p) {
                 var s = this.game.imageFile.loadSpriteSheet(p, image, sizeW, sizeH);
             }
         }
+        this.loaded = true;
     };
     
     return SpriteSheet;
+});
+Molecule.module('Molecule.SpriteSheetFile', function (require, p) {
+
+    var SpriteSheet = require('Molecule.SpriteSheet');
+    
+    function SpriteSheetFile(_game) {
+        this.game = _game;
+        this.data = [];
+    }
+    
+    SpriteSheetFile.prototype.load = function(_file, _sprites) {
+        var s = new SpriteSheet(this.game);
+        s.load(_file, _sprites);
+        this.data.push(s);
+    };
+    
+    SpriteSheetFile.prototype.isLoaded = function() {
+        var loaded = true;
+        var i;
+        for(i = 0; i < this.data.length; i++) {
+            if(!this.data[i].loaded) {
+                loaded = false;
+            }
+        }
+        return loaded;
+    };
+    
+    SpriteSheetFile.prototype.getCounter = function() {
+        var c = 0;
+        var i;
+        for(i = 0; i < this.data.length; i++) {
+            if(this.data[i].loaded) {
+                c++;
+            }
+        }
+        return c;
+    };
+
+    return SpriteSheetFile;
 });
 Molecule.module('Molecule.MAudio', function (require, p) {
 
