@@ -10,6 +10,8 @@ documentation, features and examples can be seen on the official website:
 ##### 0.9.3
 - Improve collision optimization
 - Added gamepad API
+- Optimize mobile scaling
+- Added smooth parameter for visual rendering
 - Full spritesheet support (using TexturePacker)
 - Fixed general bugs
 
