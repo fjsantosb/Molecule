@@ -7,6 +7,12 @@ documentation, features and examples can be seen on the official website:
 
 ### CHANGE LOG
 
+##### 0.9.3
+- Improve collision optimization
+- Added gamepad API
+- Full spritesheet support (using TexturePacker)
+- Fixed general bugs
+
 ##### 0.9.2
 - Optimized collisions and fixed bugs
 - Changed the concept of object to "molecule". Check tutorials for more information
