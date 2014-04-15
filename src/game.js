@@ -294,11 +294,11 @@ Molecule.module('Molecule.Game', function (require, p) {
 
         // CANVAS
 
-        this.canvas.width = options.width * ratio;
-        this.canvas.height = options.height * ratio;
+        this.canvas.width = options.width * ratio * this.scale;
+        this.canvas.height = options.height * ratio * this.scale;
         
-        this.canvas.style.width = options.width + "px";
-        this.canvas.style.height = options.height + "px";
+        this.canvas.style.width = (options.width * this.scale) + "px";
+        this.canvas.style.height = (options.height * this.scale) + "px";
         
         this.context.scale(ratio * this.scale, ratio * this.scale);
         
