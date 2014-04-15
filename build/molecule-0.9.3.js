@@ -751,6 +751,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     p.loop = function (game) {
         game.input.checkGamepad();
         p.removeSprites(game.scene.sprites);
+        p.updateMolecules(game);
         p.update(null, game);
         if (game.status == 1) {
             var exit = false;
@@ -770,9 +771,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             }
         }
         p.draw(game);
-        p.updateMolecules(game);
         p.updateGame();
-
         p.requestAnimFrame(function () {
             p.loop(game);
         });
@@ -937,11 +936,11 @@ Molecule.module('Molecule.Game', function (require, p) {
 
         // CANVAS
 
-        this.canvas.width = options.width * ratio;
-        this.canvas.height = options.height * ratio;
+        this.canvas.width = options.width * ratio * this.scale;
+        this.canvas.height = options.height * ratio * this.scale;
         
-        this.canvas.style.width = options.width + "px";
-        this.canvas.style.height = options.height + "px";
+        this.canvas.style.width = (options.width * this.scale) + "px";
+        this.canvas.style.height = (options.height * this.scale) + "px";
         
         this.context.scale(ratio * this.scale, ratio * this.scale);
         
@@ -1842,8 +1841,8 @@ Molecule.module('Molecule.Input', function (require, p) {
     };
 
     Input.prototype.mousePosition = function(_e) {
-        this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft);
-        this.mouse.y = (_e.pageY - this.game.canvas.offsetTop);
+        this.mouse.x = (_e.pageX  - this.game.canvas.offsetLeft) / this.game.scale;
+        this.mouse.y = (_e.pageY - this.game.canvas.offsetTop) / this.game.scale;
     };
 
     // Method 'ontouchstart' for 'touch' type
@@ -1875,11 +1874,11 @@ Molecule.module('Molecule.Input', function (require, p) {
         this.touch = [];
         if(_e.touches) {
             for(var i = 0; i < _e.touches.length; i++) {
-                this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft), y: (_e.touches[i].pageY - this.game.canvas.offsetTop)});
+                this.touch.push({x: (_e.touches[i].pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.touches[i].pageY - this.game.canvas.offsetTop) / this.game.scale});
             }
         } else {
             if(_e !== undefined) {
-                this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft), y: (_e.pageY - this.game.canvas.offsetTop)});
+                this.touch.push({x: (_e.pageX - this.game.canvas.offsetLeft) / this.game.scale, y: (_e.pageY - this.game.canvas.offsetTop) / this.game.scale});
             }
         }
     };
