@@ -747,6 +747,14 @@ Molecule.module('Molecule.Game', function (require, p) {
             if (molecule.update) molecule.update();
         }
     };
+    
+    p.updateDrawMolecules = function (game) {
+        var molecule;
+        for (var i = 0; i < game.scene.molecules.length; i++) {
+            molecule = game.scene.molecules[i];
+            if (molecule.draw) molecule.draw();
+        }
+    };
 
     p.loop = function (game) {
         game.input.checkGamepad();
@@ -771,7 +779,9 @@ Molecule.module('Molecule.Game', function (require, p) {
             }
         }
         p.draw(game);
+        p.updateDrawMolecules(game);
         p.updateGame();
+
         p.requestAnimFrame(function () {
             p.loop(game);
         });
@@ -1593,13 +1603,27 @@ Molecule.module('Molecule.Input', function (require, p) {
 
     Input.prototype.checkGamepad = function() {
         var i;
+        var getGamepads;
         this.gamepad = [];
-        if(this.gamepadEnabled && navigator.webkitGetGamepads) {
-            for(i = 0; i < navigator.webkitGetGamepads().length; i++) {
-                if(navigator.webkitGetGamepads()[i] !== undefined) {
-                    this.gamepad.push(navigator.webkitGetGamepads()[i]);
+        if(this.gamepadEnabled) {
+            if(navigator.getGamepads || navigator.webkitGetGamepads) {
+                if(navigator.getGamepads) {
+                    for(i = 0; i < navigator.getGamepads().length; i++) {
+                        if(navigator.getGamepads()[i] !== undefined) {
+                            this.gamepad.push(navigator.getGamepads()[i]);
+                        }
+                    }
+                } else if(navigator.webkitGetGamepads) {
+                    for(i = 0; i < navigator.webkitGetGamepads().length; i++) {
+                        if(navigator.webkitGetGamepads()[i] !== undefined) {
+                            this.gamepad.push(navigator.webkitGetGamepads()[i]);
+                        }
+                    }
                 }
             }
+        }
+        if(this.gamepad.length === 0) {
+            this.gamepad.push({axes: 0, buttons: 0});
         }
     };
 
