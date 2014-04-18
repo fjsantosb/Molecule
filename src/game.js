@@ -104,10 +104,19 @@ Molecule.module('Molecule.Game', function (require, p) {
             if (molecule.update) molecule.update();
         }
     };
+    
+    p.updateDrawMolecules = function (game) {
+        var molecule;
+        for (var i = 0; i < game.scene.molecules.length; i++) {
+            molecule = game.scene.molecules[i];
+            if (molecule.draw) molecule.draw();
+        }
+    };
 
     p.loop = function (game) {
         game.input.checkGamepad();
         p.removeSprites(game.scene.sprites);
+        p.updateMolecules(game);
         p.update(null, game);
         if (game.status == 1) {
             var exit = false;
@@ -127,7 +136,7 @@ Molecule.module('Molecule.Game', function (require, p) {
             }
         }
         p.draw(game);
-        p.updateMolecules(game);
+        p.updateDrawMolecules(game);
         p.updateGame();
 
         p.requestAnimFrame(function () {
