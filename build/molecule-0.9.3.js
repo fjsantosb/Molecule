@@ -3232,7 +3232,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 Molecule.module('Molecule.SpriteCollisions', function (require, p) {
 
     p.spritesCollide = function (spriteI, spriteJ) {
-        return (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ)) && (spriteI.collides.group === null || spriteI.collides.group !== spriteJ.collides.group)
+        return (spriteI.collides.group === null || spriteI.collides.group !== spriteJ.collides.group) && (spriteI.collides.sprite && spriteJ.collidable && spriteI.collidable) && (spriteI.collidesWithSprite(spriteJ))
     };
 
     p.updateCollisionY = function (spriteI, spriteJ, i, j, physics) {
