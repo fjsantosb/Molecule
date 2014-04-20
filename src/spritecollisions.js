@@ -65,50 +65,47 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
             tjy,
             spriteI,
             spriteJ;
-        for(k = 0; k < sprites.length; k++) {
-            for (i = k; i < sprites.length; i++) {
-                spriteI = sprites[i];
-                for (j = k; j < sprites.length; j++) {
-                    spriteJ = sprites[j];
-    
-                    if (i !== j) {
-    
-                        tjx = spriteJ.move.x;
-                        tjy = spriteJ.move.y;
-    
-                        if (p.spritesCollide(spriteI, spriteJ)) {
-    
-                            if (j > i) {
-                                spriteJ.move.x = 0;
-                                spriteJ.move.y = 0;
-                            }
-    
-                            if (p.spritesCollide(spriteI, spriteJ)) {
-                                mc = 0;
-                                while (mc <= 2) {
-                                    if (spriteI.move.x !== 0 || spriteI.move.y !== 0) {
-                                        if (mc === 0 || mc === 2) {
-                                            tx = spriteI.move.x;
-                                            if (mc !== 2)
-                                                spriteI.move.x = 0;
-                                            p.updateCollisionY(spriteI, spriteJ, i, j, physics);
-                                            spriteI.move.x = tx;
-                                        }
-                                        if (mc === 1 || mc === 2) {
-                                            ty = spriteI.move.y;
-                                            if (mc !== 2)
-                                                spriteI.move.y = 0;
-                                            p.updateCollisionX(spriteI, spriteJ, i, j, physics);
-                                            spriteI.move.y = ty;
-                                        }
-                                    }
-                                    mc++;
+        
+        for (i = 0; i < sprites.length; i++) {
+            spriteI = sprites[i];
+            for (j = 0; j < sprites.length; j++) {
+                spriteJ = sprites[j];
+
+                if (i !== j) {
+
+                    tjx = spriteJ.move.x;
+                    tjy = spriteJ.move.y;
+
+                    if (j > i) {
+                        spriteJ.move.x = 0;
+                        spriteJ.move.y = 0;
+                    }
+                    
+                    if (p.spritesCollide(spriteI, spriteJ)) {
+                        mc = 0;
+                        while (mc <= 2) {
+                            if (spriteI.move.x !== 0 || spriteI.move.y !== 0) {
+                                if (mc === 0 || mc === 2) {
+                                    tx = spriteI.move.x;
+                                    if (mc !== 2)
+                                        spriteI.move.x = 0;
+                                    p.updateCollisionY(spriteI, spriteJ, i, j, physics);
+                                    spriteI.move.x = tx;
+                                }
+                                if (mc === 1 || mc === 2) {
+                                    ty = spriteI.move.y;
+                                    if (mc !== 2)
+                                        spriteI.move.y = 0;
+                                    p.updateCollisionX(spriteI, spriteJ, i, j, physics);
+                                    spriteI.move.y = ty;
                                 }
                             }
+                            mc++;
                         }
-                        spriteJ.move.x = tjx;
-                        spriteJ.move.y = tjy;
                     }
+
+                    spriteJ.move.x = tjx;
+                    spriteJ.move.y = tjy;
                 }
             }
         }
