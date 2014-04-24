@@ -451,27 +451,38 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 		this.game = _game;
 		this.name = [];
 		this.data = [];
+		this.id = [];
 		this.counter = 0;
 	}
 
 	AudioFile.prototype.load = function(_id, _audioSrc) {
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		var self = this;
+		var context = new AudioContext();
+        var ajaxReq = new XMLHttpRequest();
+        var s = new MAudio();
+        s.id = _id;
+        s.sound = context.createBufferSource();
+        s.sound.connect(context.destination);
+        
 		if(!this.getAudioDataByName(_audioSrc)) {
-			var self = this;
-			var _audio = new Audio();
-			var _audioSrcFile;
-            var t = _audioSrc.split('.');
-            if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
-                _audioSrcFile = _audioSrc;
+            
+            ajaxReq.open('GET', _audioSrc, true);
+            ajaxReq.responseType = 'arraybuffer';
+            ajaxReq.onload = function () {
+                context.decodeAudioData(ajaxReq.response, function (buffer) {
+                    self.name.push(_audioSrc);
+                    self.id.push(_id);
+                    self.game.sounds[_id].buffer = buffer;
+                    self.data.push(buffer);
+                });
             }
-			_audio.addEventListener('canplay', function(){self.counter++});
-			_audio.src = _audioSrcFile;
-			this.name.push(_audioSrc);
-			this.data.push(_audio);
+            ajaxReq.send();
+            this.counter++;
 		}
 
-		var s = new MAudio();
-        s.id = _id;
-		s.sound = this.getAudioDataByName(_audioSrc);
+        if(this.isLoaded())
+		    s.buffer = this.getAudioDataByName(_audioSrc);
 		this.game.sounds[_id] = s;
 
 		return s;
@@ -2978,41 +2989,34 @@ Molecule.module('Molecule.SpriteSheetFile', function (require, p) {
 });
 Molecule.module('Molecule.MAudio', function (require, p) {
 
-	function MAudio() {
-		this.sound = null;
-	}
+    function MAudio() {
+        this.sound = null;
+        this.buffer = null;
+    }
 
     MAudio.prototype.play = function(_loop) {
-		_loop = typeof _loop === 'undefined' ? false : _loop;
-		if(this.sound.currentTime === this.sound.duration) {
-			this.stop();
-		}
-		this.sound.loop = _loop;
-        if (!this.sound.paused) {
-            this.stop();
-        }
-        this.sound.play();
-	};
-
-    MAudio.prototype.pause = function() {
-		this.sound.pause();
-	};
+    _loop = typeof _loop === 'undefined' ? false : _loop;
+        this.sound.buffer = this.buffer;
+        this.sound.loop = _loop;
+        this.sound.start(0);
+    };
 
     MAudio.prototype.stop = function() {
-		this.sound.pause();
-		this.sound.currentTime = 0;
-	};
+        this.sound.stop(0);
+    };
 
     MAudio.prototype.clone = function () {
 
         var mAudio = new MAudio();
-        mAudio.sound = new Audio();
-        mAudio.sound.src = this.sound.src;
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        var context = new AudioContext();
+        mAudio.sound = this.sound;
+        mAudio.buffer = this.buffer;
         return mAudio;
 
     };
 
-	return MAudio;
+    return MAudio;
 
 });
 Molecule.module('Molecule.Sprite', function (require, p) {
