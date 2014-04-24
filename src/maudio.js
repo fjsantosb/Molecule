@@ -1,39 +1,32 @@
 Molecule.module('Molecule.MAudio', function (require, p) {
 
-	function MAudio() {
-		this.sound = null;
-	}
+    function MAudio() {
+        this.sound = null;
+        this.buffer = null;
+    }
 
     MAudio.prototype.play = function(_loop) {
-		_loop = typeof _loop === 'undefined' ? false : _loop;
-		if(this.sound.currentTime === this.sound.duration) {
-			this.stop();
-		}
-		this.sound.loop = _loop;
-        if (!this.sound.paused) {
-            this.stop();
-        }
-        this.sound.play();
-	};
-
-    MAudio.prototype.pause = function() {
-		this.sound.pause();
-	};
+        _loop = typeof _loop === 'undefined' ? false : _loop;
+        this.sound.buffer = this.buffer;
+        this.sound.loop = _loop;
+        this.sound.start(0);
+    };
 
     MAudio.prototype.stop = function() {
-		this.sound.pause();
-		this.sound.currentTime = 0;
-	};
+        this.sound.stop(0);
+    };
 
     MAudio.prototype.clone = function () {
 
         var mAudio = new MAudio();
-        mAudio.sound = new Audio();
-        mAudio.sound.src = this.sound.src;
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        var context = new AudioContext();
+        mAudio.sound = this.sound;
+        mAudio.buffer = this.buffer;
         return mAudio;
 
     };
 
-	return MAudio;
+    return MAudio;
 
 });
