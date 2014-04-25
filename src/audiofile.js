@@ -17,8 +17,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
         var ajaxReq = new XMLHttpRequest();
         var s = new MAudio();
         s.id = _id;
-        s.sound = context.createBufferSource();
-        s.sound.connect(context.destination);
+        s.context = context;
         
         if(!this.getAudioDataByName(_audioSrc)) {
             
@@ -34,10 +33,10 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
             }
             ajaxReq.send();
             this.counter++;
+        } else {
+            self.game.sounds[_id].buffer = this.getAudioDataByName(_audioSrc);
         }
 
-        if(this.isLoaded())
-            s.buffer = this.getAudioDataByName(_audioSrc);
         this.game.sounds[_id] = s;
 
         return s;
