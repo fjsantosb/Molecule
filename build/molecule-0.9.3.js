@@ -447,25 +447,24 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
 
     var MAudio = require('Molecule.MAudio');
 
-	function AudioFile(_game) {
-		this.game = _game;
-		this.name = [];
-		this.data = [];
-		this.id = [];
-		this.counter = 0;
-	}
+    function AudioFile(_game) {
+        this.game = _game;
+        this.name = [];
+        this.data = [];
+        this.id = [];
+        this.counter = 0;
+    }
 
-	AudioFile.prototype.load = function(_id, _audioSrc) {
-		window.AudioContext = window.AudioContext || window.webkitAudioContext;
-		var self = this;
-		var context = new AudioContext();
+    AudioFile.prototype.load = function(_id, _audioSrc) {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        var self = this;
+        var context = new AudioContext();
         var ajaxReq = new XMLHttpRequest();
         var s = new MAudio();
         s.id = _id;
-        s.sound = context.createBufferSource();
-        s.sound.connect(context.destination);
+        s.context = context;
         
-		if(!this.getAudioDataByName(_audioSrc)) {
+        if(!this.getAudioDataByName(_audioSrc)) {
             
             ajaxReq.open('GET', _audioSrc, true);
             ajaxReq.responseType = 'arraybuffer';
@@ -473,30 +472,30 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
                 context.decodeAudioData(ajaxReq.response, function (buffer) {
                     self.name.push(_audioSrc);
                     self.id.push(_id);
-                    self.game.sounds[_id].buffer = buffer;
                     self.data.push(buffer);
+                    self.game.sounds[_id].buffer = buffer;
                 });
             }
             ajaxReq.send();
             this.counter++;
-		}
+        } else {
+            self.game.sounds[_id].buffer = this.getAudioDataByName(_audioSrc);
+        }
 
-        if(this.isLoaded())
-		    s.buffer = this.getAudioDataByName(_audioSrc);
-		this.game.sounds[_id] = s;
+        this.game.sounds[_id] = s;
 
-		return s;
-	};
+        return s;
+    };
 
-	AudioFile.prototype.isLoaded = function() {
-		return (this.counter === this.data.length);
-	};
+    AudioFile.prototype.isLoaded = function() {
+        return (this.counter === this.data.length);
+    };
 
-	AudioFile.prototype.getAudioDataByName = function(_audioName) {
-		return this.data[this.name.indexOf(_audioName)];
-	};
+    AudioFile.prototype.getAudioDataByName = function(_audioName) {
+        return this.data[this.name.indexOf(_audioName)];
+    };
 
-	return AudioFile;
+    return AudioFile;
 
 });
 Molecule.module('Molecule.Camera', function (require, p) {
@@ -2992,24 +2991,42 @@ Molecule.module('Molecule.MAudio', function (require, p) {
     function MAudio() {
         this.sound = null;
         this.buffer = null;
+        this.context = null;
+        this.startOffset = 0;
+        this.startTime = 0;
     }
 
     MAudio.prototype.play = function(_loop) {
-    _loop = typeof _loop === 'undefined' ? false : _loop;
+        _loop = typeof _loop === 'undefined' ? false : _loop;
+        this.startTime = this.context.currentTime;
+        if(this.sound && this.sound.playbackState === 2) {
+            this.sound.stop(0);
+        }
+        this.sound = this.context.createBufferSource();
+        this.sound.connect(this.context.destination);
         this.sound.buffer = this.buffer;
         this.sound.loop = _loop;
-        this.sound.start(0);
+        this.sound.start(0, this.startOffset % this.buffer.duration);
+    };
+    
+    MAudio.prototype.pause = function() {
+        if(this.sound && this.sound.playbackState !== 3) {
+            this.sound.stop(0);
+            this.startOffset += this.context.currentTime - this.startTime;
+        }
     };
 
     MAudio.prototype.stop = function() {
-        this.sound.stop(0);
+        if(this.sound && this.sound.playbackState !== 3) {
+            this.sound.stop(0);
+            this.startOffset = 0;
+        }
     };
 
     MAudio.prototype.clone = function () {
 
         var mAudio = new MAudio();
-        window.AudioContext = window.AudioContext || window.webkitAudioContext;
-        var context = new AudioContext();
+        mAudio.context = this.context;
         mAudio.sound = this.sound;
         mAudio.buffer = this.buffer;
         return mAudio;
