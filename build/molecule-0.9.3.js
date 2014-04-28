@@ -448,6 +448,8 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
     var MAudio = require('Molecule.MAudio');
 
     function AudioFile(_game) {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.context = new AudioContext();
         this.game = _game;
         this.name = [];
         this.data = [];
@@ -456,20 +458,17 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
     }
 
     AudioFile.prototype.load = function(_id, _audioSrc) {
-        window.AudioContext = window.AudioContext || window.webkitAudioContext;
         var self = this;
-        var context = new AudioContext();
         var ajaxReq = new XMLHttpRequest();
         var s = new MAudio();
         s.id = _id;
-        s.context = context;
+        s.context = this.context;
         
-        if(!this.getAudioDataByName(_audioSrc)) {
-            
+        if(!this.getAudioDataByName(_audioSrc)) {    
             ajaxReq.open('GET', _audioSrc, true);
             ajaxReq.responseType = 'arraybuffer';
             ajaxReq.onload = function () {
-                context.decodeAudioData(ajaxReq.response, function (buffer) {
+                s.context.decodeAudioData(ajaxReq.response, function (buffer) {
                     self.name.push(_audioSrc);
                     self.id.push(_id);
                     self.data.push(buffer);
@@ -481,7 +480,7 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
         } else {
             self.game.sounds[_id].buffer = this.getAudioDataByName(_audioSrc);
         }
-
+        
         this.game.sounds[_id] = s;
 
         return s;
