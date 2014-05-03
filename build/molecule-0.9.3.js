@@ -2728,7 +2728,7 @@ Molecule.module('Molecule.Physics', function (require, p) {
             }
         } else if (sprite.speed.x < 0) {
             sprite.speed.x = sprite.speed.x * (1 - game.physics.friction.x);
-            if (sprite.speed.x > 0.05) {
+            if (sprite.speed.x > -0.05) {
                 sprite.speed.x = 0;
             }
         }
@@ -2739,7 +2739,7 @@ Molecule.module('Molecule.Physics', function (require, p) {
             }
         } else if (sprite.speed.y < 0) {
             sprite.speed.y = sprite.speed.y * (1 - game.physics.friction.y);
-            if (sprite.speed.y > 0.05) {
+            if (sprite.speed.y > -0.05) {
                 sprite.speed.y = 0;
             }
         }
