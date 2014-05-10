@@ -1,6 +1,6 @@
-Molecule.module('Molecule.MAudio', function (require, p) {
+Molecule.module('Molecule.MWebAudio', function (require, p) {
 
-    function MAudio() {
+    function MWebAudio() {
         this.sound = null;
         this.buffer = null;
         this.context = null;
@@ -8,7 +8,7 @@ Molecule.module('Molecule.MAudio', function (require, p) {
         this.startTime = 0;
     }
 
-    MAudio.prototype.play = function(_loop) {
+    MWebAudio.prototype.play = function(_loop) {
         _loop = typeof _loop === 'undefined' ? false : _loop;
         this.startTime = this.context.currentTime;
         if(this.sound && this.sound.playbackState === 2) {
@@ -21,30 +21,28 @@ Molecule.module('Molecule.MAudio', function (require, p) {
         this.sound.start(0, this.startOffset % this.buffer.duration);
     };
     
-    MAudio.prototype.pause = function() {
+    MWebAudio.prototype.pause = function() {
         if(this.sound && this.sound.playbackState !== 3) {
             this.sound.stop(0);
             this.startOffset += this.context.currentTime - this.startTime;
         }
     };
 
-    MAudio.prototype.stop = function() {
+    MWebAudio.prototype.stop = function() {
         if(this.sound && this.sound.playbackState !== 3) {
             this.sound.stop(0);
             this.startOffset = 0;
         }
     };
 
-    MAudio.prototype.clone = function () {
-
-        var mAudio = new MAudio();
-        mAudio.context = this.context;
-        mAudio.sound = this.sound;
-        mAudio.buffer = this.buffer;
-        return mAudio;
-
+    MWebAudio.prototype.clone = function () {
+        var mWebAudio = new MWebAudio();
+        mWebAudio.context = this.context;
+        mWebAudio.sound = this.sound;
+        mWebAudio.buffer = this.buffer;
+        return mWebAudio;
     };
 
-    return MAudio;
+    return MWebAudio;
 
 });

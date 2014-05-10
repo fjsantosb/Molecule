@@ -13,6 +13,7 @@ module.exports = function(grunt) {
         'src/mapfile.js',
         'src/molecule.js',
         'src/move.js',
+        'src/mwebaudio.js',
         'src/physics.js',
         'src/scene.js',
         'src/spritesheet.js',
@@ -22,7 +23,8 @@ module.exports = function(grunt) {
         'src/spritecollisions.js',
         'src/text.js',
         'src/tile.js',
-        'src/utils.js'
+        'src/utils.js',
+        'src/webaudiofile.js'
     ];
 
     // Project configuration.

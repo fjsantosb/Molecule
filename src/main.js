@@ -295,6 +295,11 @@
         game.audioFile.load(id, soundSrc);
         return this;
     };
+    
+    Molecule.webaudio = function (id, soundSrc) {
+        game.webAudioFile.load(id, soundSrc);
+        return this;
+    };
 
     Molecule.tilemap = function (id, mapSrc) {
         game.mapFile.load(id, mapSrc);

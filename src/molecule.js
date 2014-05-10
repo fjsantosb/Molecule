@@ -105,6 +105,14 @@ Molecule.module('Molecule.Molecule', function (require, p) {
                 this.audio[sound] = audio[sound].clone();
             }
         }
+        
+        var webaudio = this.webaudio;
+        this.webaudio = {};
+        for (var sound in webaudio) {
+            if (webaudio.hasOwnProperty(sound)) {
+                this.webaudio[sound] = webaudio[sound].clone();
+            }
+        }
 
         this.init()
     }

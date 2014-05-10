@@ -295,6 +295,11 @@
         game.audioFile.load(id, soundSrc);
         return this;
     };
+    
+    Molecule.webaudio = function (id, soundSrc) {
+        game.webAudioFile.load(id, soundSrc);
+        return this;
+    };
 
     Molecule.tilemap = function (id, mapSrc) {
         game.mapFile.load(id, mapSrc);
@@ -448,39 +453,30 @@ Molecule.module('Molecule.AudioFile', function (require, p) {
     var MAudio = require('Molecule.MAudio');
 
     function AudioFile(_game) {
-        window.AudioContext = window.AudioContext || window.webkitAudioContext;
-        this.context = new AudioContext();
         this.game = _game;
         this.name = [];
         this.data = [];
-        this.id = [];
         this.counter = 0;
     }
 
     AudioFile.prototype.load = function(_id, _audioSrc) {
-        var self = this;
-        var ajaxReq = new XMLHttpRequest();
+        if(!this.getAudioDataByName(_audioSrc)) {
+            var self = this;
+            var _audio = new Audio();
+            var _audioSrcFile;
+            var t = _audioSrc.split('.');
+            if(_audio.canPlayType('audio/' + t[t.length - 1]) != '') {
+                _audioSrcFile = _audioSrc;
+            }
+            _audio.addEventListener('canplay', function(){self.counter++});
+            _audio.src = _audioSrcFile;
+            this.name.push(_audioSrc);
+            this.data.push(_audio);
+        }
+
         var s = new MAudio();
         s.id = _id;
-        s.context = this.context;
-        
-        if(!this.getAudioDataByName(_audioSrc)) {    
-            ajaxReq.open('GET', _audioSrc, true);
-            ajaxReq.responseType = 'arraybuffer';
-            ajaxReq.onload = function () {
-                s.context.decodeAudioData(ajaxReq.response, function (buffer) {
-                    self.name.push(_audioSrc);
-                    self.id.push(_id);
-                    self.data.push(buffer);
-                    self.game.sounds[_id].buffer = buffer;
-                });
-            }
-            ajaxReq.send();
-            this.counter++;
-        } else {
-            self.game.sounds[_id].buffer = this.getAudioDataByName(_audioSrc);
-        }
-        
+        s.sound = this.getAudioDataByName(_audioSrc);
         this.game.sounds[_id] = s;
 
         return s;
@@ -658,6 +654,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         Map = require('Molecule.Map'),
         ImageFile = require('Molecule.ImageFile'),
         AudioFile = require('Molecule.AudioFile'),
+        WebAudioFile = require('Molecule.WebAudioFile'),
         Input = require('Molecule.Input'),
         Text = require('Molecule.Text'),
         physics = require('Molecule.Physics'),
@@ -699,9 +696,9 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length + game.spriteSheetFile.data.length;
-        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter + game.spriteSheetFile.getCounter();
-        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded() && game.spriteSheetFile.isLoaded()) {
+        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length + game.spriteSheetFile.data.length + game.webAudioFile.data.length;
+        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter + game.spriteSheetFile.getCounter() + game.webAudioFile.counter;
+        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded() && game.spriteSheetFile.isLoaded() && game.webAudioFile.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();
@@ -978,6 +975,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         // ASSET LOADING
         this.imageFile = new ImageFile(this);
         this.audioFile = new AudioFile(this);
+        this.webAudioFile = new WebAudioFile(this);
         this.mapFile = new MapFile(this);
         this.spriteSheetFile = new SpriteSheetFile(this);
 
@@ -992,6 +990,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         utils.bindMethods(this.text, this);
         utils.bindMethods(this.tilemap, this);
         utils.bindMethods(this.audio, this);
+        utils.bindMethods(this.webaudio, this);
 
         this.node ? document.getElementById(this.node).appendChild(this.canvas) : document.body.appendChild(this.canvas);
 
@@ -1003,6 +1002,16 @@ Molecule.module('Molecule.Game', function (require, p) {
                 return this.sounds[_id].clone();
             } else {
                 throw new Error('No audio loaded with the name ' + _id);
+            }
+        }
+    };
+    
+    Game.prototype.webaudio = {
+        create: function (_id) {
+            if (utils.isString(_id) && this.sounds[_id]) {
+                return this.sounds[_id].clone();
+            } else {
+                throw new Error('No webaudio loaded with the name ' + _id);
             }
         }
     };
@@ -1273,6 +1282,13 @@ Molecule.module('Molecule.Game', function (require, p) {
                     for (var audio in obj.audio) {
                         if (obj.audio.hasOwnProperty(audio)) {
                             obj.audio[audio].stop();
+                        }
+                    }
+                }
+                if (obj.webaudio) {
+                    for (var webaudio in obj.webaudio) {
+                        if (obj.webaudio.hasOwnProperty(webaudio)) {
+                            obj.webaudio[webaudio].stop();
                         }
                     }
                 }
@@ -2629,6 +2645,14 @@ Molecule.module('Molecule.Molecule', function (require, p) {
                 this.audio[sound] = audio[sound].clone();
             }
         }
+        
+        var webaudio = this.webaudio;
+        this.webaudio = {};
+        for (var sound in webaudio) {
+            if (webaudio.hasOwnProperty(sound)) {
+                this.webaudio[sound] = webaudio[sound].clone();
+            }
+        }
 
         this.init()
     }
@@ -2716,6 +2740,54 @@ Molecule.module('Molecule.Move', function (require, p) {
        return r;
 
    }
+
+});
+Molecule.module('Molecule.MWebAudio', function (require, p) {
+
+    function MWebAudio() {
+        this.sound = null;
+        this.buffer = null;
+        this.context = null;
+        this.startOffset = 0;
+        this.startTime = 0;
+    }
+
+    MWebAudio.prototype.play = function(_loop) {
+        _loop = typeof _loop === 'undefined' ? false : _loop;
+        this.startTime = this.context.currentTime;
+        if(this.sound && this.sound.playbackState === 2) {
+            this.sound.stop(0);
+        }
+        this.sound = this.context.createBufferSource();
+        this.sound.connect(this.context.destination);
+        this.sound.buffer = this.buffer;
+        this.sound.loop = _loop;
+        this.sound.start(0, this.startOffset % this.buffer.duration);
+    };
+    
+    MWebAudio.prototype.pause = function() {
+        if(this.sound && this.sound.playbackState !== 3) {
+            this.sound.stop(0);
+            this.startOffset += this.context.currentTime - this.startTime;
+        }
+    };
+
+    MWebAudio.prototype.stop = function() {
+        if(this.sound && this.sound.playbackState !== 3) {
+            this.sound.stop(0);
+            this.startOffset = 0;
+        }
+    };
+
+    MWebAudio.prototype.clone = function () {
+        var mWebAudio = new MWebAudio();
+        mWebAudio.context = this.context;
+        mWebAudio.sound = this.sound;
+        mWebAudio.buffer = this.buffer;
+        return mWebAudio;
+    };
+
+    return MWebAudio;
 
 });
 Molecule.module('Molecule.Physics', function (require, p) {
@@ -2989,45 +3061,34 @@ Molecule.module('Molecule.MAudio', function (require, p) {
 
     function MAudio() {
         this.sound = null;
-        this.buffer = null;
-        this.context = null;
-        this.startOffset = 0;
-        this.startTime = 0;
     }
 
     MAudio.prototype.play = function(_loop) {
         _loop = typeof _loop === 'undefined' ? false : _loop;
-        this.startTime = this.context.currentTime;
-        if(this.sound && this.sound.playbackState === 2) {
-            this.sound.stop(0);
+        if(this.sound.currentTime === this.sound.duration) {
+            this.stop();
         }
-        this.sound = this.context.createBufferSource();
-        this.sound.connect(this.context.destination);
-        this.sound.buffer = this.buffer;
         this.sound.loop = _loop;
-        this.sound.start(0, this.startOffset % this.buffer.duration);
-    };
-    
-    MAudio.prototype.pause = function() {
-        if(this.sound && this.sound.playbackState !== 3) {
-            this.sound.stop(0);
-            this.startOffset += this.context.currentTime - this.startTime;
+        if (!this.sound.paused) {
+            this.stop();
         }
+        this.sound.play();
+    };
+
+    MAudio.prototype.pause = function() {
+        this.sound.pause();
     };
 
     MAudio.prototype.stop = function() {
-        if(this.sound && this.sound.playbackState !== 3) {
-            this.sound.stop(0);
-            this.startOffset = 0;
-        }
+        this.sound.pause();
+        this.sound.currentTime = 0;
     };
 
     MAudio.prototype.clone = function () {
 
         var mAudio = new MAudio();
-        mAudio.context = this.context;
-        mAudio.sound = this.sound;
-        mAudio.buffer = this.buffer;
+        mAudio.sound = new Audio();
+        mAudio.sound.src = this.sound.src;
         return mAudio;
 
     };
@@ -3579,5 +3640,59 @@ Molecule.module('Molecule.utils', function (require, p) {
         }
 
     };
+
+});
+Molecule.module('Molecule.WebAudioFile', function (require, p) {
+
+    var MWebAudio = require('Molecule.MWebAudio');
+
+    function WebAudioFile(_game) {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.context = new AudioContext();
+        this.game = _game;
+        this.name = [];
+        this.data = [];
+        this.id = [];
+        this.counter = 0;
+    }
+
+    WebAudioFile.prototype.load = function(_id, _audioSrc) {
+        var self = this;
+        var ajaxReq = new XMLHttpRequest();
+        var s = new MWebAudio();
+        s.id = _id;
+        s.context = this.context;
+        
+        if(!this.getAudioDataByName(_audioSrc)) {    
+            ajaxReq.open('GET', _audioSrc, true);
+            ajaxReq.responseType = 'arraybuffer';
+            ajaxReq.onload = function () {
+                s.context.decodeAudioData(ajaxReq.response, function (buffer) {
+                    self.name.push(_audioSrc);
+                    self.id.push(_id);
+                    self.data.push(buffer);
+                    self.game.sounds[_id].buffer = buffer;
+                });
+            }
+            ajaxReq.send();
+            this.counter++;
+        } else {
+            self.game.sounds[_id].buffer = this.getAudioDataByName(_audioSrc);
+        }
+        
+        this.game.sounds[_id] = s;
+
+        return s;
+    };
+
+    WebAudioFile.prototype.isLoaded = function() {
+        return (this.counter === this.data.length);
+    };
+
+    WebAudioFile.prototype.getAudioDataByName = function(_audioName) {
+        return this.data[this.name.indexOf(_audioName)];
+    };
+
+    return WebAudioFile;
 
 });

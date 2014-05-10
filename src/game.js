@@ -6,6 +6,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         Map = require('Molecule.Map'),
         ImageFile = require('Molecule.ImageFile'),
         AudioFile = require('Molecule.AudioFile'),
+        WebAudioFile = require('Molecule.WebAudioFile'),
         Input = require('Molecule.Input'),
         Text = require('Molecule.Text'),
         physics = require('Molecule.Physics'),
@@ -47,9 +48,9 @@ Molecule.module('Molecule.Game', function (require, p) {
     };
 
     p.loadResources = function (_interval, game) {
-        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length + game.spriteSheetFile.data.length;
-        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter + game.spriteSheetFile.getCounter();
-        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded() && game.spriteSheetFile.isLoaded()) {
+        var total = game.imageFile.data.length + game.mapFile.maps.length + game.audioFile.data.length + game.spriteSheetFile.data.length + game.webAudioFile.data.length;
+        var total_loaded = game.imageFile.counter + game.mapFile.getCounter() + game.audioFile.counter + game.spriteSheetFile.getCounter() + game.webAudioFile.counter;
+        if (game.imageFile.isLoaded() && game.mapFile.isLoaded() && game.audioFile.isLoaded() && game.spriteSheetFile.isLoaded() && game.webAudioFile.isLoaded()) {
             clearInterval(_interval);
             for (var i = 0; i < game.scene.sprites.length; i++) {
                 game.scene.sprites[i].getAnimation();
@@ -326,6 +327,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         // ASSET LOADING
         this.imageFile = new ImageFile(this);
         this.audioFile = new AudioFile(this);
+        this.webAudioFile = new WebAudioFile(this);
         this.mapFile = new MapFile(this);
         this.spriteSheetFile = new SpriteSheetFile(this);
 
@@ -340,6 +342,7 @@ Molecule.module('Molecule.Game', function (require, p) {
         utils.bindMethods(this.text, this);
         utils.bindMethods(this.tilemap, this);
         utils.bindMethods(this.audio, this);
+        utils.bindMethods(this.webaudio, this);
 
         this.node ? document.getElementById(this.node).appendChild(this.canvas) : document.body.appendChild(this.canvas);
 
@@ -351,6 +354,16 @@ Molecule.module('Molecule.Game', function (require, p) {
                 return this.sounds[_id].clone();
             } else {
                 throw new Error('No audio loaded with the name ' + _id);
+            }
+        }
+    };
+    
+    Game.prototype.webaudio = {
+        create: function (_id) {
+            if (utils.isString(_id) && this.sounds[_id]) {
+                return this.sounds[_id].clone();
+            } else {
+                throw new Error('No webaudio loaded with the name ' + _id);
             }
         }
     };
@@ -621,6 +634,13 @@ Molecule.module('Molecule.Game', function (require, p) {
                     for (var audio in obj.audio) {
                         if (obj.audio.hasOwnProperty(audio)) {
                             obj.audio[audio].stop();
+                        }
+                    }
+                }
+                if (obj.webaudio) {
+                    for (var webaudio in obj.webaudio) {
+                        if (obj.webaudio.hasOwnProperty(webaudio)) {
+                            obj.webaudio[webaudio].stop();
                         }
                     }
                 }
