@@ -4,7 +4,10 @@ Molecule.module('Molecule.WebAudioFile', function (require, p) {
 
     function WebAudioFile(_game) {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
-        this.context = new AudioContext();
+        this.context = null;
+        if(window.AudioContext !== undefined) {
+            this.context = new AudioContext();
+        }
         this.game = _game;
         this.name = [];
         this.data = [];
