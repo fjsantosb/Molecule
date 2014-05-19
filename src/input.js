@@ -88,13 +88,13 @@ Molecule.module('Molecule.Input', function (require, p) {
             if(navigator.getGamepads || navigator.webkitGetGamepads) {
                 if(navigator.getGamepads) {
                     for(i = 0; i < navigator.getGamepads().length; i++) {
-                        if(navigator.getGamepads()[i] !== undefined) {
+                        if(navigator.getGamepads()[i] !== undefined && navigator.getGamepads()[i].timestamp !== 0) {
                             this.gamepad.push(navigator.getGamepads()[i]);
                         }
                     }
                 } else if(navigator.webkitGetGamepads) {
                     for(i = 0; i < navigator.webkitGetGamepads().length; i++) {
-                        if(navigator.webkitGetGamepads()[i] !== undefined) {
+                        if(navigator.webkitGetGamepads()[i] !== undefined && navigator.webkitGetGamepads()[i].timestamp !== 0) {
                             this.gamepad.push(navigator.webkitGetGamepads()[i]);
                         }
                     }
