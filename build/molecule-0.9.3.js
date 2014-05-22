@@ -3334,9 +3334,11 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
             }
             spriteI.collision.sprite.id = j;
             spriteJ.collision.sprite.id = i;
-            spriteI.move.y = 0;
-            spriteI.speed.y = 0;
-            spriteI.speed.t.y = 0;
+            if(spriteI.collides.sprite && spriteJ.collides.sprite) {
+                spriteI.move.y = 0;
+                spriteI.speed.y = 0;
+                spriteI.speed.t.y = 0;
+            }
         }
     };
 
@@ -3358,9 +3360,11 @@ Molecule.module('Molecule.SpriteCollisions', function (require, p) {
             }
             spriteI.collision.sprite.id = j;
             spriteJ.collision.sprite.id = i;
-            spriteI.move.x = 0;
-            spriteI.speed.x = 0;
-            spriteI.speed.t.x = 0;
+            if(spriteI.collides.sprite && spriteJ.collides.sprite) {
+                spriteI.move.x = 0;
+                spriteI.speed.x = 0;
+                spriteI.speed.t.x = 0;
+            }
         }
     };
 
