@@ -65,6 +65,12 @@ Molecule.module('Molecule.Game', function (require, p) {
         game.context.fillRect(30, Math.round(game.height / 1.25), (game.width - (30 * 2)) * (total_loaded / total), 16);
         game.context.restore();
     };
+    
+    p.updateSpritesID = function (sprites) {
+        for (var i = 0; i < sprites.length; i++) {
+            sprites[i].id = i;
+        }
+    };
 
     p.removeSprites = function (sprites) {
         for (var i = sprites.length - 1; i >= 0; i--) {
@@ -117,6 +123,7 @@ Molecule.module('Molecule.Game', function (require, p) {
     p.loop = function (game) {
         game.input.checkGamepad();
         p.removeSprites(game.scene.sprites);
+        p.updateSpritesID(game.scene.sprites);
         p.updateMolecules(game);
         p.update(null, game);
         if (game.status == 1) {

@@ -8,6 +8,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
 
         this.name = _name;
         this.src = _src;
+        this.id = null;
         this.image = null;
         this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
         this.rotation = 0;
@@ -176,6 +177,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         utils.deepClone(this, sprite, [
             'name',
             'src',
+            'id',
             '_MoleculeType',
             'position',
             'rotation',
