@@ -3,12 +3,12 @@ Molecule.module('Molecule.Sprite', function (require, p) {
     var Animation = require('Molecule.Animation'),
         utils = require('Molecule.utils');
 
-	// Sprite var.
+    // Sprite var.
     function Sprite(_name, _src, _width, _height) {
 
         this.name = _name;
         this.src = _src;
-        this.id = null;
+        this.id = -1;
         this.image = null;
         this.position = {x: 0, y: 0, absolute: {x: 0, y: 0}};
         this.rotation = 0;
@@ -46,7 +46,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.animation.sliceFrames(this.image.width, this.image.height, this.frame.width, this.frame.height);
     };
 
-	// Sprite prototype Method flipUpdate
+    // Sprite prototype Method flipUpdate
     Sprite.prototype.flipUpdate = function () {
         this.flip.offset.x = this.flip.x ? -this.frame.width : 0;
         this.flip.offset.y = this.flip.y ? -this.frame.height : 0;
@@ -54,7 +54,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         this.flip.f.y = this.flip.y ? -1 : 1;
     };
 
-	// Sprite prototype Method update
+    // Sprite prototype Method update
     Sprite.prototype.update = function () {
         this.position.x += this.move.x;
         this.position.y += this.move.y;
@@ -68,17 +68,17 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         }
     };
 
-	// Sprite prototype Method resetMove
+    // Sprite prototype Method resetMove
     Sprite.prototype.resetMove = function () {
         this.move = {x: 0, y: 0};
     };
 
-	// Sprite prototype Method reset acceleration
+    // Sprite prototype Method reset acceleration
     Sprite.prototype.resetAcceleration = function () {
         this.acceleration = {x: 0, y: 0};
     };
 
-	// Sprite prototype Method draw
+    // Sprite prototype Method draw
     Sprite.prototype.draw = function (_overlap) {
         if (this.overlap === _overlap && this.position.x - this.anchor.x + this.frame.width >= 0 && this.position.y - this.anchor.y + this.frame.height >= 0 && this.position.x - this.anchor.x <= this.game.width && this.position.y - this.anchor.y <= this.game.height) {
             this.game.context.save();
@@ -92,7 +92,7 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         }
     };
 
-	// Sprite prototype Method is_touched
+    // Sprite prototype Method is_touched
     Sprite.prototype.touch = function () {
         var _touch = this.game.input.touch;
         for (var i = 0; i < _touch.length; i++) {
@@ -103,20 +103,20 @@ Molecule.module('Molecule.Sprite', function (require, p) {
         return false;
     };
 
-	// Sprite prototype Method is_clicked
+    // Sprite prototype Method is_clicked
     Sprite.prototype.click = function (_button) {
         var _mouse = this.game.input.mouse;
         return (this.position.x - this.anchor.x + this.frame.offset.x <= _mouse.x && this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x > _mouse.x && this.position.y - this.anchor.y + this.frame.offset.y <= _mouse.y && this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y > _mouse.y && _button);
     };
 
-	// Sprite prototype Method collidesWithSprite
+    // Sprite prototype Method collidesWithSprite
     Sprite.prototype.collidesWithSprite = function (_object) {
         var sp1 = {left: this.position.x - this.anchor.x + this.move.x + this.frame.offset.x, right: this.position.x - this.anchor.x + this.frame.width - this.frame.offset.x + this.move.x, top: this.position.y - this.anchor.y + this.move.y + this.frame.offset.y, bottom: this.position.y - this.anchor.y + this.frame.height - this.frame.offset.y + this.move.y};
         var sp2 = {left: _object.position.x - _object.anchor.x + _object.move.x + _object.frame.offset.x, right: _object.position.x - _object.anchor.x + _object.frame.width - _object.frame.offset.x + _object.move.x, top: _object.position.y - _object.anchor.y + _object.move.y + _object.frame.offset.y, bottom: _object.position.y - _object.anchor.y + _object.frame.height - _object.frame.offset.y + _object.move.y}; 
         return !(sp2.left >= sp1.right || sp2.right <= sp1.left || sp2.top >= sp1.bottom || sp2.bottom <= sp1.top);
     };
 
-	// Sprite prototype Method collidesWithTile
+    // Sprite prototype Method collidesWithTile
     Sprite.prototype.collidesWithTile = function (_layer, _tile, _j) {
 
         var _lpx = Math.abs(_layer.x);
