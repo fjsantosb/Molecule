@@ -363,6 +363,7 @@ Molecule.module('Molecule.Animation', function (require, p) {
         this.loop = true;
         this.reverse = false;
         this.halt = false;
+        this.end = false;
     }
 
     Animation.prototype.sliceFrames = function(_imageWidth, _imageHeight, _frameWidth, _frameHeight) {
@@ -408,6 +409,7 @@ Molecule.module('Molecule.Animation', function (require, p) {
                     this.current.animation = i;
                     this.current.frame = 0;
                     this.timer = 0;
+                    this.end = false;
                 }
             }
         }
@@ -429,6 +431,7 @@ Molecule.module('Molecule.Animation', function (require, p) {
                             this.current.frame = 0;
                         } else {
                             this.current.frame = this.id[this.current.animation].frame.length - 1;
+                            this.end = true;
                         }
                     }
                 } else {
@@ -438,6 +441,7 @@ Molecule.module('Molecule.Animation', function (require, p) {
                             this.current.frame = this.id[this.current.animation].frame.length - 1;
                         } else {
                             this.current.frame = 0;
+                            this.end = true;
                         }
                     }
                 }
