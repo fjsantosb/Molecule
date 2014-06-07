@@ -1568,6 +1568,8 @@ Molecule.module('Molecule.Input', function (require, p) {
         
         this.gamepadEnabled = false;
         
+        this.accelerometer = {x: 0, y: 0, z: 0, alpha: 0, beta: 0, gamma: 0, interval: 0};
+        
         this.keydown = function(_e){self.onkeydown(_e)};
         this.keyup = function(_e){self.onkeyup(_e)};
         
@@ -1579,6 +1581,8 @@ Molecule.module('Molecule.Input', function (require, p) {
         this.touchmove = function(_e){self.ontouchmove(_e)};
         this.touchend = function(_e){self.ontouchend(_e)};
         this.touchcancel = function(_e){self.ontouchcancel(_e)};
+        
+        this.devicemotion = function(_e){self.ondevicemotion(_e)};
     }
 
     // Method to init 'keyboard', 'mouse' or 'touch' depending of type
@@ -1607,6 +1611,9 @@ Molecule.module('Molecule.Input', function (require, p) {
         if(_type === 'gamepad') {
             this.gamepadEnabled = true;
         }
+        if(_type === 'accelerometer') {
+            window.addEventListener('devicemotion', this.devicemotion, true);
+        }
     };
 
     // Method to remove 'keyboard', 'mouse' or 'touch' depending of type
@@ -1634,6 +1641,9 @@ Molecule.module('Molecule.Input', function (require, p) {
         }
         if(_type === 'gamepad') {
             this.gamepadEnabled = false;
+        }
+        if(_type === 'accelerometer') {
+            window.removeEventListener('devicemotion', this.devicemotion, true);
         }
     };
 
@@ -1942,6 +1952,18 @@ Molecule.module('Molecule.Input', function (require, p) {
             }
         }
     };
+    
+    Input.prototype.ondevicemotion = function(_e) {
+        this.accelerometer.x = _e.acceleration.x;
+        this.accelerometer.y = _e.acceleration.y;
+        this.accelerometer.z = _e.acceleration.z;
+        
+        this.accelerometer.alpha = _e.rotationRate.alpha;
+        this.accelerometer.beta = _e.rotationRate.beta;
+        this.accelerometer.gamma = _e.rotationRate.gamma;
+        
+        this.accelerometer.interval = _e.interval;
+    }
 
     return Input;
 
