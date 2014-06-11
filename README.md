@@ -7,6 +7,14 @@ documentation, features and examples can be seen on the official website:
 
 ### CHANGE LOG
 
+##### 0.9.4
+- Added accelerometer support
+- Gamepad API optimization
+- Added webaudio API
+- Sprite collision optimization
+- Added several new properties
+- Fixed general bugs
+
 ##### 0.9.3
 - Optimization in collision detection
 - Added gamepad API
