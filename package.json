@@ -1,7 +1,7 @@
 {
   "name": "molecule",
   "description": "Molecule - Game Framework",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "homepage": "http://www.moleculejs.net/",
   "repository": {
     "type": "git",

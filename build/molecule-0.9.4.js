@@ -1,5 +1,5 @@
 /*
-    MOLECULE 0.9.3
+    MOLECULE 0.9.4
 
     HTML5 game development library by Francisco Santos Belmonte and Christian Alfoni Jørgensen
 
