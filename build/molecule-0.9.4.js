@@ -820,7 +820,6 @@ Molecule.module('Molecule.Game', function (require, p) {
             sprite = game.scene.sprites[i];
             if (game.boundaries.x !== null && sprite.collides.boundaries) {
                 if (sprite.position.absolute.x - sprite.anchor.x + sprite.frame.offset.x + sprite.move.x < game.boundaries.x) {
-                    //sprite.position.x = game.boundaries.x + sprite.anchor.x - sprite.frame.offset.x;
                     sprite.collision.boundaries.left = true;
                     sprite.collision.boundaries.id = 0;
                     sprite.move.x = 0;
@@ -831,7 +830,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                     }
                 }
                 if (sprite.position.absolute.x + sprite.frame.width - sprite.anchor.x - sprite.frame.offset.x + sprite.move.x > game.boundaries.x + game.boundaries.width) {
-                    //sprite.position.x = game.boundaries.x + game.boundaries.width - sprite.frame.width + sprite.anchor.x + sprite.frame.offset.x;
                     sprite.collision.boundaries.right = true;
                     sprite.collision.boundaries.id = 1;
                     sprite.move.x = 0;
@@ -844,7 +842,6 @@ Molecule.module('Molecule.Game', function (require, p) {
             }
             if (game.boundaries.y !== null && sprite.collides.boundaries) {
                 if (sprite.position.absolute.y - sprite.anchor.y + sprite.frame.offset.y + sprite.move.y < game.boundaries.y) {
-                    //sprite.position.y = game.boundaries.y + sprite.anchor.y - sprite.frame.offset.y;
                     sprite.collision.boundaries.up = true;
                     sprite.collision.boundaries.id = 2;
                     sprite.move.y = 0;
@@ -855,7 +852,6 @@ Molecule.module('Molecule.Game', function (require, p) {
                     }
                 }
                 if (sprite.position.absolute.y + sprite.frame.height - sprite.anchor.y - sprite.frame.offset.y + sprite.move.y > game.boundaries.y + game.boundaries.height) {
-                    //sprite.position.y = game.boundaries.y + game.boundaries.height - sprite.frame.height + sprite.anchor.y + sprite.frame.offset.y;
                     sprite.collision.boundaries.down = true;
                     sprite.collision.boundaries.id = 3;
                     sprite.move.y = 0;
