@@ -828,12 +828,12 @@ Molecule.module('Molecule.Game', function (require, p) {
             timeout = {
                 funcString: funcString,
                 id: setTimeout(function () {
-                    p.timeouts.splice(p.timeouts.indexOf(findTimeout(timeout)), 1);
+                    p.timeouts.splice(p.timeouts.indexOf(findTimeout(timeout.funcString)), 1);
                     func.call(context);
                 }, ms),
                 clear: function () {
                     clearTimeout(this.id);
-                    p.timeouts.splice(p.timeouts.indexOf(findTimeout(timeout)), 1);
+                    p.timeouts.splice(p.timeouts.indexOf(findTimeout(this.funcString)), 1);
                 }
             }
             p.timeouts.push(timeout);
