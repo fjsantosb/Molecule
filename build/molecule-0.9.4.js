@@ -1465,12 +1465,33 @@ Molecule.module('Molecule.Game', function (require, p) {
     Game.prototype.timeout = function (func, ms, context) {
 
         var funcString = func.toString();
-        if (p.timeouts.indexOf(funcString) === -1) {
-            return setTimeout(function () {
-                p.timeouts.splice(p.timeouts.indexOf(funcString), 1);
-                func.call(context);
-            }, ms);
-            p.timeouts.push(funcString);
+        var findTimeout = function (funcString) {
+            var timeout;
+            for (var x = 0; x < p.timeouts.length; x++) {
+                timeout = p.timeouts[x];
+                if (timeout.funcString === funcString) {
+                    return timeout;
+                }
+            }     
+        };
+        var timeout = findTimeout(funcString);
+
+        if (!timeout) {
+            timeout = {
+                funcString: funcString,
+                id: setTimeout(function () {
+                    p.timeouts.splice(p.timeouts.indexOf(findTimeout(timeout)), 1);
+                    func.call(context);
+                }, ms),
+                clear: function () {
+                    clearTimeout(this.id);
+                    p.timeouts.splice(p.timeouts.indexOf(findTimeout(timeout)), 1);
+                }
+            }
+            p.timeouts.push(timeout);
+            return timeout;
+        } else {
+            return timeout;
         }
 
     };
