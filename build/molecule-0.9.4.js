@@ -1268,6 +1268,9 @@ Molecule.module('Molecule.Game', function (require, p) {
                 game = this;
             moleculesToRemove.forEach(function (obj) {
                 obj.removeListeners();
+                if (obj.teardown) {
+                  obj.teardown();
+                }
                 game.scene.molecules.splice(game.scene.molecules.indexOf(obj), 1);
                 if (obj.sprite) {
                     game.scene.sprites.splice(game.scene.sprites.indexOf(obj.sprite), 1);
@@ -1463,7 +1466,7 @@ Molecule.module('Molecule.Game', function (require, p) {
 
         var funcString = func.toString();
         if (p.timeouts.indexOf(funcString) === -1) {
-            setTimeout(function () {
+            return setTimeout(function () {
                 p.timeouts.splice(p.timeouts.indexOf(funcString), 1);
                 func.call(context);
             }, ms);
