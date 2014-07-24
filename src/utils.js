@@ -84,6 +84,10 @@ Molecule.module('Molecule.utils', function (require, p) {
             return sprite instanceof Sprite;
 
         },
+        isAudio: function (audio) {
+            var MAudio = require('Molecule.MAudio');
+            return audio instanceof MAudio;
+        },
         isText: function (text) {
             var Text = require('Molecule.Text');
             return text instanceof Text;

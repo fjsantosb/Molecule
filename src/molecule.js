@@ -5,7 +5,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
     
     p.isInstanceOfMoleculeObject = function (value) {
         
-        return utils.isMolecule(value) || utils.isSprite(value) || utils.isText(value) || utils.isTilemap(value);
+        return utils.isMolecule(value) || utils.isSprite(value) || utils.isText(value) || utils.isAudio(value) || utils.isTilemap(value);
         
     };
     

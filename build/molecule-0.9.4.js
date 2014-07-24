@@ -2602,7 +2602,7 @@ Molecule.module('Molecule.Molecule', function (require, p) {
     
     p.isInstanceOfMoleculeObject = function (value) {
         
-        return utils.isMolecule(value) || utils.isSprite(value) || utils.isText(value) || utils.isTilemap(value);
+        return utils.isMolecule(value) || utils.isSprite(value) || utils.isText(value) || utils.isAudio(value) || utils.isTilemap(value);
         
     };
     
@@ -3680,6 +3680,10 @@ Molecule.module('Molecule.utils', function (require, p) {
             var Sprite = require('Molecule.Sprite');
             return sprite instanceof Sprite;
 
+        },
+        isAudio: function (audio) {
+            var MAudio = require('Molecule.MAudio');
+            return audio instanceof MAudio;
         },
         isText: function (text) {
             var Text = require('Molecule.Text');
