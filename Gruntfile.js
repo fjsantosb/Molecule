@@ -111,6 +111,15 @@ module.exports = function(grunt) {
                     sinon: true
                 }
             }
+        },
+        connect: {
+            server: {
+                options: {
+                    port: 3000,
+                    base: '',
+                    keepalive: true
+                }
+            }
         }
     });
 
@@ -120,8 +129,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-tdd');
     grunt.loadNpmTasks('grunt-replace');
+    grunt.loadNpmTasks('grunt-contrib-connect');
 
     // Default task.
     grunt.registerTask('default', ['concat', 'replace:dist', 'uglify']);
     grunt.registerTask('build', ['jshint:beforeConcat', 'concat', 'replace:dist', 'jshint:afterConcat']);
+    grunt.registerTask('demo', ['connect']);
 };

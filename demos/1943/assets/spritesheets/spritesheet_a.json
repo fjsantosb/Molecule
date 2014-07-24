@@ -1,0 +1,171 @@
+{
+    "frames": [
+        {
+            "name": "decoy.png",
+            "position": {"x": 356, "y": 70},
+            "size": {"w": 20, "h": 20}
+        }, 
+        {
+            "name": "enemy_explosion_1.png",
+            "position": {"x": 548, "y": 70},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_2.png",
+            "position": {"x": 514, "y": 70},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_3.png",
+            "position": {"x": 480, "y": 70},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_4.png",
+            "position": {"x": 446, "y": 70},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_5.png",
+            "position": {"x": 412, "y": 70},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_6.png",
+            "position": {"x": 378, "y": 70},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_7.png",
+            "position": {"x": 616, "y": 36},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "enemy_explosion_8.png",
+            "position": {"x": 616, "y": 2},
+            "size": {"w": 32, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_idle_1.png",
+            "position": {"x": 564, "y": 36},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_idle_2.png",
+            "position": {"x": 564, "y": 2},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_left_1_1.png",
+            "position": {"x": 512, "y": 36},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_left_1_2.png",
+            "position": {"x": 512, "y": 2},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_left_2_1.png",
+            "position": {"x": 460, "y": 36},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_left_2_2.png",
+            "position": {"x": 460, "y": 2},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_right_1_1.png",
+            "position": {"x": 408, "y": 36},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_right_1_2.png",
+            "position": {"x": 408, "y": 2},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_right_2_1.png",
+            "position": {"x": 356, "y": 36},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_1up_right_2_2.png",
+            "position": {"x": 356, "y": 2},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_2up_idle_1.png",
+            "position": {"x": 314, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_2up_idle_2.png",
+            "position": {"x": 262, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_bullet.png",
+            "position": {"x": 366, "y": 92},
+            "size": {"w": 6, "h": 28}
+        }, 
+        {
+            "name": "plane_green_idle_1.png",
+            "position": {"x": 614, "y": 70},
+            "size": {"w": 30, "h": 26}
+        }, 
+        {
+            "name": "plane_green_idle_2.png",
+            "position": {"x": 582, "y": 70},
+            "size": {"w": 30, "h": 26}
+        }, 
+        {
+            "name": "plane_red_idle_1.png",
+            "position": {"x": 612, "y": 98},
+            "size": {"w": 28, "h": 26}
+        }, 
+        {
+            "name": "plane_red_idle_2.png",
+            "position": {"x": 582, "y": 98},
+            "size": {"w": 28, "h": 26}
+        }, 
+        {
+            "name": "plane_shadow_idle.png",
+            "position": {"x": 210, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_shadow_left_1.png",
+            "position": {"x": 158, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_shadow_left_2.png",
+            "position": {"x": 106, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_shadow_right_1.png",
+            "position": {"x": 54, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "plane_shadow_right_2.png",
+            "position": {"x": 2, "y": 94},
+            "size": {"w": 50, "h": 32}
+        }, 
+        {
+            "name": "title.png",
+            "position": {"x": 2, "y": 2},
+            "size": {"w": 352, "h": 90}
+        }],
+    "meta": {
+        "app": "http://www.codeandweb.com/texturepacker",
+        "description": "Json file for Molecule Framework",
+        "version": "1.0",
+        "image": "spritesheet_a.png",
+        "size": {"w":650,"h":128},
+        "smartupdate": "$TexturePacker:SmartUpdate:150c8c7c17a39102a5ab8ce78c970234:f4fc0b52357f42bf38d575b0aa013e49:ddb16baab0bb3339fa453df853295679$"
+    }
+}

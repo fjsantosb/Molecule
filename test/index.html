@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Molecule - HTML5 Game Framework</title>
+        <meta charset="UTF-8"/>
+    </head>
+    <body>
+        <script src='../src/main.js'></script>
+        <script src='../src/animation.js'></script>
+        <script src='../src/audiofile.js'></script>
+        <script src='../src/camera.js'></script>
+        <script src='../src/game.js'></script>
+        <script src='../src/imagefile.js'></script>
+        <script src='../src/input.js'></script>
+        <script src='../src/map.js'></script>
+        <script src='../src/mapcollisions.js'></script>
+        <script src='../src/mapfile.js'></script>
+        <script src='../src/molecule.js'></script>
+        <script src='../src/move.js'></script>
+        <script src='../src/mwebaudio.js'></script>
+        <script src='../src/physics.js'></script>
+        <script src='../src/scene.js'></script>
+        <script src='../src/spritesheet.js'></script>
+        <script src='../src/spritesheetfile.js'></script>
+        <script src='../src/maudio.js'></script>
+        <script src='../src/sprite.js'></script>
+        <script src='../src/spritecollisions.js'></script>
+        <script src='../src/text.js'></script>
+        <script src='../src/tile.js'></script>
+        <script src='../src/utils.js'></script>
+        <script src='../src/webaudiofile.js'></script>
+        <script>
+            Molecule({
+                width: 320,
+                height: 320
+            })
+            .sprite('player', 'http://moleculejs.net/files/jsfridge/plane_player.png')
+            .ready(function (game) {
+               
+                var test = game.molecule.define('test', {
+                    array: [],
+                    sprite: game.sprite.create('player'),
+                    init: function () {
+                        this.array.push('hey');
+                        console.log(this.array);
+                        this.sprite.acceleration.x = 1;
+                    }
+                });
+                
+                game.molecule.add('test');
+                
+            });
+        
+        
+        </script>
+    </body>
+</html>

@@ -1,6 +1,33 @@
 Molecule.module('Molecule.Molecule', function (require, p) {
 
     var Text = require('Molecule.Text');
+    var utils = require('Molecule.utils');
+    
+    p.isInstanceOfMoleculeObject = function (value) {
+        
+        return utils.isMolecule(value) || utils.isSprite(value) || utils.isText(value) || utils.isTilemap(value);
+        
+    };
+    
+    p.cloneOptions = function (source) {
+
+        var target = {};
+        for (var prop in source) {
+            if (source.hasOwnProperty(prop)) {
+
+                if (source[prop] instanceof Array) {
+                    target[prop] = source[prop].slice(0);
+                } else if (typeof source[prop] === 'object' && source[prop] !== null && !p.isInstanceOfMoleculeObject(source[prop])) {
+                    target[prop] = this.cloneOptions(source[prop]);
+                } else {
+                    target[prop] = source[prop];
+                }
+
+            }
+        }
+
+        return target;
+    }
 
     p.mergeObjects = function () {
         var object = arguments[0],
@@ -31,19 +58,17 @@ Molecule.module('Molecule.Molecule', function (require, p) {
         var MoleculeObject;
 
 
-        MoleculeObject = function () {
-            return parent.apply(this, arguments);
+        MoleculeObject = function (instanceObject) {
+            return parent.call(this, p.mergeObjects(p.cloneOptions(options), instanceObject || {}));
         };
 
-        p.mergeObjects(MoleculeObject, parent, options);
+        MoleculeObject.extend = p.extend;
 
         var Surrogate = function () {
             this.constructor = MoleculeObject;
         };
         Surrogate.prototype = parent.prototype;
         MoleculeObject.prototype = new Surrogate;
-
-        if (options) p.mergeObjects(MoleculeObject.prototype, options);
 
         MoleculeObject.__super__ = parent.prototype;
 
