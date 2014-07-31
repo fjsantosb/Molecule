@@ -13,7 +13,7 @@
     var onceCallbacks = [];
     var logArgs = {};
     var isTest = false;
-    var timeoutLimit = 1000;
+    var timeoutLimit = 2000;
     var game = null;
 
     var p = {
