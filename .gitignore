@@ -23,3 +23,5 @@ examples/_flappybird
 examples/flappy_bird
 examples/maze
 examples/example_08
+
+.idea/*
